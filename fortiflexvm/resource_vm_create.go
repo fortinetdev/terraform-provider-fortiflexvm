@@ -9,6 +9,7 @@ package fortiflexvm
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -17,33 +18,34 @@ func resourceVmsCreate() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceVmsCreateCreate,
 		Read:   resourceVmsCreateRead,
-		Update: resourceVmsCreateRead,
+		// Update: resourceVmsCreateRead, // If we want to set `ForceNew: true` for every schema, we must comment update function.
 		Delete: resourceVmsCreateRead,
-
-		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
-		},
 
 		Schema: map[string]*schema.Schema{
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
+				ForceNew: true,
 			},
 			"vm_count": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
+				ForceNew: true,
 			},
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"end_date": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"folder_path": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 		},
 	}
@@ -61,6 +63,11 @@ func resourceVmsCreateCreate(d *schema.ResourceData, m interface{}) error {
 	_, err = c.CreateVms(obj)
 
 	if err != nil {
+		if strings.HasPrefix(err.Error(), "Response contains multiple values:") {
+			// This error is acceptable, ignore this error.
+			d.SetId("VmsCreate")
+			return nil
+		}
 		return fmt.Errorf("Error creating Vms resource: %v", err)
 	}
 

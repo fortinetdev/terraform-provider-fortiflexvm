@@ -256,9 +256,13 @@ func resourceVmUpdateRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
-	if d.Get("config_id") == "" {
+	if d.Get("config_id") == 0 {
 		psn := importOptionChecking(m.(*FortiClient).Cfg, "config_id")
-		if err := d.Set("config_id", psn); err != nil {
+		psn_int, err := strconv.Atoi(psn)
+		if err != nil {
+			return fmt.Errorf("Error set params config_id: %v", err)
+		}
+		if err := d.Set("config_id", psn_int); err != nil {
 			return fmt.Errorf("Error set params config_id: %v", err)
 		}
 	}
@@ -309,6 +313,10 @@ func getVmUpdateReadResponse(o map[string]interface{}, mkey string) (map[string]
 	return nil, err
 }
 
+func flattenVmUpdateSerialNumber(v interface{}, d *schema.ResourceData) interface{} {
+	return v
+}
+
 func flattenVmUpdateConfigId(v interface{}, d *schema.ResourceData) interface{} {
 	var rst interface{}
 	switch v.(type) {
@@ -336,6 +344,12 @@ func refreshObjectVmUpdate(d *schema.ResourceData, o map[string]interface{}) err
 	var err error
 	if o == nil {
 		return nil
+	}
+
+	if err = d.Set("serial_number", flattenVmUpdateSerialNumber(o["serialNumber"], d)); err != nil {
+		if !fortiAPIPatch(o["serial_number"]) {
+			return fmt.Errorf("Error reading serial_number: %v", err)
+		}
 	}
 
 	if err = d.Set("config_id", flattenVmUpdateConfigId(o["configId"], d)); err != nil {

@@ -9,9 +9,9 @@ description: |-
 # fortiflexvm_vms_update
 Update a VM, stop or reactivate a VM, or regenerate a VM token.
 
-~> You can use [fortiflexvm_vms_create](./fortiflexvm_vms_create.html.markdown) to create VMs. The status of newly created VMs is `PENDING`. You can't update a VM if its current status is `PENDING`. Please use [VM token to activate a virtual machine](https://docs.fortinet.com/document/flex-vm/latest/administration-guide/256339/injecting-the-flex-vm-license) before using this API.
+!> You can use [fortiflexvm_vms_create](./fortiflexvm_vms_create.html.markdown) to create VMs. The status of newly created VMs is `PENDING`. You can't update a VM if its current status is `PENDING`. Please [use VM token to activate a virtual machine](https://docs.fortinet.com/document/flex-vm/latest/administration-guide/256339/injecting-the-flex-vm-license) before using this API.
 
-~> By using this resource, you can change the data in the FortiFlex VM Platform immediately. Yet it may take several hours for the VMs to update their licenses automatically. To update the licenses in the VMs immediately, please reboot your VMs.
+~> By using this resource, you can change the data in the FortiFlex VM Platform immediately. Yet it may take several hours for the VMs to update their licenses automatically.
 
 ## Example Usage
 
@@ -44,3 +44,23 @@ The following arguments are supported:
 The following attribute is exported:
 
 * `id` - (String) An ID for the resource.
+
+## Import
+
+~> Currently, our Provider only supports importing one VM profile.
+
+VM profile can be imported by using the following steps:
+
+First, specify the `config_id` when you configure the provider.
+```
+provider "fortiflexvm" {
+  username = "ABCDEFG"
+  password = "HIJKLMN"
+  import_options= toset(["config_id=42"])
+}
+```
+
+Then, use the following command to import the VM profile.
+```
+terraform import fortiflexvm_vms_update.labelname {{serial_number}}
+```

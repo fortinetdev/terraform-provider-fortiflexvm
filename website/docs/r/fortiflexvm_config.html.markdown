@@ -110,3 +110,21 @@ The `fwb_vm` block contains:
 The following attribute is exported:
 
 * `id` - (String) An ID for the resource.
+
+## Import
+
+FlexVM Configuration can be imported by using the following steps:
+
+First, specify the `program_serial_number` when you configure the provider.
+```
+provider "fortiflexvm" {
+  username = "ABCDEFG"
+  password = "HIJKLMN"
+  import_options= toset(["program_serial_number=ELAVMS000000XXXX"])
+}
+```
+
+Then, use the following command to import the FlexVM Configuration.
+```
+terraform import fortiflexvm_config.labelname {{id}}
+```

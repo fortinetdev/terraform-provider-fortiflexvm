@@ -51,27 +51,7 @@ func resourceConfig() *schema.Resource {
 				FGT_VM_LCS: FortiGate Virtual Machine - A La Carte Services;
 				FAZ_VM: FortiAnalyzer Virtual Machine;
 				FPC_VM: FortiPortal Virtual Machine.`,
-				ValidateDiagFunc: func(v interface{}, p cty.Path) diag.Diagnostics {
-					value := v.(string)
-					valid_values := []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS", "FAZ_VM", "FPC_VM"}
-					var diags diag.Diagnostics
-					flag := false
-					for _, valid_value := range valid_values {
-						if valid_value == value {
-							flag = true
-							break
-						}
-					}
-					if !flag {
-						diag := diag.Diagnostic{
-							Severity: diag.Error,
-							Summary:  "Wrong value",
-							Detail:   fmt.Sprintf("Invalid status: %v. Valid values: %v", value, valid_values),
-						}
-						diags = append(diags, diag)
-					}
-					return diags
-				},
+				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS", "FAZ_VM", "FPC_VM"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -81,19 +61,7 @@ func resourceConfig() *schema.Resource {
 				Description: `Configuration status, must be one of the following options:
 				ACTIVE: Enable a configuration;
 				DISABLED: Disable a configuration.`,
-				ValidateDiagFunc: func(v interface{}, p cty.Path) diag.Diagnostics {
-					value := v.(string)
-					var diags diag.Diagnostics
-					if value != "ACTIVE" && value != "DISABLED" {
-						diag := diag.Diagnostic{
-							Severity: diag.Error,
-							Summary:  "Wrong value",
-							Detail:   fmt.Sprintf("Invalid status: %v. Valid values: ACTIVE or DISABLED", value),
-						}
-						diags = append(diags, diag)
-					}
-					return diags
-				},
+				ValidateDiagFunc: checkInputValidString("status", []string{"ACTIVE", "DISABLED"}),
 			},
 			"fgt_vm_bundle": &schema.Schema{
 				Type:     schema.TypeList,
@@ -102,19 +70,22 @@ func resourceConfig() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"cpu_size": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeString,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidString("fgt_vm_bundle.cpu_size", []string{"1", "2", "4", "8", "16", "32", "2147483647"}),
 						},
 						"service_pkg": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeString,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidString("fgt_vm_bundle.service_pkg", []string{"FC", "UTM", "ENT", "ATP"}),
 						},
 						"vdom_num": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("fgt_vm_bundle.vdom_num", 0, 500),
 						},
 					},
 				},
@@ -126,14 +97,16 @@ func resourceConfig() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"managed_dev": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("fmg_vm.managed_dev", 1, 100000),
 						},
 						"adom_num": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("fmg_vm.adom_num", 1, 100000),
 						},
 					},
 				},
@@ -145,14 +118,16 @@ func resourceConfig() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"cpu_size": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeString,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidString("fwb_vm.cpu_size", []string{"1", "2", "4", "8", "16"}),
 						},
 						"service_pkg": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeString,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidString("fwb_vm.service_pkg", []string{"FWBSTD", "FWBADV"}),
 						},
 					},
 				},
@@ -167,28 +142,50 @@ func resourceConfig() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
+							ValidateDiagFunc: func(v interface{}, p cty.Path) diag.Diagnostics {
+								parameter_name := "fgt_vm_lcs.cpu_size"
+								lower_bound := 1
+								upper_bound := 96
+								var diags diag.Diagnostics
+								value, err := strconv.Atoi(v.(string))
+								if err != nil || value < lower_bound || value > upper_bound {
+									diag := diag.Diagnostic{
+										Severity: diag.Error,
+										Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+										Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values: number between %v and %v (inclusive)", parameter_name, value, lower_bound, upper_bound),
+									}
+									diags = append(diags, diag)
+								}
+								return diags
+							},
 						},
 						"fortiguard_services": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
 							Computed: true,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+							// ValidateFunc and ValidateDiagFunc are not yet supported on lists or sets.
+							// ValidateDiagFunc: checkInputValidStringList("fgt_vm_lcs.fortiguard_services", []string{"IPS", "AVDB", "FURL", "IOTH", "FGSA", "ISSS"}),
 						},
 						"support_service": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeString,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidString("fgt_vm_lcs.support_service", []string{"FC247", "ASET"}),
 						},
 						"vdom_num": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("fgt_vm_lcs.vdom_num", 1, 500),
 						},
 						"cloud_services": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
 							Computed: true,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+							// ValidateFunc and ValidateDiagFunc are not yet supported on lists or sets.
+							// ValidateDiagFunc: checkInputValidStringList("fgt_vm_lcs.cloud_services", []string{"FAMS", "SWNM", "FMGC", "AFAC"}),
 						},
 					},
 				},
@@ -200,19 +197,22 @@ func resourceConfig() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"daily_storage": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("faz_vm.daily_storage", 5, 8300),
 						},
 						"adom_num": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("faz_vm.adom_num", 0, 1200),
 						},
 						"support_service": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeString,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidString("faz_vm.support_service", []string{"FAZFC247"}),
 						},
 					},
 				},
@@ -224,14 +224,77 @@ func resourceConfig() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"managed_dev": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-							Computed: true,
+							Type:             schema.TypeInt,
+							Optional:         true,
+							Computed:         true,
+							ValidateDiagFunc: checkInputValidInt("fpc_vm.managed_dev", 0, 100000),
 						},
 					},
 				},
 			},
 		},
+	}
+}
+
+func contains(str_list []string, target string) bool {
+	for _, str := range str_list {
+		if target == str {
+			return true
+		}
+	}
+	return false
+}
+
+func checkInputValidString(parameter_name string, valid_values []string) func(interface{}, cty.Path) diag.Diagnostics {
+	return func(v interface{}, p cty.Path) diag.Diagnostics {
+		value := v.(string)
+		var diags diag.Diagnostics
+		if flag := contains(valid_values, value); !flag {
+			diag := diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+				Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values: %v", parameter_name, value, valid_values),
+			}
+			diags = append(diags, diag)
+		}
+		return diags
+	}
+}
+
+func checkInputValidStringList(parameter_name string, valid_values []string) func(interface{}, cty.Path) diag.Diagnostics {
+	return func(v interface{}, p cty.Path) diag.Diagnostics {
+		values := v.([]string)
+		var diags diag.Diagnostics
+		flag := true
+		for _, value := range values {
+			flag = flag && contains(valid_values, value)
+			if !flag {
+				diag := diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+					Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values (you can select multiple values): %v", parameter_name, value, valid_values),
+				}
+				diags = append(diags, diag)
+				break
+			}
+		}
+		return diags
+	}
+}
+
+func checkInputValidInt(parameter_name string, lower_bound int, upper_bound int) func(interface{}, cty.Path) diag.Diagnostics {
+	return func(v interface{}, p cty.Path) diag.Diagnostics {
+		value := v.(int)
+		var diags diag.Diagnostics
+		if value < lower_bound || value > upper_bound {
+			diag := diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+				Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values: number between %v and %v (inclusive)", parameter_name, value, lower_bound, upper_bound),
+			}
+			diags = append(diags, diag)
+		}
+		return diags
 	}
 }
 
@@ -477,7 +540,7 @@ func flattenConfigParameters(v interface{}, d *schema.ResourceData, pt string) i
 	for _, r := range l {
 		i := r.(map[string]interface{})
 
-		pType, cName, _ := convConfParsId2NameList(int(i["id"].(float64)))
+		pType, cName, dataType := convConfParsId2NameList(int(i["id"].(float64)))
 		if pType != pt {
 			log.Printf("[ERROR] Got incorrect parameter ID of Product Type %v, should be type %v", pType, pt)
 			return nil
@@ -487,10 +550,21 @@ func flattenConfigParameters(v interface{}, d *schema.ResourceData, pt string) i
 				if argList, ok := tmp[cName]; ok {
 					tmp[cName] = append(argList.([]interface{}), cValue)
 				} else {
-					tmp[cName] = []interface{}{cValue}
+					if cValue == "NONE" {
+						tmp[cName] = []interface{}{}
+					} else {
+						tmp[cName] = []interface{}{cValue}
+					}
 				}
 			} else {
-				tmp[cName] = cValue.(string)
+				switch dataType {
+				case "int":
+					tmp[cName], _ = strconv.Atoi((cValue.(string)))
+				case "string":
+					tmp[cName] = cValue.(string)
+				default:
+					tmp[cName] = cValue.(string)
+				}
 			}
 		}
 
@@ -582,9 +656,26 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 		}
 		if cvList, ok := cv.([]interface{}); ok {
 			for _, csv := range cvList {
+				if pre == "fgt_vm_lcs" { // input check
+					fortiguard_services_valid_values := []string{"IPS", "AVDB", "FURL", "IOTH", "FGSA", "ISSS"}
+					cloud_services_valid_values := []string{"FAMS", "SWNM", "FMGC", "AFAC"}
+					if ck == "fortiguard_services" && !contains(fortiguard_services_valid_values, csv.(string)) {
+						return result, fmt.Errorf(`Invalid fgt_vm_lcs.fortiguard_services input %v
+Valid values (you can select multiple values): %v`, csv.(string), fortiguard_services_valid_values)
+					} else if ck == "cloud_services" && !contains(cloud_services_valid_values, csv.(string)) {
+						return result, fmt.Errorf(`Invalid fgt_vm_lcs.cloud_services input %v
+Valid values (you can select multiple values): %v`, csv.(string), cloud_services_valid_values)
+					}
+				}
 				tmp := make(map[string]interface{})
 				tmp["id"] = ckId
 				tmp["value"] = csv
+				result = append(result, tmp)
+			}
+			if len(cvList) == 0 { // if this list is empty, send "NONE" to the flexvm server
+				tmp := make(map[string]interface{})
+				tmp["id"] = ckId
+				tmp["value"] = "NONE"
 				result = append(result, tmp)
 			}
 		} else {

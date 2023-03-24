@@ -10,7 +10,9 @@ description: |-
 
 Create one or more VMs based on a Flex VM Configuration.
 
--> This API is only used to create one or more VMs. **Once you declare a resource block and use `terraform apply`, any modification to the resource blocks will not make efforts**. (e.g., if you already used the resource block in the `Example Usage` to apply one VM, you can not apply another VM by just replacing the value of `vm_count` with 2. You need to write another resource block to create additional VMs). To modify a VM, please refer to [fortiflexvm_vms_update](./fortiflexvm_vms_update.html.markdown).
+!> This API is only used to create one or more VMs. To modify a VM, please refer to [fortiflexvm_vms_update](./fortiflexvm_vms_update.html.markdown).
+
+~> Once you declare a resource block and use `terraform apply`, **any modification to this resource block will create new VM(s) when you use `terraform apply` again**. (e.g., if you already used the resource block in the `Example Usage` to apply one VM, you will create 2 more VMs by replacing the value of `vm_count` with 2. And you create 3 VMs in total). 
 
 ## Example Usage
 
@@ -40,4 +42,7 @@ The following attribute is exported:
 
 * `id` - (String) An ID for the resource.
 
+## Import
+
+!> You can not import this resource.
 
