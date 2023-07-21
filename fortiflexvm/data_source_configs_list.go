@@ -1,9 +1,8 @@
-// Copyright 2020 Fortinet, Inc. All rights reserved.
-// Author: Xing Li (@lix-fortinet), Hongbin Lu (@fgtdev-hblu)
-// Documentation:
-// Xing Li (@lix-fortinet), Hongbin Lu (@fgtdev-hblu),
+// Copyright 2023 Fortinet, Inc. All rights reserved.
+// Author: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
+// Documentation: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 
-// Description: Get list of Flex VM Configurations for a Program.
+// Description: Get list of configurations for a program.
 
 package fortiflexvm
 
@@ -14,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceConfigsList() *schema.Resource {
@@ -164,6 +162,42 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fad_vm": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"cpu_size": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"fgt_hw": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"device_model": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -175,12 +209,13 @@ func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
-	obj, err := getObjectConfigsList(d)
-	if err != nil {
-		return fmt.Errorf("Error reading ConfigsList data source while getting required parameters: %v", err)
-	}
+	// Prepare data
+	request_obj := make(map[string]interface{})
+	program_serial_number := d.Get("program_serial_number").(string)
+	request_obj["programSerialNumber"] = program_serial_number
 
-	o, err := c.ReadConfigsList(obj)
+	// Send request
+	o, err := c.ReadConfigsList(&request_obj)
 	if err != nil {
 		return fmt.Errorf("Error describing ConfigsList: %v", err)
 	}
@@ -190,12 +225,25 @@ func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
+	// Update status
 	err = dataSourceRefreshObjectConfigsList(d, o)
 	if err != nil {
 		return fmt.Errorf("Error describing ConfigsList from API: %v", err)
 	}
 
-	d.SetId("ConfigsList")
+	d.SetId(program_serial_number)
+
+	return nil
+}
+
+func dataSourceRefreshObjectConfigsList(d *schema.ResourceData, o map[string]interface{}) error {
+	var err error
+
+	if err = d.Set("configs", dataSourceFlattenConfigsListConfigs(o["configs"], d)); err != nil {
+		if !fortiAPIPatch(o["configs"]) {
+			return fmt.Errorf("Error reading configs: %v", err)
+		}
+	}
 
 	return nil
 }
@@ -217,70 +265,32 @@ func dataSourceFlattenConfigsListConfigs(v interface{}, d *schema.ResourceData) 
 		i := r.(map[string]interface{})
 
 		if _, ok := i["id"]; ok {
-			tmp["id"] = dataSourceFlattenConfigsListConfigsId(i["id"], d)
+			tmp["id"] = i["id"]
 		}
-
 		if _, ok := i["programSerialNumber"]; ok {
-			tmp["program_serial_number"] = dataSourceFlattenConfigsListConfigsProgramSerialNumber(i["programSerialNumber"], d)
+			tmp["program_serial_number"] = i["programSerialNumber"]
 		}
-
 		if _, ok := i["name"]; ok {
-			tmp["name"] = dataSourceFlattenConfigsListConfigsName(i["name"], d)
+			tmp["name"] = i["name"]
 		}
-
-		if _, ok := i["productType"]; ok {
-			tmp["product_type"] = dataSourceFlattenConfigsListConfigsProductType(i["productType"], d)
-		}
-
 		if _, ok := i["status"]; ok {
-			tmp["status"] = dataSourceFlattenConfigsListConfigsStatus(i["status"], d)
+			tmp["status"] = i["status"]
 		}
-
-		if tmp["product_type"] == "FGT_VM_Bundle" {
+		if _, ok := i["productType"]; ok {
+			tmp["product_type"] = dataSourceFlattenConfigsListConfigsProductType(i["productType"])
 			if _, ok := i["parameters"]; ok {
-				tmp["fgt_vm_bundle"] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"], d, "fgt_vm_bundle")
-			}
-		} else if tmp["product_type"] == "FMG_VM" {
-			if _, ok := i["parameters"]; ok {
-				tmp["fmg_vm"] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"], d, "fmg_vm")
-			}
-		} else if tmp["product_type"] == "FWB_VM" {
-			if _, ok := i["parameters"]; ok {
-				tmp["fwb_vm"] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"], d, "fwb_vm")
-			}
-		} else if tmp["product_type"] == "FGT_VM_LCS" {
-			if _, ok := i["parameters"]; ok {
-				tmp["fgt_vm_lcs"] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"], d, "fgt_vm_lcs")
-			}
-		} else if tmp["product_type"] == "FAZ_VM" {
-			if _, ok := i["parameters"]; ok {
-				tmp["faz_vm"] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"], d, "faz_vm")
-			}
-		} else if tmp["product_type"] == "FPC_VM" {
-			if _, ok := i["parameters"]; ok {
-				tmp["fpc_vm"] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"], d, "fpc_vm")
+				product_type := tmp["product_type"].(string)
+				product_type_lower := strings.ToLower(product_type)
+				tmp[product_type_lower] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"])
 			}
 		}
-
 		result = append(result, tmp)
 	}
 
 	return result
 }
 
-func dataSourceFlattenConfigsListConfigsId(v interface{}, d *schema.ResourceData) interface{} {
-	return v
-}
-
-func dataSourceFlattenConfigsListConfigsProgramSerialNumber(v interface{}, d *schema.ResourceData) interface{} {
-	return v
-}
-
-func dataSourceFlattenConfigsListConfigsName(v interface{}, d *schema.ResourceData) interface{} {
-	return v
-}
-
-func dataSourceFlattenConfigsListConfigsProductType(v interface{}, d *schema.ResourceData) interface{} {
+func dataSourceFlattenConfigsListConfigsProductType(v interface{}) interface{} {
 	var rst interface{}
 	rst = ""
 	if pt, ok := v.(map[string]interface{}); ok {
@@ -294,11 +304,7 @@ func dataSourceFlattenConfigsListConfigsProductType(v interface{}, d *schema.Res
 	return rst
 }
 
-func dataSourceFlattenConfigsListConfigsStatus(v interface{}, d *schema.ResourceData) interface{} {
-	return v
-}
-
-func dataSourceFlattenConfigsListConfigsParameters(v interface{}, d *schema.ResourceData, pt string) interface{} {
+func dataSourceFlattenConfigsListConfigsParameters(v interface{}) interface{} {
 	if v == nil {
 		return nil
 	}
@@ -308,76 +314,34 @@ func dataSourceFlattenConfigsListConfigsParameters(v interface{}, d *schema.Reso
 		return nil
 	}
 
-	result := make([]map[string]interface{}, 0, len(l))
-
+	result := make([]map[string]interface{}, 0, 1)
 	tmp := make(map[string]interface{})
 	for _, r := range l {
-		i := r.(map[string]interface{})
-
-		pType, cName, dataType := convConfParsId2NameList(int(i["id"].(float64)))
-		if pType != pt {
-			log.Printf("[ERROR] Got incorrect parameter ID of Product Type %v, should be type %v", pType, pt)
-			return nil
+		param := r.(map[string]interface{})
+		_, cName, dataType := convConfParsId2NameList(int(param["id"].(float64)))
+		if cName == "" {
+			log.Printf("NEW PARAM: %v", param["id"])
+			continue
 		}
-		if cValue, ok := i["value"]; ok {
-			if cName == "fortiguard_services" || cName == "cloud_services" {
-				if argList, ok := tmp[cName]; ok {
-					tmp[cName] = append(argList.([]interface{}), cValue)
-				} else {
-					tmp[cName] = []interface{}{cValue}
+		if cValue, ok := param["value"]; ok {
+			switch dataType {
+			case "int":
+				tmp[cName], _ = strconv.Atoi((cValue.(string)))
+			case "string":
+				tmp[cName] = cValue.(string)
+			case "list":
+				if _, ok := tmp[cName]; ok == false {
+					tmp[cName] = []interface{}{}
 				}
-			} else {
-				switch dataType {
-				case "int":
-					tmp[cName], _ = strconv.Atoi((cValue.(string)))
-				case "string":
-					tmp[cName] = cValue.(string)
-				default:
-					tmp[cName] = cValue.(string)
+				if cValue != "NONE" {
+					tmp[cName] = append(tmp[cName].([]interface{}), cValue)
 				}
-
+			default:
+				tmp[cName] = cValue.(string)
 			}
 		}
-
 	}
 	result = append(result, tmp)
 
 	return result
-}
-
-func dataSourceRefreshObjectConfigsList(d *schema.ResourceData, o map[string]interface{}) error {
-	var err error
-
-	if err = d.Set("configs", dataSourceFlattenConfigsListConfigs(o["configs"], d)); err != nil {
-		if !fortiAPIPatch(o["configs"]) {
-			return fmt.Errorf("Error reading configs: %v", err)
-		}
-	}
-
-	return nil
-}
-
-func dataSourceFlattenConfigsListFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fosdebugbeg int, fosdebugend int) {
-	log.Printf(strconv.Itoa(fosdebugsn))
-	e := validation.IntBetween(fosdebugbeg, fosdebugend)
-	log.Printf("ER List: %v, %v", strings.Split("FortiFlexVM Ver", " "), e)
-}
-
-func expandConfigsListProgramSerialNumber(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
-}
-
-func getObjectConfigsList(d *schema.ResourceData) (*map[string]interface{}, error) {
-	obj := make(map[string]interface{})
-
-	if v, ok := d.GetOk("program_serial_number"); ok {
-		t, err := expandConfigsListProgramSerialNumber(d, v, "program_serial_number")
-		if err != nil {
-			return &obj, err
-		} else if t != nil {
-			obj["programSerialNumber"] = t
-		}
-	}
-
-	return &obj, nil
 }

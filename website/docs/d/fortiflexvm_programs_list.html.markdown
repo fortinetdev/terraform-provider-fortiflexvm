@@ -3,11 +3,11 @@ subcategory: "Programs"
 layout: "fortiflexvm"
 page_title: "FortiFlexVM: fortiflexvm_programs_list"
 description: |-
-  Get list of Flex VM Programs for the account.
+  Get list of FortiFlex Programs for the account.
 ---
 
 # Data Source: fortiflexvm_programs_list
-Get list of Flex VM Programs for the account.
+Get list of FortiFlex Programs for the account.
 
 ## Example Usage
 
@@ -27,14 +27,14 @@ No argument is required.
 
 The following attributes are exported:
 
-* `id` - (String) An ID for the resource.
-* `programs` - (List of Object) List of Flex VM Programs for the account. The structure of [`programs` block](#nestedatt--programs) is documented below.
+* `id` - (String) An ID for the resource. Its value is the string "ProgramsList".
+* `programs` - (List of Object) List of FortiFlex Programs for the account. The structure of [`programs` block](#nestedatt--programs) is documented below.
 
 <a id="nestedatt--programs"></a>
 The `programs` block contains:
 
 * `account_id` - (Number) Your account ID.
-* `end_date` - (String) Flex VM Program end date.
+* `end_date` - (String) FortiFlex Program end date.
 * `has_support_coverage` - (Boolean) <!-- Whether the current date is between the start_date and end_date. -->
-* `serial_number` - (String) The unique serial number of this Flex VM Program.
-* `start_date` - (String) Flex VM Program creation date.
+* `serial_number` - (String) The unique serial number of this FortiFlex Program.
+* `start_date` - (String) FortiFlex Program creation date.

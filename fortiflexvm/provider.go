@@ -1,9 +1,8 @@
-// Copyright 2020 Fortinet, Inc. All rights reserved.
-// Author: Xing Li (@lix-fortinet), Hongbin Lu (@fgtdev-hblu)
-// Documentation:
-// Xing Li (@lix-fortinet), Hongbin Lu (@fgtdev-hblu),
+// Copyright 2023 Fortinet, Inc. All rights reserved.
+// Author: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
+// Documentation: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 
-// Description: Provider for FlexVM
+// Description: Provider for FortiFlex
 
 package fortiflexvm
 
@@ -11,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// Provider creates and returns the FlexVM *schema.Provider.
+// Provider creates and returns the FortiFlex *schema.Provider.
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -38,18 +37,19 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"fortiflexvm_programs_list":    dataSourceProgramsList(),
-			"fortiflexvm_configs_list":     dataSourceConfigsList(),
-			"fortiflexvm_vms_list":         dataSourceVmsList(),
-			"fortiflexvm_vms_points":       dataSourceVmsPoints(),
-			"fortiflexvm_groups_list":      dataSourceGroupsList(),
-			"fortiflexvm_groups_nexttoken": dataSourceGroupsNexttoken(),
+			"fortiflexvm_programs_list":       dataSourceProgramsList(),
+			"fortiflexvm_configs_list":        dataSourceConfigsList(),
+			"fortiflexvm_entitlements_list":   dataSourceEntitlementsList(),
+			"fortiflexvm_entitlements_points": dataSourceEntitlementsPoints(),
+			"fortiflexvm_groups_list":         dataSourceGroupsList(),
+			"fortiflexvm_groups_nexttoken":    dataSourceGroupsNexttoken(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"fortiflexvm_config":     resourceConfig(),
-			"fortiflexvm_vms_create": resourceVmsCreate(),
-			"fortiflexvm_vms_update": resourceVmUpdate(),
+			"fortiflexvm_config":                resourceConfig(),
+			"fortiflexvm_entitlements_vm":       resourceEntitlementsVM(),
+			"fortiflexvm_entitlements_hardware": resourceEntitlementsHW(),
+			"fortiflexvm_entitlements_vm_token": resourceEntitlementsVMToken(),
 		},
 
 		ConfigureFunc: providerConfigure,

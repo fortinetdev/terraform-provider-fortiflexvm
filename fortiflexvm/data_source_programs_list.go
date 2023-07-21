@@ -1,20 +1,15 @@
-// Copyright 2020 Fortinet, Inc. All rights reserved.
-// Author: Xing Li (@lix-fortinet), Hongbin Lu (@fgtdev-hblu)
-// Documentation:
-// Xing Li (@lix-fortinet), Hongbin Lu (@fgtdev-hblu),
+// Copyright 2023 Fortinet, Inc. All rights reserved.
+// Author: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
+// Documentation: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 
-// Description: Get list of Flex VM Programs.
+// Description: Get list of programs.
 
 package fortiflexvm
 
 import (
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceProgramsList() *schema.Resource {
@@ -57,6 +52,7 @@ func dataSourceProgramsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
+	// Send request
 	o, err := c.ReadProgramsList(nil)
 	if err != nil {
 		return fmt.Errorf("Error describing ProgramsList: %v", err)
@@ -67,6 +63,7 @@ func dataSourceProgramsListRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
+	// Update status
 	err = dataSourceRefreshObjectProgramsList(d, o)
 	if err != nil {
 		return fmt.Errorf("Error describing ProgramsList from API: %v", err)
@@ -77,7 +74,17 @@ func dataSourceProgramsListRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func dataSourceFlattenProgramsListPrograms(v interface{}, d *schema.ResourceData, pre string) []map[string]interface{} {
+func dataSourceRefreshObjectProgramsList(d *schema.ResourceData, o map[string]interface{}) error {
+	var err error
+	if err = d.Set("programs", dataSourceFlattenProgramsListPrograms(o["programs"])); err != nil {
+		if !fortiAPIPatch(o["programs"]) {
+			return fmt.Errorf("Error reading programs: %v", err)
+		}
+	}
+	return nil
+}
+
+func dataSourceFlattenProgramsListPrograms(v interface{}) []map[string]interface{} {
 	if v == nil {
 		return nil
 	}
@@ -88,81 +95,26 @@ func dataSourceFlattenProgramsListPrograms(v interface{}, d *schema.ResourceData
 	}
 
 	result := make([]map[string]interface{}, 0, len(l))
-
-	con := 0
 	for _, r := range l {
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
-
-		pre_append := "" // table
-
-		pre_append = pre + "." + strconv.Itoa(con) + "." + "account_id"
 		if _, ok := i["accountId"]; ok {
-			tmp["account_id"] = dataSourceFlattenProgramsListProgramsAccountId(i["accountId"], d, pre_append)
+			tmp["account_id"] = i["accountId"]
 		}
-
-		pre_append = pre + "." + strconv.Itoa(con) + "." + "end_date"
 		if _, ok := i["endDate"]; ok {
-			tmp["end_date"] = dataSourceFlattenProgramsListProgramsEndDate(i["endDate"], d, pre_append)
+			tmp["end_date"] = i["endDate"]
 		}
-
-		pre_append = pre + "." + strconv.Itoa(con) + "." + "has_support_coverage"
 		if _, ok := i["hasSupportCoverage"]; ok {
-			tmp["has_support_coverage"] = dataSourceFlattenProgramsListProgramsHasSupportCoverage(i["hasSupportCoverage"], d, pre_append)
+			tmp["has_support_coverage"] = i["hasSupportCoverage"]
 		}
-
-		pre_append = pre + "." + strconv.Itoa(con) + "." + "serial_number"
 		if _, ok := i["serialNumber"]; ok {
-			tmp["serial_number"] = dataSourceFlattenProgramsListProgramsSerialNumber(i["serialNumber"], d, pre_append)
+			tmp["serial_number"] = i["serialNumber"]
 		}
-
-		pre_append = pre + "." + strconv.Itoa(con) + "." + "start_date"
 		if _, ok := i["startDate"]; ok {
-			tmp["start_date"] = dataSourceFlattenProgramsListProgramsStartDate(i["startDate"], d, pre_append)
+			tmp["start_date"] = i["startDate"]
 		}
-
 		result = append(result, tmp)
-
-		con += 1
 	}
 
 	return result
-}
-
-func dataSourceFlattenProgramsListProgramsAccountId(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
-}
-
-func dataSourceFlattenProgramsListProgramsEndDate(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
-}
-
-func dataSourceFlattenProgramsListProgramsHasSupportCoverage(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
-}
-
-func dataSourceFlattenProgramsListProgramsSerialNumber(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
-}
-
-func dataSourceFlattenProgramsListProgramsStartDate(v interface{}, d *schema.ResourceData, pre string) interface{} {
-	return v
-}
-
-func dataSourceRefreshObjectProgramsList(d *schema.ResourceData, o map[string]interface{}) error {
-	var err error
-
-	if err = d.Set("programs", dataSourceFlattenProgramsListPrograms(o["programs"], d, "programs")); err != nil {
-		if !fortiAPIPatch(o["programs"]) {
-			return fmt.Errorf("Error reading programs: %v", err)
-		}
-	}
-
-	return nil
-}
-
-func dataSourceFlattenProgramsListFortiTestDebug(d *schema.ResourceData, fosdebugsn int, fosdebugbeg int, fosdebugend int) {
-	log.Printf(strconv.Itoa(fosdebugsn))
-	e := validation.IntBetween(fosdebugbeg, fosdebugend)
-	log.Printf("ER List: %v, %v", strings.Split("FortiFlexVM Ver", " "), e)
 }

@@ -19,7 +19,7 @@ data "fortiflexvm_groups_nexttoken" "example" {
     folder_path = "My Assets"
 }
 
-output "output1"{
+output "my_groups_nexttoken"{
     value = data.fortiflexvm_groups_nexttoken.example
 }
 ```
@@ -30,26 +30,27 @@ The following arguments are supported:
 
 **Althrough both arguments are optional, please at least specify one argument to get the result.**
 
-* `config_id` (Optional/Number) The ID of a Flex VM Configuration.
+* `config_id` (Optional/Number) The ID of a configuration.
 * `folder_path` (Optional/String) Folder path.
 
 ## Attribute Reference
 
 The following attributes are exported:
 
-* `id` - (String) An ID for the resource.
-* `vms` - (List of Object) **One** Virtual Machine with unused token. The structure of [`vms` block](#nestedatt--vms)is documented below.
+* `id` - (String) An ID for the resource. Its value will be `{config_id}.{folder_path}`. For example: "42.My Assets". If config_id or folder_path is not specified, their value will be "none". For example: "none.My Assets" or "42.none".
+* `entitlements` - (List of Object) **One** Virtual Machine with unused token. The structure of [`entitlements` block](#nestedatt--entitlements)is documented below.
 
-<a id="nestedatt--vms"></a>
-The `vms` block contains:
+<a id="nestedatt--entitlements"></a>
+The `entitlements` block contains:
 
-* `config_id` - (Number) The ID of the Flex VM Configuration this VM used.
-* `description` - (String) The description of the VM.
-* `end_date` - (String) VM end date.
-* `serial_number` - (String) The unique serial number of the VM.
-* `start_date` - (String) VM creation date.
-* `status` - (String) VM status. Possible values: `PENDING`, `ACTIVE`, `STOPPED` or `EXPIRED`.
-* `token` - (String) VM token.
-* `token_status` - (String) The status of the VM token. Possible values: `NOTUSED` or `USED`.
+* `config_id` - (Number) The ID of the configuration this entitlement used.
+* `description` - (String) The description of the entitlement.
+* `end_date` - (String) Entitlement end date.
+* `serial_number` - (String) The unique serial number of the entitlement.
+* `start_date` - (String) Entitlement creation date.
+* `status` - (String) Entitlement status. Possible values: `PENDING`, `ACTIVE`, `STOPPED` or `EXPIRED`.
+* `token` - (String) Entitlement token. Empty for hardware entitlements.
+* `token_status` - (String) (String) The status of the Entitlement token. Possible values: `NOTUSED` or `USED`. Empty for hardware entitlements.
+
 
 

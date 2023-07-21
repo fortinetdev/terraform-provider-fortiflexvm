@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// Auth describes the authentication information for FlexVM
+// Auth describes the authentication information for FortiFlex
 type Auth struct {
 	Username string
 	Password string
@@ -23,7 +23,7 @@ func NewAuth(username, password string) *Auth {
 // GetEnvPassword gets password from OS environment
 // It returns the password
 func (m *Auth) GetEnvPassword() (string, error) {
-	password := os.Getenv("FLEXVM_ACCESS_PASSWORD")
+	password := os.Getenv("FORTIFLEX_ACCESS_PASSWORD")
 
 	if password == "" {
 		return password, fmt.Errorf("GetEnvPassword error")
@@ -34,10 +34,10 @@ func (m *Auth) GetEnvPassword() (string, error) {
 	return password, nil
 }
 
-// GetEnvUsername gets FlexVM username from OS environment
+// GetEnvUsername gets username from OS environment
 // It returns the username
 func (m *Auth) GetEnvUsername() (string, error) {
-	h := os.Getenv("FLEXVM_ACCESS_USERNAME")
+	h := os.Getenv("FORTIFLEX_ACCESS_USERNAME")
 
 	if h == "" {
 		return h, fmt.Errorf("GetEnvUsername error")

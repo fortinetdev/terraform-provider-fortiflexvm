@@ -1,40 +1,13 @@
 package fortiflexvm
 
 import (
-	"net"
-	"os"
+	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/hashicorp/go-cty/cty"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 )
-
-func validateConvIPMask2CIDR(oNewIP, oOldIP string) string {
-	if oNewIP != oOldIP && strings.Contains(oNewIP, "/") && strings.Contains(oOldIP, " ") {
-		line := strings.Split(oOldIP, " ")
-		if len(line) >= 2 {
-			ip := line[0]
-			mask := line[1]
-			prefixSize, _ := net.IPMask(net.ParseIP(mask).To4()).Size()
-			return ip + "/" + strconv.Itoa(prefixSize)
-		}
-	}
-	return oOldIP
-}
-
-func fortiStringValue(t interface{}) string {
-	if v, ok := t.(string); ok {
-		return v
-	} else {
-		return ""
-	}
-}
-
-func fortiIntValue(t interface{}) int {
-	if v, ok := t.(float64); ok {
-		return int(v)
-	} else {
-		return 0
-	}
-}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -48,14 +21,6 @@ func fortiAPIPatch(t interface{}) bool {
 	}
 
 	return false
-}
-
-func isImportTable() bool {
-	itable := os.Getenv("FLEXVM_IMPORT_TABLE")
-	if itable == "false" {
-		return false
-	}
-	return true
 }
 
 func convProductTypeName2Id(p_type string) int {
@@ -72,6 +37,10 @@ func convProductTypeName2Id(p_type string) int {
 		return 7
 	case "FPC_VM":
 		return 8
+	case "FAD_VM":
+		return 9
+	case "FGT_HW":
+		return 101
 	default:
 		return 0
 	}
@@ -91,6 +60,10 @@ func convProductTypeId2Name(p_id int) string {
 		return "FAZ_VM"
 	case 8:
 		return "FPC_VM"
+	case 9:
+		return "FAD_VM"
+	case 101:
+		return "FGT_HW"
 	default:
 		return ""
 	}
@@ -130,6 +103,18 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "faz_vm", "support_service", "string"
 	case 24:
 		return "fpc_vm", "managed_dev", "int"
+	case 25:
+		return "fad_vm", "cpu_size", "string"
+	case 26:
+		return "fad_vm", "service_pkg", "string"
+	case 27:
+		return "fgt_hw", "device_model", "string"
+	case 28:
+		return "fgt_hw", "service_pkg", "string"
+	case 29:
+		return "fgt_hw", "addons", "string"
+	case 30:
+		return "fmg_vm", "managed_dev", "int"
 	default:
 		return "", "", ""
 	}
@@ -151,7 +136,7 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 	case "fmg_vm":
 		switch c_name {
 		case "managed_dev":
-			return 3
+			return 30
 		case "adom_num":
 			return 9
 		default:
@@ -199,6 +184,26 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 		default:
 			return 0
 		}
+	case "fad_vm":
+		switch c_name {
+		case "cpu_size":
+			return 25
+		case "service_pkg":
+			return 26
+		default:
+			return 0
+		}
+	case "fgt_hw":
+		switch c_name {
+		case "device_model":
+			return 27
+		case "service_pkg":
+			return 28
+		case "addons":
+			return 29
+		default:
+			return 0
+		}
 	default:
 		return 0
 	}
@@ -242,4 +247,142 @@ func importOptionChecking(c *Config, para string) string {
 	}
 
 	return ""
+}
+
+func contains(str_list []string, target string) bool {
+	for _, str := range str_list {
+		if target == str {
+			return true
+		}
+	}
+	return false
+}
+
+func checkInputValidString(parameter_name string, valid_values []string) func(interface{}, cty.Path) diag.Diagnostics {
+	return func(v interface{}, p cty.Path) diag.Diagnostics {
+		value := v.(string)
+		var diags diag.Diagnostics
+		if flag := contains(valid_values, value); !flag {
+			diag := diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+				Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values: %v", parameter_name, value, valid_values),
+			}
+			diags = append(diags, diag)
+		}
+		return diags
+	}
+}
+
+func checkInputValidStringList(parameter_name string, valid_values []string) func(interface{}, cty.Path) diag.Diagnostics {
+	return func(v interface{}, p cty.Path) diag.Diagnostics {
+		values := v.([]string)
+		var diags diag.Diagnostics
+		flag := true
+		for _, value := range values {
+			flag = flag && contains(valid_values, value)
+			if !flag {
+				diag := diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+					Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values (you can select multiple values): %v", parameter_name, value, valid_values),
+				}
+				diags = append(diags, diag)
+				break
+			}
+		}
+		return diags
+	}
+}
+
+func checkInputValidInt(parameter_name string, lower_bound int, upper_bound int) func(interface{}, cty.Path) diag.Diagnostics {
+	return func(v interface{}, p cty.Path) diag.Diagnostics {
+		value := v.(int)
+		var diags diag.Diagnostics
+		if value < lower_bound || value > upper_bound {
+			diag := diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  fmt.Sprintf("Invalid value of parameter: %v", parameter_name),
+				Detail:   fmt.Sprintf("Invalid %v value: %v\nValid values: number between %v and %v (inclusive)", parameter_name, value, lower_bound, upper_bound),
+			}
+			diags = append(diags, diag)
+		}
+		return diags
+	}
+}
+
+func splitID(resource_id string) (string, string, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	split_parts := strings.Split(resource_id, ".")
+	if len(split_parts) != 2 {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to handle id in fortiflexvm_entitlement",
+			Detail:   "Incorrect id format. Please use 'serial_number' + '.' + 'config_id', example: 'FGVMMLTM12345678.123' ",
+		})
+		return "", "", diags
+	}
+	serial_number := split_parts[0]
+	config_id := split_parts[1]
+	_, err := strconv.Atoi(config_id)
+	if err != nil {
+		return "", "", diag.FromErr(fmt.Errorf("The id you import in fortiflexvm_entitlement is incorrect."+
+			"Please use 'serial_number' + '.' + 'config_id', example: 'FGVMMLTM12345678.123'."+
+			"Your serial_number: %s, your config_id: %s (should be an integer).", serial_number, config_id))
+	}
+	return serial_number, config_id, diags
+}
+
+func getEntitlementFromId(resource_id string, m interface{}) (map[string]interface{}, diag.Diagnostics) {
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	serial_number, config_id, diags := splitID(resource_id)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Get entitlements list
+	obj := make(map[string]interface{})
+	obj["configId"] = config_id
+	return_data, err := c.ReadEntitlementsList(&obj)
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+
+	// Find target entitlement
+	target_entitlement, err := findEntitlementFromList(return_data, serial_number)
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+
+	return target_entitlement, diags
+}
+
+func findEntitlementFromList(entitlement_list map[string]interface{}, serial_number string) (map[string]interface{}, error) {
+	if entitlement_list == nil {
+		return nil, fmt.Errorf("Response from FlexVM API is nil")
+	}
+
+	if ent_list, ok := entitlement_list["entitlements"].([]interface{}); ok {
+		for _, data_ent := range ent_list {
+			if ent, ok := data_ent.(map[string]interface{}); ok {
+				cId := fmt.Sprintf("%v", ent["serialNumber"])
+				if cId == serial_number {
+					return ent, nil
+				}
+			}
+		}
+	}
+	return nil, fmt.Errorf("Target entitlement %v not exist", serial_number)
+}
+
+func changeVMStatus(serial_number string, action string, m interface{}) (map[string]interface{}, error) {
+	c := m.(*FortiClient).Client
+	c.Retries = 1
+
+	obj := make(map[string]interface{})
+	obj["serialNumber"] = serial_number
+	target_entitlement, err := c.UpdateVmUpdateStatus(&obj, action)
+	return target_entitlement, err
 }

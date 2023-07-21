@@ -2,7 +2,7 @@
 // Author: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 // Documentation: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 
-// Description: Get next available (unused) token.
+// Description: Get list of entitlements for a Configuration.
 
 package fortiflexvm
 
@@ -13,17 +13,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceGroupsNexttoken() *schema.Resource {
+func dataSourceEntitlementsList() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGroupsNexttokenRead,
+		Read: dataSourceEntitlementsListRead,
 		Schema: map[string]*schema.Schema{
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"folder_path": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 			},
 			"entitlements": &schema.Schema{
 				Type:     schema.TypeList,
@@ -69,32 +65,19 @@ func dataSourceGroupsNexttoken() *schema.Resource {
 	}
 }
 
-func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
-	config_id := "none"
-	folder_path := "none"
-
-	if v, ok := d.GetOk("config_id"); ok {
-		config_id = strconv.Itoa(v.(int))
-		request_obj["configId"] = v
-	}
-	if v, ok := d.GetOk("folder_path"); ok {
-		folder_path = v.(string)
-		request_obj["folderPath"] = v
-	}
-
-	if len(request_obj) == 0 {
-		return fmt.Errorf("Either config_id or folder_path is required.")
-	}
+	config_id := d.Get("config_id").(int)
+	request_obj["configId"] = config_id
 
 	// Send request
-	o, err := c.ReadGroupsNexttoken(&request_obj)
+	o, err := c.ReadEntitlementsList(&request_obj)
 	if err != nil {
-		return fmt.Errorf("Error describing GroupsNexttoken: %v", err)
+		return fmt.Errorf("Error describing EntitlementsList: %v", err)
 	}
 
 	if o == nil {
@@ -103,63 +86,30 @@ func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error 
 	}
 
 	// Update status
-	err = dataSourceRefreshObjectGroupsNexttoken(d, o)
+	err = dataSourceRefreshObjectEntitlementsList(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing GroupsNexttoken from API: %v", err)
+		return fmt.Errorf("Error describing EntitlementsList from API: %v", err)
 	}
 
-	resource_id := fmt.Sprintf("%v.%v", config_id, folder_path)
-	d.SetId(resource_id)
+	recource_id := strconv.Itoa(config_id)
+	d.SetId(recource_id)
 
 	return nil
 }
 
-func dataSourceRefreshObjectGroupsNexttoken(d *schema.ResourceData, o map[string]interface{}) error {
+func dataSourceRefreshObjectEntitlementsList(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
-	if err = d.Set("entitlements", dataSourceFlattenGroupsNexttokenEntitlementsElement(o["entitlements"])); err != nil {
+
+	if err = d.Set("entitlements", dataSourceFlattenEntitlementsListEntitlements(o["entitlements"])); err != nil {
 		if !fortiAPIPatch(o["entitlements"]) {
 			return fmt.Errorf("Error reading entitlements: %v", err)
 		}
 	}
+
 	return nil
 }
 
-func dataSourceFlattenGroupsNexttokenEntitlementsElement(v interface{}) []map[string]interface{} {
-	if v == nil {
-		return nil
-	}
-	result := make([]map[string]interface{}, 0, 1)
-	tmp := make(map[string]interface{})
-	i := v.(map[string]interface{})
-	if _, ok := i["configId"]; ok {
-		tmp["config_id"] = i["configId"]
-	}
-	if _, ok := i["description"]; ok {
-		tmp["description"] = i["description"]
-	}
-	if _, ok := i["serialNumber"]; ok {
-		tmp["serial_number"] = i["serialNumber"]
-	}
-	if _, ok := i["startDate"]; ok {
-		tmp["start_date"] = i["startDate"]
-	}
-	if _, ok := i["endDate"]; ok {
-		tmp["end_date"] = i["endDate"]
-	}
-	if _, ok := i["status"]; ok {
-		tmp["status"] = i["status"]
-	}
-	if _, ok := i["token"]; ok {
-		tmp["token"] = i["token"]
-	}
-	if _, ok := i["tokenStatus"]; ok {
-		tmp["token_status"] = i["tokenStatus"]
-	}
-	result = append(result, tmp)
-	return result
-}
-
-func dataSourceFlattenGroupsNexttokenEntitlements(v interface{}) []map[string]interface{} {
+func dataSourceFlattenEntitlementsListEntitlements(v interface{}) []map[string]interface{} {
 	if v == nil {
 		return nil
 	}
@@ -200,5 +150,6 @@ func dataSourceFlattenGroupsNexttokenEntitlements(v interface{}) []map[string]in
 		}
 		result = append(result, tmp)
 	}
+
 	return result
 }

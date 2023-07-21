@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -23,7 +24,7 @@ type MultValue struct {
 // MultValues describes the nested structure in the results
 type MultValues []MultValue
 
-// FortiSDKClient describes the global FlexVM plugin client instance
+// FortiSDKClient describes the global FortiFlex plugin client instance
 type FortiSDKClient struct {
 	Config  config.Config
 	Retries int
@@ -55,7 +56,7 @@ func NewClient(auth *auth.Auth, client *http.Client) (*FortiSDKClient, error) {
 	return c, nil
 }
 
-// NewRequest creates the request to FlexVM for the client
+// NewRequest creates the request to FortiFlex for the client
 // and return it to the client
 func (c *FortiSDKClient) NewRequest(method string, path string, params interface{}, data *bytes.Buffer) *request.Request {
 	return request.New(c.Config, method, path, params, data)
@@ -95,6 +96,7 @@ func (c *FortiSDKClient) GenerateToken() error {
 
 	body, err := ioutil.ReadAll(rsp.Body)
 	rsp.Body.Close() //#
+	log.Printf("FortiFlex login: %s", string(body))
 
 	if err != nil || body == nil {
 		err = fmt.Errorf("cannot get response body %v", err)
@@ -103,7 +105,7 @@ func (c *FortiSDKClient) GenerateToken() error {
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(string(body)), &result)
-	err = fortiAPIErrorFormat(result, string(body))
+	// err = fortiAPIErrorFormat(result, string(body))
 
 	if err == nil {
 		if result["access_token"] != nil && result["access_token"] != "" {

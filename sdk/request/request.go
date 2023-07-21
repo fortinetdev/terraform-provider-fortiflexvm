@@ -7,13 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/config"
 )
 
-// Request describes the request to FlexVM service
+// Request describes the request to FortiFlex service
 type Request struct {
 	Config       config.Config
 	HTTPRequest  *http.Request
@@ -23,7 +22,7 @@ type Request struct {
 	Data         *bytes.Buffer
 }
 
-// New creates reqeust object with http method, path, params and data,
+// New creates request object with http method, path, params and data,
 // It will save the http request, path, etc. for the next operations
 // such as sending data, getting response, etc.
 // It returns the created request object to the gobal plugin client.
@@ -46,13 +45,13 @@ func New(c config.Config, method string, path string, params interface{}, data *
 	return r
 }
 
-// Send request data to FlexVM.
+// Send request data to FortiFlex.
 // If errors are encountered, it returns the error.
 func (r *Request) Send() error {
-	return r.SendRequest(15)
+	return r.SendRequest(5)
 }
 
-// SendRequest request data to FlexVM.
+// SendRequest request data to FortiFlex.
 // If errors are encountered, it returns the error.
 func (r *Request) SendRequest(retries int) error {
 	r.HTTPRequest.Header.Set("Content-Type", "application/json")
@@ -72,30 +71,20 @@ func (r *Request) SendRequest(retries int) error {
 	}
 
 	retry := 0
-	for {
-		//Send
-		rsp, errdo := r.Config.HTTPCon.Do(r.HTTPRequest)
-		r.HTTPResponse = rsp
-		if errdo != nil {
-			if strings.Contains(errdo.Error(), "x509: ") {
-				err = fmt.Errorf("Error found: %v", filterapikey(errdo.Error()))
-				break
-			}
-
-			if retry > retries {
-				err = fmt.Errorf("lost connection to firewall with error: %v", filterapikey(errdo.Error()))
-				break
-			}
-			time.Sleep(time.Second)
-			log.Printf("Error found: %v, will resend again %s, %d", filterapikey(errdo.Error()), u, retry)
-
-			retry++
-
+	for retry <= retries {
+		rsp, err := r.Config.HTTPCon.Do(r.HTTPRequest)
+		if err != nil {
+			log.Printf("Error found: %v, will resend again %s, %d", filterapikey(err.Error()), u, retry)
 		} else {
+			r.HTTPResponse = rsp
 			break
 		}
+		retry++
+		time.Sleep(time.Second)
 	}
-
+	if retry > retries {
+		err = fmt.Errorf("Can't connect to server, please try it later.")
+	}
 	return err
 }
 

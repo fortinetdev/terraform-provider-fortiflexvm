@@ -18,8 +18,8 @@ type Config struct {
 	ImportOptions *schema.Set
 }
 
-// FortiClient contains the basic FlexVM SDK connection information to FlexVM
-// It can be used to as a client of FlexVM for the plugin
+// FortiClient contains the basic FortiFlex SDK connection information to FortiFlex
+// It can be used to as a client of FortiFlex for the plugin
 type FortiClient struct {
 	Client *forticlient.FortiSDKClient
 	Cfg    *Config
@@ -30,14 +30,14 @@ type FortiClient struct {
 func (c *Config) CreateClient() (interface{}, error) {
 	var fClient FortiClient
 
-	err := createFlexVMClient(&fClient, c)
+	err := createFortiFlexClient(&fClient, c)
 	if err != nil {
-		return nil, fmt.Errorf("Error create flexvm client: %v", err)
+		return nil, fmt.Errorf("Error create fortiflex client: %v", err)
 	}
 	return &fClient, nil
 }
 
-func createFlexVMClient(fClient *FortiClient, c *Config) error {
+func createFortiFlexClient(fClient *FortiClient, c *Config) error {
 	config := &tls.Config{}
 
 	auth := auth.NewAuth(c.Username, c.Password)
