@@ -17,6 +17,10 @@ func dataSourceGroupsNexttoken() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceGroupsNexttokenRead,
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -30,6 +34,10 @@ func dataSourceGroupsNexttoken() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"account_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
 						"config_id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Computed: true,
@@ -86,6 +94,9 @@ func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error 
 		folder_path = v.(string)
 		request_obj["folderPath"] = v
 	}
+	if v, ok := d.GetOk("account_id"); ok {
+		request_obj["accountId"] = v
+	}
 
 	if len(request_obj) == 0 {
 		return fmt.Errorf("Either config_id or folder_path is required.")
@@ -116,47 +127,25 @@ func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error 
 
 func dataSourceRefreshObjectGroupsNexttoken(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
-	if err = d.Set("entitlements", dataSourceFlattenGroupsNexttokenEntitlementsElement(o["entitlements"])); err != nil {
-		if !fortiAPIPatch(o["entitlements"]) {
-			return fmt.Errorf("Error reading entitlements: %v", err)
+	switch v := o["entitlements"].(type) {
+	case map[string]interface{}:
+		entitlements_list := make([]interface{}, 0, 1)
+		entitlements_list = append(entitlements_list, o["entitlements"].(map[string]interface{}))
+		if err = d.Set("entitlements", dataSourceFlattenGroupsNexttokenEntitlements(entitlements_list)); err != nil {
+			if !fortiAPIPatch(o["entitlements"]) {
+				return fmt.Errorf("Error reading entitlements: %v", err)
+			}
 		}
+	case []interface{}:
+		if err = d.Set("entitlements", dataSourceFlattenGroupsNexttokenEntitlements(o["entitlements"])); err != nil {
+			if !fortiAPIPatch(o["entitlements"]) {
+				return fmt.Errorf("Error reading entitlements: %v", err)
+			}
+		}
+	default:
+		fmt.Printf("Unsupported type: %T\n", v)
 	}
 	return nil
-}
-
-func dataSourceFlattenGroupsNexttokenEntitlementsElement(v interface{}) []map[string]interface{} {
-	if v == nil {
-		return nil
-	}
-	result := make([]map[string]interface{}, 0, 1)
-	tmp := make(map[string]interface{})
-	i := v.(map[string]interface{})
-	if _, ok := i["configId"]; ok {
-		tmp["config_id"] = i["configId"]
-	}
-	if _, ok := i["description"]; ok {
-		tmp["description"] = i["description"]
-	}
-	if _, ok := i["serialNumber"]; ok {
-		tmp["serial_number"] = i["serialNumber"]
-	}
-	if _, ok := i["startDate"]; ok {
-		tmp["start_date"] = i["startDate"]
-	}
-	if _, ok := i["endDate"]; ok {
-		tmp["end_date"] = i["endDate"]
-	}
-	if _, ok := i["status"]; ok {
-		tmp["status"] = i["status"]
-	}
-	if _, ok := i["token"]; ok {
-		tmp["token"] = i["token"]
-	}
-	if _, ok := i["tokenStatus"]; ok {
-		tmp["token_status"] = i["tokenStatus"]
-	}
-	result = append(result, tmp)
-	return result
 }
 
 func dataSourceFlattenGroupsNexttokenEntitlements(v interface{}) []map[string]interface{} {
@@ -174,29 +163,32 @@ func dataSourceFlattenGroupsNexttokenEntitlements(v interface{}) []map[string]in
 	for _, r := range l {
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
-		if _, ok := i["configId"]; ok {
-			tmp["config_id"] = i["configId"]
+		if value, ok := i["accountId"]; ok {
+			tmp["account_id"] = value
 		}
-		if _, ok := i["description"]; ok {
-			tmp["description"] = i["description"]
+		if value, ok := i["configId"]; ok {
+			tmp["config_id"] = value
 		}
-		if _, ok := i["serialNumber"]; ok {
-			tmp["serial_number"] = i["serialNumber"]
+		if value, ok := i["description"]; ok {
+			tmp["description"] = value
 		}
-		if _, ok := i["startDate"]; ok {
-			tmp["start_date"] = i["startDate"]
+		if value, ok := i["serialNumber"]; ok {
+			tmp["serial_number"] = value
 		}
-		if _, ok := i["endDate"]; ok {
-			tmp["end_date"] = i["endDate"]
+		if value, ok := i["startDate"]; ok {
+			tmp["start_date"] = value
 		}
-		if _, ok := i["status"]; ok {
-			tmp["status"] = i["status"]
+		if value, ok := i["endDate"]; ok {
+			tmp["end_date"] = value
 		}
-		if _, ok := i["token"]; ok {
-			tmp["token"] = i["token"]
+		if value, ok := i["status"]; ok {
+			tmp["status"] = value
 		}
-		if _, ok := i["tokenStatus"]; ok {
-			tmp["token_status"] = i["tokenStatus"]
+		if value, ok := i["token"]; ok {
+			tmp["token"] = value
+		}
+		if value, ok := i["tokenStatus"]; ok {
+			tmp["token_status"] = value
 		}
 		result = append(result, tmp)
 	}

@@ -19,6 +19,10 @@ func dataSourceConfigsList() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceConfigsListRead,
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"program_serial_number": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -28,6 +32,10 @@ func dataSourceConfigsList() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"account_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
 						"id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Computed: true,
@@ -130,6 +138,35 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fc_ems_op": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"ztna_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"epp_ztna_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"chromebook": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"support_service": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
 						"faz_vm": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
@@ -192,7 +229,40 @@ func dataSourceConfigsList() *schema.Resource {
 										Computed: true,
 									},
 									"addons": &schema.Schema{
-										Type:     schema.TypeString,
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
+						"fwbc_private": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"average_throughput": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"web_applications": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"fwbc_public": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"average_throughput": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"web_applications": &schema.Schema{
+										Type:     schema.TypeInt,
 										Computed: true,
 									},
 								},
@@ -213,6 +283,9 @@ func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 	request_obj := make(map[string]interface{})
 	program_serial_number := d.Get("program_serial_number").(string)
 	request_obj["programSerialNumber"] = program_serial_number
+	if v, ok := d.GetOk("account_id"); ok {
+		request_obj["accountId"] = v
+	}
 
 	// Send request
 	o, err := c.ReadConfigsList(&request_obj)
@@ -264,22 +337,29 @@ func dataSourceFlattenConfigsListConfigs(v interface{}, d *schema.ResourceData) 
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
 
-		if _, ok := i["id"]; ok {
-			tmp["id"] = i["id"]
+		if value, ok := i["accountId"]; ok {
+			tmp["account_id"] = value
 		}
-		if _, ok := i["programSerialNumber"]; ok {
-			tmp["program_serial_number"] = i["programSerialNumber"]
+		if value, ok := i["id"]; ok {
+			tmp["id"] = value
 		}
-		if _, ok := i["name"]; ok {
-			tmp["name"] = i["name"]
+		if value, ok := i["programSerialNumber"]; ok {
+			tmp["program_serial_number"] = value
 		}
-		if _, ok := i["status"]; ok {
-			tmp["status"] = i["status"]
+		if value, ok := i["name"]; ok {
+			tmp["name"] = value
+		}
+		if value, ok := i["status"]; ok {
+			tmp["status"] = value
 		}
 		if _, ok := i["productType"]; ok {
 			tmp["product_type"] = dataSourceFlattenConfigsListConfigsProductType(i["productType"])
 			if _, ok := i["parameters"]; ok {
 				product_type := tmp["product_type"].(string)
+				// Currently don't support this type
+				if product_type == "" {
+					continue
+				}
 				product_type_lower := strings.ToLower(product_type)
 				tmp[product_type_lower] = dataSourceFlattenConfigsListConfigsParameters(i["parameters"])
 			}

@@ -9,6 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 )
 
+var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
+	"fpc_vm", "fad_vm", "fgt_hw", "fwbc_private", "fwbc_public"}
+
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
 		return false
@@ -33,6 +36,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 3
 	case "FGT_VM_LCS":
 		return 4
+	case "FC_EMS_OP":
+		return 5
 	case "FAZ_VM":
 		return 7
 	case "FPC_VM":
@@ -41,6 +46,10 @@ func convProductTypeName2Id(p_type string) int {
 		return 9
 	case "FGT_HW":
 		return 101
+	case "FWBC_PRIVATE":
+		return 202
+	case "FWBC_PUBLIC":
+		return 203
 	default:
 		return 0
 	}
@@ -56,6 +65,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FWB_VM"
 	case 4:
 		return "FGT_VM_LCS"
+	case 5:
+		return "FC_EMS_OP"
 	case 7:
 		return "FAZ_VM"
 	case 8:
@@ -64,6 +75,10 @@ func convProductTypeId2Name(p_id int) string {
 		return "FAD_VM"
 	case 101:
 		return "FGT_HW"
+	case 202:
+		return "FWBC_PRIVATE"
+	case 203:
+		return "FWBC_PUBLIC"
 	default:
 		return ""
 	}
@@ -95,6 +110,14 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fgt_vm_lcs", "vdom_num", "int"
 	case 12:
 		return "fgt_vm_lcs", "cloud_services", "list"
+	case 13:
+		return "fc_ems_op", "ztna_num", "int"
+	case 14:
+		return "fc_ems_op", "epp_ztna_num", "int"
+	case 15:
+		return "fc_ems_op", "chromebook", "int"
+	case 16:
+		return "fc_ems_op", "support_service", "string"
 	case 21:
 		return "faz_vm", "daily_storage", "int"
 	case 22:
@@ -112,9 +135,19 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 	case 28:
 		return "fgt_hw", "service_pkg", "string"
 	case 29:
-		return "fgt_hw", "addons", "string"
+		return "fgt_hw", "addons", "list"
 	case 30:
 		return "fmg_vm", "managed_dev", "int"
+	case 32:
+		return "fwbc_private", "average_throughput", "int"
+	case 33:
+		return "fwbc_private", "web_applications", "int"
+	case 34:
+		return "fwbc_public", "average_throughput", "int"
+	case 35:
+		return "fwbc_public", "web_applications", "int"
+	case 36:
+		return "fc_ems_op", "addons", "list"
 	default:
 		return "", "", ""
 	}
@@ -166,6 +199,21 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 		default:
 			return 0
 		}
+	case "fc_ems_op":
+		switch c_name {
+		case "ztna_num":
+			return 13
+		case "epp_ztna_num":
+			return 14
+		case "chromebook":
+			return 15
+		case "support_service":
+			return 16
+		case "addons":
+			return 36
+		default:
+			return 0
+		}
 	case "faz_vm":
 		switch c_name {
 		case "daily_storage":
@@ -201,6 +249,24 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 28
 		case "addons":
 			return 29
+		default:
+			return 0
+		}
+	case "fwbc_private":
+		switch c_name {
+		case "average_throughput":
+			return 32
+		case "web_applications":
+			return 33
+		default:
+			return 0
+		}
+	case "fwbc_public":
+		switch c_name {
+		case "average_throughput":
+			return 34
+		case "web_applications":
+			return 35
 		default:
 			return 0
 		}

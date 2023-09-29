@@ -24,6 +24,10 @@ func resourceEntitlementsVMToken() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"serial_number": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -102,29 +106,32 @@ func refreshObjectEntitlementsVMToken(d *schema.ResourceData, o map[string]inter
 
 	result := make([]map[string]interface{}, 0, 1)
 	tmp := make(map[string]interface{})
-	if _, ok := o["configId"]; ok {
-		tmp["config_id"] = o["configId"]
+	if value, ok := o["accountId"]; ok {
+		tmp["account_id"] = value
 	}
-	if _, ok := o["description"]; ok {
-		tmp["description"] = o["description"]
+	if value, ok := o["configId"]; ok {
+		tmp["config_id"] = value
 	}
-	if _, ok := o["serialNumber"]; ok {
-		tmp["serial_number"] = o["serialNumber"]
+	if value, ok := o["description"]; ok {
+		tmp["description"] = value
 	}
-	if _, ok := o["startDate"]; ok {
-		tmp["start_date"] = o["startDate"]
+	if value, ok := o["serialNumber"]; ok {
+		tmp["serial_number"] = value
 	}
-	if _, ok := o["endDate"]; ok {
-		tmp["end_date"] = o["endDate"]
+	if value, ok := o["startDate"]; ok {
+		tmp["start_date"] = value
 	}
-	if _, ok := o["status"]; ok {
-		tmp["status"] = o["status"]
+	if value, ok := o["endDate"]; ok {
+		tmp["end_date"] = value
 	}
-	if _, ok := o["token"]; ok {
-		tmp["token"] = o["token"]
+	if value, ok := o["status"]; ok {
+		tmp["status"] = value
 	}
-	if _, ok := o["tokenStatus"]; ok {
-		tmp["token_status"] = o["tokenStatus"]
+	if value, ok := o["token"]; ok {
+		tmp["token"] = value
+	}
+	if value, ok := o["tokenStatus"]; ok {
+		tmp["token_status"] = value
 	}
 	result = append(result, tmp)
 	d.Set("entitlements", result)

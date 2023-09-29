@@ -16,6 +16,10 @@ func dataSourceEntitlementsPoints() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceEntitlementsPointRead,
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
@@ -33,6 +37,10 @@ func dataSourceEntitlementsPoints() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"account_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
 						"points": &schema.Schema{
 							Type:     schema.TypeInt,
 							Computed: true,
@@ -61,6 +69,9 @@ func dataSourceEntitlementsPointRead(d *schema.ResourceData, m interface{}) erro
 	request_obj["configId"] = config_id
 	request_obj["startDate"] = start_date
 	request_obj["endDate"] = end_date
+	if v, ok := d.GetOk("account_id"); ok {
+		request_obj["accountId"] = v
+	}
 
 	// Send request
 	o, err := c.ReadEntitlementsPoint(&request_obj)
@@ -111,11 +122,14 @@ func dataSourceFlattenEntitlementsPointEntitlements(v interface{}, d *schema.Res
 	for _, r := range l {
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
-		if _, ok := i["points"]; ok {
-			tmp["points"] = i["points"]
+		if value, ok := i["accountId"]; ok {
+			tmp["account_id"] = value
 		}
-		if _, ok := i["serialNumber"]; ok {
-			tmp["serial_number"] = i["serialNumber"]
+		if value, ok := i["points"]; ok {
+			tmp["points"] = value
+		}
+		if value, ok := i["serialNumber"]; ok {
+			tmp["serial_number"] = value
 		}
 		result = append(result, tmp)
 	}

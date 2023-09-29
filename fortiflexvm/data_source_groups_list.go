@@ -16,11 +16,19 @@ func dataSourceGroupsList() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceGroupsListRead,
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"groups": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"account_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
 						"folder_path": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
@@ -44,8 +52,14 @@ func dataSourceGroupsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 	c.Retries = 1
 
+	// Prepare data
+	request_obj := make(map[string]interface{})
+	if v, ok := d.GetOk("account_id"); ok {
+		request_obj["accountId"] = v
+	}
+
 	// Send request
-	o, err := c.ReadGroupsList(nil)
+	o, err := c.ReadGroupsList(&request_obj)
 	if err != nil {
 		return fmt.Errorf("Error describing GroupsList: %v", err)
 	}
@@ -92,14 +106,17 @@ func dataSourceFlattenGroupsListGroups(v interface{}) []map[string]interface{} {
 	for _, r := range l {
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
-		if _, ok := i["folderPath"]; ok {
-			tmp["folder_path"] = i["folderPath"]
+		if value, ok := i["accountId"]; ok {
+			tmp["account_id"] = value
 		}
-		if _, ok := i["availableTokens"]; ok {
-			tmp["available_tokens"] = i["availableTokens"]
+		if value, ok := i["folderPath"]; ok {
+			tmp["folder_path"] = value
 		}
-		if _, ok := i["usedTokens"]; ok {
-			tmp["used_tokens"] = i["usedTokens"]
+		if value, ok := i["availableTokens"]; ok {
+			tmp["available_tokens"] = value
+		}
+		if value, ok := i["usedTokens"]; ok {
+			tmp["used_tokens"] = value
 		}
 		result = append(result, tmp)
 	}

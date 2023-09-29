@@ -15,9 +15,10 @@ Returns total points consumed by one or more entitlements in a date range.
 
 ```hcl
 data "fortiflexvm_entitlements_points" "example" {
+    # account_id = 12345 # optional
     config_id = 42
     start_date = "2022-11-25"
-    end_date = "2022-03-07"
+    end_date = "2023-03-07"
 }
 
 output "my_entitlements_points"{
@@ -30,6 +31,7 @@ output "my_entitlements_points"{
 
 The following arguments are required:
 
+* `account_id` - (Optional/Number) The account ID.
 * `config_id` - (Required/Number) The ID of a configuration.
 * `end_date` - (Required/String) Specify an end date. Any format that satisfies [ISO 8601](https://www.w3.org/TR/NOTE-datetime-970915.html) is accepted. Recommended format: `YYYY-MM-DD`.
 * `start_date` - (Required/String) Specify a start date. Any format that satisfies [ISO 8601](https://www.w3.org/TR/NOTE-datetime-970915.html) is accepted. Recommended format: `YYYY-MM-DD`.
@@ -44,6 +46,7 @@ The following attributes are exported:
 <a id="nestedatt--entitlements"></a>
 The `entitlements` block contains:
 
+* `account_id` - (Number) The account ID of this group.
 * `points` - (Number) The points consumed by this entitlement in the date range.
 * `serial_number` - (String) The unique serial number of the entitlement.
 

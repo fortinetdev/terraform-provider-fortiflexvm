@@ -27,6 +27,11 @@ func resourceConfig() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"program_serial_number": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -45,11 +50,15 @@ func resourceConfig() *schema.Resource {
 				FMG_VM: FortiManager Virtual Machine;
 				FWB_VM: FortiWeb Virtual Machine - Service Bundle;
 				FGT_VM_LCS: FortiGate Virtual Machine - A La Carte Services;
+				FC_EMS_OP: FortiClient EMS On-Prem;
 				FAZ_VM: FortiAnalyzer Virtual Machine;
 				FPC_VM: FortiPortal Virtual Machine;
 				FAD_VM: FortiADC Virtual Machine;
-				FGT_HW: FortiGate Hardware.`,
-				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW"}),
+				FGT_HW: FortiGate Hardware;
+				FWBC_PRIVATE: FortiWeb Cloud - Private;
+				FWBC_PUBLIC: FortiWeb Cloud - Public.`,
+				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
+					"FC_EMS_OP", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -158,6 +167,41 @@ func resourceConfig() *schema.Resource {
 					},
 				},
 			},
+			"fc_ems_op": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ztna_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"epp_ztna_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"chromebook": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"support_service": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
 			"faz_vm": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -232,7 +276,46 @@ func resourceConfig() *schema.Resource {
 							Computed: true,
 						},
 						"addons": &schema.Schema{
-							Type:     schema.TypeString,
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
+			"fwbc_private": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"average_throughput": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"web_applications": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"fwbc_public": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"average_throughput": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"web_applications": &schema.Schema{
+							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
 						},
@@ -504,33 +587,26 @@ func flattenConfigParameters(v interface{}) interface{} {
 func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error {
 	var err error
 
-	if err = d.Set("program_serial_number", o["programSerialNumber"]); err != nil {
-		if !fortiAPIPatch(o["programSerialNumber"]) {
-			return fmt.Errorf("Error reading program_serial_number: %v", err)
-		}
+	if value, ok := o["accountId"]; ok {
+		d.Set("account_id", value)
 	}
-
-	if err = d.Set("name", o["name"]); err != nil {
-		if !fortiAPIPatch(o["name"]) {
-			return fmt.Errorf("Error reading name: %v", err)
-		}
+	if value, ok := o["programSerialNumber"]; ok {
+		d.Set("program_serial_number", value)
 	}
-
+	if value, ok := o["name"]; ok {
+		d.Set("name", value)
+	}
 	if err = d.Set("product_type", flattenConfigProductType(o["productType"])); err != nil {
 		if !fortiAPIPatch(o["productType"]) {
 			return fmt.Errorf("Error reading product_type: %v", err)
 		}
 	}
-
-	if err = d.Set("status", o["status"]); err != nil {
-		if !fortiAPIPatch(o["status"]) {
-			return fmt.Errorf("Error reading status: %v", err)
-		}
+	if value, ok := o["status"]; ok {
+		d.Set("status", value)
 	}
 
 	// initialize product variables. This can fix the problem of inconsistent output.
-	pTypeList := []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "faz_vm", "fpc_vm", "fad_vm", "fgt_hw"}
-	for _, type_name := range pTypeList {
+	for _, type_name := range PRODUCT_TYPES {
 		empty_interface := make([]map[string]interface{}, 0)
 		d.Set(type_name, empty_interface)
 	}
@@ -544,14 +620,6 @@ func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error
 	}
 
 	return nil
-}
-
-func expandConfigProgramSerialNumber(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
-}
-
-func expandConfigName(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	return v, nil
 }
 
 func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
@@ -625,24 +693,17 @@ func getObjectConfig(d *schema.ResourceData, rType string) (*map[string]interfac
 	}
 
 	if rType == "create" || rType == "read" {
-		if v, ok := d.GetOk("program_serial_number"); ok {
-			t, err := expandConfigProgramSerialNumber(d, v, "program_serial_number")
-			if err != nil {
-				return &obj, err
-			} else if t != nil {
-				obj["programSerialNumber"] = t
-			}
+		if value, ok := d.GetOk("program_serial_number"); ok {
+			obj["programSerialNumber"] = value
+		}
+		if value, ok := d.GetOk("account_id"); ok {
+			obj["accountId"] = value
 		}
 	}
 
 	if rType == "create" || rType == "update" {
-		if v, ok := d.GetOk("name"); ok {
-			t, err := expandConfigName(d, v, "name")
-			if err != nil {
-				return &obj, err
-			} else if t != nil {
-				obj["name"] = t
-			}
+		if value, ok := d.GetOk("name"); ok {
+			obj["name"] = value
 		}
 
 		var pType string

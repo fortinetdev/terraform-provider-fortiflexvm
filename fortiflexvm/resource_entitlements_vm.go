@@ -24,6 +24,10 @@ func resourceEntitlementsVM() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
@@ -231,13 +235,32 @@ func resourceEntitlementsVMDelete(ctx context.Context, d *schema.ResourceData, m
 func refreshObjectEntitlementsVM(d *schema.ResourceData, o map[string]interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	// can't set folder_path
-	d.Set("config_id", o["configId"])
-	d.Set("description", o["description"])
-	d.Set("end_date", o["endDate"])
-	d.Set("serial_number", o["serialNumber"])
-	d.Set("status", o["status"])
-	d.Set("start_date", o["startDate"])
-	d.Set("token", o["token"])
-	d.Set("token_status", o["tokenStatus"])
+	if value, ok := o["accountId"]; ok {
+		d.Set("account_id", value)
+	}
+	if value, ok := o["configId"]; ok {
+		d.Set("config_id", value)
+	}
+	if value, ok := o["description"]; ok {
+		d.Set("description", value)
+	}
+	if value, ok := o["endDate"]; ok {
+		d.Set("end_date", value)
+	}
+	if value, ok := o["serialNumber"]; ok {
+		d.Set("serial_number", value)
+	}
+	if value, ok := o["status"]; ok {
+		d.Set("status", value)
+	}
+	if value, ok := o["startDate"]; ok {
+		d.Set("start_date", value)
+	}
+	if value, ok := o["token"]; ok {
+		d.Set("token", value)
+	}
+	if value, ok := o["tokenStatus"]; ok {
+		d.Set("token_status", value)
+	}
 	return diags
 }

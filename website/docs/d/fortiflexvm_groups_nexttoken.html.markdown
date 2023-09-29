@@ -15,6 +15,7 @@ Returns first available token by asset folder or Configuration id (or both can b
 
 ```hcl
 data "fortiflexvm_groups_nexttoken" "example" {
+    # account_id = 12345 # optional
     config_id = 42
     folder_path = "My Assets"
 }
@@ -28,8 +29,9 @@ output "my_groups_nexttoken"{
 
 The following arguments are supported:
 
-**Althrough both arguments are optional, please at least specify one argument to get the result.**
+**Either account_id or config_id is required.**
 
+* `account_id` - (Optional/Number) The account ID.
 * `config_id` (Optional/Number) The ID of a configuration.
 * `folder_path` (Optional/String) Folder path.
 
@@ -43,6 +45,7 @@ The following attributes are exported:
 <a id="nestedatt--entitlements"></a>
 The `entitlements` block contains:
 
+* `account_id` - (Number) The account ID of this entitlements. If not specified argument `account_id`, the value of attribute `entitlements->account_id` will be 0.
 * `config_id` - (Number) The ID of the configuration this entitlement used.
 * `description` - (String) The description of the entitlement.
 * `end_date` - (String) Entitlement end date.

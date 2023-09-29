@@ -17,15 +17,27 @@ func dataSourceEntitlementsList() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceEntitlementsListRead,
 		Schema: map[string]*schema.Schema{
+			"account_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
+			},
+			"program_serial_number": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"entitlements": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"account_id": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
 						"config_id": &schema.Schema{
 							Type:     schema.TypeInt,
 							Computed: true,
@@ -72,7 +84,28 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 	// Prepare data
 	request_obj := make(map[string]interface{})
 	config_id := d.Get("config_id").(int)
-	request_obj["configId"] = config_id
+	account_id := d.Get("account_id").(int)
+	program_serial_number := d.Get("program_serial_number").(string)
+	recource_id := ""
+	if config_id == 0 && (account_id == 0 || program_serial_number == "") {
+		return fmt.Errorf("Either config_id or (account_id + program_serial_number) should be provided in request payload.")
+	}
+	if config_id != 0 {
+		recource_id = strconv.Itoa(config_id)
+	} else {
+		recource_id = fmt.Sprintf("%v.%v", account_id, program_serial_number)
+	}
+
+	if v, ok := d.GetOk("account_id"); ok {
+		request_obj["accountId"] = v
+	}
+	if v, ok := d.GetOk("program_serial_number"); ok {
+		request_obj["serialNumber"] = v // Bug in FortiFlex API, need to specify serialNumber
+		request_obj["programSerialNumber"] = v
+	}
+	if v, ok := d.GetOk("config_id"); ok {
+		request_obj["configId"] = v
+	}
 
 	// Send request
 	o, err := c.ReadEntitlementsList(&request_obj)
@@ -91,7 +124,6 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 		return fmt.Errorf("Error describing EntitlementsList from API: %v", err)
 	}
 
-	recource_id := strconv.Itoa(config_id)
 	d.SetId(recource_id)
 
 	return nil
@@ -124,29 +156,32 @@ func dataSourceFlattenEntitlementsListEntitlements(v interface{}) []map[string]i
 	for _, r := range l {
 		tmp := make(map[string]interface{})
 		i := r.(map[string]interface{})
-		if _, ok := i["configId"]; ok {
-			tmp["config_id"] = i["configId"]
+		if value, ok := i["accountId"]; ok {
+			tmp["account_id"] = value
 		}
-		if _, ok := i["description"]; ok {
-			tmp["description"] = i["description"]
+		if value, ok := i["configId"]; ok {
+			tmp["config_id"] = value
 		}
-		if _, ok := i["serialNumber"]; ok {
-			tmp["serial_number"] = i["serialNumber"]
+		if value, ok := i["description"]; ok {
+			tmp["description"] = value
 		}
-		if _, ok := i["startDate"]; ok {
-			tmp["start_date"] = i["startDate"]
+		if value, ok := i["serialNumber"]; ok {
+			tmp["serial_number"] = value
 		}
-		if _, ok := i["endDate"]; ok {
-			tmp["end_date"] = i["endDate"]
+		if value, ok := i["startDate"]; ok {
+			tmp["start_date"] = value
 		}
-		if _, ok := i["status"]; ok {
-			tmp["status"] = i["status"]
+		if value, ok := i["endDate"]; ok {
+			tmp["end_date"] = value
 		}
-		if _, ok := i["token"]; ok {
-			tmp["token"] = i["token"]
+		if value, ok := i["status"]; ok {
+			tmp["status"] = value
 		}
-		if _, ok := i["tokenStatus"]; ok {
-			tmp["token_status"] = i["tokenStatus"]
+		if value, ok := i["token"]; ok {
+			tmp["token"] = value
+		}
+		if value, ok := i["tokenStatus"]; ok {
+			tmp["token_status"] = value
 		}
 		result = append(result, tmp)
 	}

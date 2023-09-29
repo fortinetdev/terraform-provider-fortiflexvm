@@ -42,6 +42,7 @@ output "new_entitlement_token"{
 
 The following arguments are supported:
 
+* `account_id` - (Optional/Number) Account ID.
 * `config_id` - (Required/Number) The ID of a FortiFlex Configuration.
 * `description` - (Optional/String) The description of VM entitlement.
 * `end_date` - (Optional/String) VM entitlement end date. It can not be before today's date or after the program's end date. Any format that satisfies [ISO 8601](https://www.w3.org/TR/NOTE-datetime-970915.html) is accepted. Recommended format: `YYYY-MM-DDThh:mm:ss`. If not specify, it will use the program end date automatically.
@@ -52,6 +53,7 @@ The following arguments are supported:
 
 The following attribute is exported:
 
+* `account_id` - (Number) Account ID.
 * `id` - (String) The ID of the resource. Its value will be {serial_number}.{config_id}. For example: "FGVMMLTM23001273.3196"
 * `serial_number` - (String) The ID of the VM entitlement.
 * `start_date` - (String) Start date. Its format is `YYYY-MM-DDThh:mm:ss.sss`. For example: "2023-07-07T14:32:09.873".

@@ -37,6 +37,7 @@ The following arguments are supported:
 
 The following attribute is exported:
 
+* `account_id` - (Number) Account ID.
 * `id` - (String) The ID of the resource. Its value will be {serial_number}.{config_id}. For example: "FGVMMLTM23001273.3196"
 * `token` - (String) The token of the VM entitlement.
 * `token_status` - (String) The status of the token. Possible value: "NOTUSED" or "USED"

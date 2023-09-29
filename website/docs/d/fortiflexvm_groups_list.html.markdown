@@ -16,6 +16,7 @@ Returns list of FortiFlex groups (asset folders that have FortiFlex products in 
 
 ```hcl
 data "fortiflexvm_groups_list" "example" {
+    # account_id = 12345 # optional
 }
 
 output "my_groups_list"{
@@ -25,7 +26,9 @@ output "my_groups_list"{
 
 ## Argument Reference
 
-No argument is required.
+The following argument is required:
+
+* `account_id` - (Optional/Number) The account ID.
 
 ## Attribute Reference
 
@@ -37,6 +40,7 @@ The following attributes are exported:
 <a id="nestedatt--groups"></a>
 The `groups` block contains:
 
+* `account_id` - (Number) The account ID of this group. If not specified argument `account_id`, the value of attribute `groups->account_id` will be 0.
 * `available_tokens` - (Number) The number of available tokens in the group.
 * `folder_path` - (String) The folder path of the group.
 * `used_tokens` - (Number) The number of tokens used in the group.

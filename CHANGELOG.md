@@ -1,5 +1,12 @@
-## 2.0.1 (Unreleased)
+## 2.1.1 (Unreleased)
 
+## 2.1.0 (September 29, 2023)
+
+IMPROVEMENTS:
+
+* Support 3 new products: `FortiClient EMS On-Prem`, `FortiWeb Cloud - Private` and `FortiWeb Cloud - Public`.
+* Support return value `accound_id` for all resources and data sources.
+* `data_source_entitlements_list` supports `account_id` and `program_serial_number`.
 
 ## 2.0.0 (July 17, 2023)
 
