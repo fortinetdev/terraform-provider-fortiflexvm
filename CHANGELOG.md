@@ -1,4 +1,15 @@
-## 2.1.1 (Unreleased)
+## 2.2.1 (Unreleased)
+
+## 2.2.0 (December 5, 2023)
+
+FEATURES:
+
+* **New Resource:** `fortiflexvm_entitlements_cloud`
+
+IMPROVEMENTS:
+
+* New product: `FortiClient EMS Cloud` (`fc_ems_clous`)
+* Configuration `fgt_vm_bundle` supports `fortiguard_services`, `cloud_services` and `support_service`.
 
 ## 2.1.0 (September 29, 2023)
 

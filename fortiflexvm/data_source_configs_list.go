@@ -73,6 +73,20 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeInt,
 										Computed: true,
 									},
+									"fortiguard_services": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+									"cloud_services": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+									"support_service": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
 								},
 							},
 						},
@@ -268,6 +282,39 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fc_ems_cloud": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"ztna_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"ztna_fgf_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"epp_ztna_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"epp_ztna_fgf_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"chromebook": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -376,9 +423,7 @@ func dataSourceFlattenConfigsListConfigsProductType(v interface{}) interface{} {
 	if pt, ok := v.(map[string]interface{}); ok {
 		if p_id, ok := pt["id"]; ok {
 			rst = convProductTypeId2Name(int(p_id.(float64)))
-			if rst == "" {
-				log.Printf("[ERROR] Can not recognise Product Type ID: %v", p_id)
-			}
+			// if rst == ""  Can not recognise Product Type ID
 		}
 	}
 	return rst

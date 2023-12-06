@@ -41,6 +41,7 @@ The `configs` block contains:
 
 * `fad_vm` - (List of Object) FortiADC Virtual Machine. The structure of [`configs.fad_vm` block](#nestedobjatt--configs--fad_vm) is documented below.
 * `faz_vm` - (List of Object) FortiAnalyzer Virtual Machine. The structure of [`configs.faz_vm` block](#nestedobjatt--configs--faz_vm) is documented below.
+* `fc_ems_cloud` - (List of Object) FortiClient EMS Cloud. The structure of [`configs.fc_ems_cloud` block](#nestedobjatt--configs--fc_ems_cloud) is documented below.
 * `fc_ems_op` - (List of Object) FortiClient EMS On-Prem. The structure of [`configs.fc_ems_op` block](#nestedobjatt--configs--fc_ems_op) is documented below.
 * `fgt_hw` - (List of Object) FortiGate Hardware. The structure of [`configs.fgt_hw` block](#nestedobjatt--configs--fgt_hw) is documented below.
 * `fgt_vm_bundle` - (List of Object) FortiGate Virtual Machine. The structure of [`configs.fgt_vm_bundle` block](#nestedobjatt--configs--fgt_vm_bundle) is documented below.
@@ -56,6 +57,7 @@ The `configs` block contains:
 * `product_type` - (String) Configuration type. Possible values: 
   * `FAD_VM`: FortiADC Virtual Machine
   * `FAZ_VM`: FortiAnalyzer Virtual Machine
+  * `FC_EMS_CLOUD`: FortiClient EMS Cloud
   * `FC_EMS_OP`: FortiClient EMS On-Prem
   * `FGT_HW`: FortiGate Hardware
   * `FGT_VM_Bundle`: FortiGate Virtual Machine - Service Bundle
@@ -84,6 +86,17 @@ The `configs.faz_vm` block contains:
 * `support_service` - (String) Support Service. Possible value: `"FAZFC247"` (FortiCare Premium).
 
 
+<a id="nestedobjatt--configs--fc_ems_cloud"></a>
+The `configs.fc_ems_cloud` block contains:
+
+* `ztna_num` - (Number) ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `ztna_fgf_num` - (Number) ZTNA/VPN + FortiGuard Forensics(number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `epp_ztna_num` - (Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `epp_ztna_fgf_num` - (Number) EPP/ATP + ZTNA/VPN + FortiGuard Forensics (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `chromebook` - (Number) Chromebook (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `addons` - (List of String) The default value is an empty list. Options: `"BPS"` (FortiCare Best Practice).
+
+
 <a id="nestedobjatt--configs--fc_ems_op"></a>
 The `configs.fc_ems_op` block contains:
 
@@ -98,33 +111,65 @@ The `configs.fc_ems_op` block contains:
 The `configs.fgt_hw` block contains:
 
 * `device_model` - (String) Device Model. Possible values: 
-  * `"FGT40F"`: FortiGate-40F
-  * `"FGT60F"`: FortiGate-60F
-  * `"FGT70F"`: FortiGate-70F
-  * `"FGT80F"`: FortiGate-80F
-  * `"FG100F"`: FortiGate-100F
-  * `"FGT60E"`: FortiGate-60E
-  * `"FGT61F"`: FortiGate-61F
-  * `"FG100E"`: FortiGate-100E
-  * `"FG101F"`: FortiGate-101F
-  * `"FG200E"`: FortiGate-200E
-  * `"FG200F"`: FortiGate-200F
-  * `"FG201F"`: FortiGate-201F
-  * `"FG4H0F"`: FortiGate-400F
-  * `"FG6H0F"`: FortiGate-600F
-  * `"FWF40F"`: FortiWifi-40F
-  * `"FWF60F"`: FortiWifi-60F
-  * `"FGR60F"`: FortiGateRugged-60F
-  * `"FR70FB"`: FortiGateRugged-70F
-  * `"FGT81F"`: FortiGate-81F
-  * `"FG101E"`: FortiGate-101E
-  * `"FG4H1F"`: FortiGate-401F
-  * `"FG1K0F"`: FortiGate-1000F
-  * `"FG180F"`: FortiGate-1800F
-  * `"F2K60F"`: FortiGate-2600F
-  * `"FG3K0F"`: FortiGate-3000F
-  * `"FG3K1F"`: FortiGate-3001F
-  * `"FG3K2F"`: FortiGate-3200F
+  * `"FGT40F"`: FortiGate 40F
+  * `"FWF40F"`: FortiWifi 40F
+  * `"FGT60E"`: FortiGate 60E
+  * `"FGT60F"`: FortiGate 60F
+  * `"FWF60F"`: FortiWifi 60F
+  * `"FGR60F"`: FortiGateRugged 60F
+  * `"FGT61F"`: FortiGate 61F
+  * `"FGT70F"`: FortiGate 70F
+  * `"FR70FB"`: FortiGateRugged 70F
+  * `"FGT80F"`: FortiGate 80F
+  * `"FGT81F"`: FortiGate 81F
+  * `"FG100E"`: FortiGate 100E
+  * `"FG100F"`: FortiGate 100F
+  * `"FG101E"`: FortiGate 101E
+  * `"FG101F"`: FortiGate 101F
+  * `"FG200E"`: FortiGate 200E
+  * `"FG200F"`: FortiGate 200F
+  * `"FG201F"`: FortiGate 201F
+  * `"FG4H0F"`: FortiGate 400F
+  * `"FG4H1F"`: FortiGate 401F
+  * `"FG6H0F"`: FortiGate 600F
+  * `"FG1K0F"`: FortiGate 1000F
+  * `"FG180F"`: FortiGate 1800F
+  * `"F2K60F"`: FortiGate 2600F
+  * `"FG3K0F"`: FortiGate 3000F
+  * `"FG3K1F"`: FortiGate 3001F
+  * `"FG3K2F"`: FortiGate 3200F
+  * `"FG40FI"`: FortiGate 40F-3G4G
+  * `"FW40FI"`: FortiWifi 40F-3G4G
+  * `"FWF61F"`: FortiWifi 61F
+  * `"FR60FI"`: FortiGateRugged 60F 3G4G
+  * `"FGT71F"`: FortiGate 71F
+  * `"FG80FP"`: FortiGate 80F-PoE
+  * `"FG80FB"`: FortiGate 80F-Bypass
+  * `"FG80FD"`: FortiGate 80F DSL
+  * `"FWF80F"`: FortiWiFi 80F-2R
+  * `"FW80FS"`: FortiWiFi 80F-2R-3G4G-DSL
+  * `"FWF81F"`: FortiWiFi 81F 2R
+  * `"FW81FS"`: FortiWiFi 81F-2R-3G4G-DSL
+  * `"FW81FD"`: FortiWiFi 81F-2R-3G4G-PoE
+  * `"FW81FP"`: FortiWiFi 81F 2R POE
+  * `"FG81FP"`: FortiGate 81F-PoE
+  * `"FGT90G"`: FortiGate 90G
+  * `"FGT91G"`: FortiGate 91G
+  * `"FG201E"`: FortiGate 201E
+  * `"FG4H0E"`: FortiGate 400E
+  * `"FG4HBE"`: FortiGate 400E BYPASS
+  * `"FG4H1E"`: FortiGate 401E
+  * `"FD4H1E"`: FortiGate 401E DC
+  * `"FG6H0E"`: FortiGate 600E
+  * `"FG6H1E"`: FortiGate 601E
+  * `"FG6H1F"`: FortiGate 601F
+  * `"FG9H0G"`: FortiGate 900G
+  * `"FG9H1G"`: FortiGate 901G
+  * `"FG1K1F"`: FortiGate 1001F
+  * `"FG181F"`: FortiGate 1801F
+  * `"FG3K7F"`: FortiGate 3700F
+  * `"FG39E6"`: FortiGate 3960E
+  * `"FG441F"`: FortiGate 4401F
 * `service_pkg` - (String) Possible values: `"FGHWFC247"` (FortiCare Premium), `"FGHWFCEL"` (FortiCare Elite), `"FGHWATP"` (ATP), `"FGHWUTP"` (UTP) or `"FGHWENT"` (Enterprise).
 * `addons` - (List of String) Possible values:
   * `"FGHWFCELU"`: FortiCare Elite Upgrade
@@ -142,8 +187,24 @@ The `configs.fgt_hw` block contains:
 <a id="nestedobjatt--configs--fgt_vm_bundle"></a>
 The `configs.fgt_vm_bundle` block contains:
 
-* `cpu_size` - (String) The number of CPUs. The value of this attribute is one of `"1"`, `"2"`, `"4"`, `"8"`, `"16"`, `"32"` or `"2147483647"` (unlimited).
+* `cloud_services` - (List of String) Cloud Services. The default value is an empty list. It should be a combination of:
+  * `"FGTFAMS"`: FortiGate Cloud Management
+  * `"FGTSWNM"`: SD-WAN Underlay
+  * `"FGTSOCA"`: SOCaaS
+  * `"FGTFAZC"`: FortiAnalyzer Cloud
+  * `"FGTSWOS"`: Cloud-based Overlay-as-a-Service
+  * `"FGTFSPA"`: SD-WAN Connector for FortiSASE 
+* `cpu_size` - (String) The number of CPUs. Number between 1 and 96 (inclusive).
+* `fortiguard_services` - (List of String) FortiGuard Services. The default value is an empty list. It should be a combination of:
+  * `"FGTAVDB"`: Advanced Malware Protection
+  * `"FGTFAIS"`: AI-Based In-line Sandbox
+  * `"FGTISSS"`: FortiGuard OT Security Service
+  * `"FGTDLDB"`: FortiGuard DLP
+  * `"FGTFGSA"`: FortiGuard Attack Surface Security Service
+  * `"FGTFCSS"`: FortiConverter Service
 * `service_pkg` - (String) The value of this attribute is one of `"FC"` (FortiCare), `"UTP"` (UTP), `"ENT"` (Enterprise) or `"ATP"` (ATP).
+* `support_service` - (String) Support service. The default value is "NONE". Support values:
+  * `"FGTFCELU"`: FC Elite Upgrade
 * `vdom_num` - (Number) Number of VDOMs. A number between 0 and 500 (inclusive).
 
 

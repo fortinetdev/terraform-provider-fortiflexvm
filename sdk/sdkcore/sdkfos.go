@@ -114,6 +114,18 @@ func (c *FortiSDKClient) CreateEntitlementsHW(params *map[string]interface{}) (m
 	return
 }
 
+// CreateEntitlementsCloud API operation
+// Returns the requested value when the request executes successfully.
+// Returns error for service API and SDK errors.
+func (c *FortiSDKClient) CreateEntitlementsCloud(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
+	HTTPMethod := "POST"
+	path := "/ES/api/fortiflex/v2/entitlements/cloud/create"
+	rspKey := "entitlements"
+
+	mapTmp, err = createUpdate(c, HTTPMethod, path, rspKey, params)
+	return
+}
+
 // ReadEntitlementsPoint API operation for FortiFlex gets point usage for Virtual Machines
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.

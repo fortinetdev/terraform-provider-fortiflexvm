@@ -17,7 +17,7 @@ The FortiFlexVM provider is used to interact with the resources supported by For
 terraform {
   required_providers {
     fortiflexvm = {
-      version = "2.0.0"
+      version = "2.2.0"
       source  = "fortinetdev/fortiflexvm"
     }
   }
@@ -53,7 +53,7 @@ resource "fortiflexvm_config" "example"{
 resource "fortiflexvm_entitlements_vm" "example"{ 
   config_id = fortiflexvm_config.example.id
   description = "Your description" # Optional.
-  end_date = "2023-11-12T00:00:00" # Optional. If not set, it will use the program's end date automatically.
+  end_date = "2023-11-12T00:00:00" # Optional. If not set or empty "", it will use the program's end date automatically.
   # folder_path = "My Assets" # Optional. If not set, new VM will be in "My Assets"
   # status = "ACTIVE" # "ACTIVE" or "STOPPED". Optional. It has many restrictions. Not recommended to set it manually.
 }

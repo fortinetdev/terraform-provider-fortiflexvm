@@ -10,7 +10,7 @@ import (
 )
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
-	"fpc_vm", "fad_vm", "fgt_hw", "fwbc_private", "fwbc_public"}
+	"fpc_vm", "fad_vm", "fgt_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -50,6 +50,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 202
 	case "FWBC_PUBLIC":
 		return 203
+	case "FC_EMS_CLOUD":
+		return 204
 	default:
 		return 0
 	}
@@ -79,6 +81,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FWBC_PRIVATE"
 	case 203:
 		return "FWBC_PUBLIC"
+	case 204:
+		return "FC_EMS_CLOUD"
 	default:
 		return ""
 	}
@@ -148,6 +152,24 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fwbc_public", "web_applications", "int"
 	case 36:
 		return "fc_ems_op", "addons", "list"
+	case 37:
+		return "fc_ems_cloud", "ztna_num", "int"
+	case 38:
+		return "fc_ems_cloud", "ztna_fgf_num", "int"
+	case 39:
+		return "fc_ems_cloud", "epp_ztna_num", "int"
+	case 40:
+		return "fc_ems_cloud", "epp_ztna_fgf_num", "int"
+	case 41:
+		return "fc_ems_cloud", "chromebook", "int"
+	case 42:
+		return "fc_ems_cloud", "addons", "list"
+	case 43:
+		return "fgt_vm_bundle", "fortiguard_services", "list"
+	case 44:
+		return "fgt_vm_bundle", "cloud_services", "list"
+	case 45:
+		return "fgt_vm_bundle", "support_service", "string"
 	default:
 		return "", "", ""
 	}
@@ -163,6 +185,12 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 2
 		case "vdom_num":
 			return 10
+		case "fortiguard_services":
+			return 43
+		case "cloud_services":
+			return 44
+		case "support_service":
+			return 45
 		default:
 			return 0
 		}
@@ -267,6 +295,23 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 34
 		case "web_applications":
 			return 35
+		default:
+			return 0
+		}
+	case "fc_ems_cloud":
+		switch c_name {
+		case "ztna_num":
+			return 37
+		case "ztna_fgf_num":
+			return 38
+		case "epp_ztna_num":
+			return 39
+		case "epp_ztna_fgf_num":
+			return 40
+		case "chromebook":
+			return 41
+		case "addons":
+			return 42
 		default:
 			return 0
 		}

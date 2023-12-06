@@ -56,9 +56,10 @@ func resourceConfig() *schema.Resource {
 				FAD_VM: FortiADC Virtual Machine;
 				FGT_HW: FortiGate Hardware;
 				FWBC_PRIVATE: FortiWeb Cloud - Private;
-				FWBC_PUBLIC: FortiWeb Cloud - Public.`,
+				FWBC_PUBLIC: FortiWeb Cloud - Public;
+				FC_EMS_CLOUD: FortiClient EMS Cloud.`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
-					"FC_EMS_OP", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC"}),
+					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -87,6 +88,23 @@ func resourceConfig() *schema.Resource {
 						},
 						"vdom_num": &schema.Schema{
 							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"fortiguard_services": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"cloud_services": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"support_service": &schema.Schema{
+							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
 						},
@@ -318,6 +336,46 @@ func resourceConfig() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
+						},
+					},
+				},
+			},
+			"fc_ems_cloud": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ztna_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"ztna_fgf_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"epp_ztna_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"epp_ztna_fgf_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"chromebook": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
 						},
 					},
 				},
@@ -626,7 +684,8 @@ func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) 
 	var typeId interface{}
 	typeId = convProductTypeName2Id(v.(string))
 	if typeId == 0 {
-		err := fmt.Errorf("product_type invalid: %v, should be one of [FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FAZ_VM, FPC_VM, FAD_VM, FGT_HW]", v.(string))
+		err := fmt.Errorf("product_type invalid: %v, should be one of [%v]", v.(string),
+			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FGT_HW, FWBC_PRIVATE, FWBC_PUBLIC, FC_EMS_CLOUD")
 		return typeId, err
 	}
 	return typeId, nil
@@ -675,6 +734,11 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 				result = append(result, tmp)
 			}
 		} else {
+			if pre == "fgt_vm_bundle" { // version 2.2.0, allow fgt_vm_bundle->support_service empty
+				if ck == "support_service" && cv == "" {
+					cv = "NONE"
+				}
+			}
 			tmp := make(map[string]interface{})
 			tmp["id"] = ckId
 			tmp["value"] = cv
