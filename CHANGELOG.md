@@ -1,4 +1,11 @@
-## 2.2.1 (Unreleased)
+## 2.2.2 (Unreleased)
+
+## 2.2.1 (Feburary 9, 2024)
+
+IMPROVEMENTS:
+
+* Add update entitlements scenario use cases in the document.
+* Improve examples format.
 
 ## 2.2.0 (December 5, 2023)
 

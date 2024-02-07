@@ -15,16 +15,15 @@ Returns total points consumed by one or more entitlements in a date range.
 
 ```hcl
 data "fortiflexvm_entitlements_points" "example" {
-    # account_id = 12345 # optional
-    config_id = 42
-    start_date = "2022-11-25"
-    end_date = "2023-03-07"
+  # account_id = 12345 # optional
+  config_id  = 42
+  start_date = "2023-11-25"
+  end_date   = "2024-10-07"
 }
 
-output "my_entitlements_points"{
-    value = data.fortiflexvm_entitlements_points.example
+output "my_entitlements_points" {
+  value = data.fortiflexvm_entitlements_points.example
 }
-
 ```
 
 ## Argument Reference

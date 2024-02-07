@@ -16,13 +16,13 @@ Either config_id or (account_id + serial_number) should be provided.
 
 ```hcl
 data "fortiflexvm_entitlements_list" "example" {
-    config_id = 42
-    # either config_id or (account_id + serial_number) should be provided
-    # account_id = 12345
-    # serial_number = "ELAVMR0000000101"
+  config_id = 42
+  # either config_id or (account_id + serial_number) should be provided
+  # account_id = 12345
+  # serial_number = "ELAVMR0000000101"
 }
-output "my_entitlements_list"{
-    value = data.fortiflexvm_entitlements_list.example
+output "my_entitlements_list" {
+  value = data.fortiflexvm_entitlements_list.example
 }
 ```
 

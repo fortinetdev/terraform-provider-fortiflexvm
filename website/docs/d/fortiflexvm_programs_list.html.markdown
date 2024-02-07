@@ -14,8 +14,8 @@ Get list of FortiFlex Programs for the account.
 ```hcl
 data "fortiflexvm_programs_list" "example" {}
 
-output "my_programs_list"{
-    value = data.fortiflexvm_programs_list.example
+output "my_programs_list" {
+  value = data.fortiflexvm_programs_list.example
 }
 ```
 

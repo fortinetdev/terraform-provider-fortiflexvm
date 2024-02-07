@@ -15,13 +15,13 @@ Returns first available token by asset folder or Configuration id (or both can b
 
 ```hcl
 data "fortiflexvm_groups_nexttoken" "example" {
-    # account_id = 12345 # optional
-    config_id = 42
-    folder_path = "My Assets"
+  # account_id = 12345 # optional
+  config_id   = 42
+  folder_path = "My Assets"
 }
 
-output "my_groups_nexttoken"{
-    value = data.fortiflexvm_groups_nexttoken.example
+output "my_groups_nexttoken" {
+  value = data.fortiflexvm_groups_nexttoken.example
 }
 ```
 

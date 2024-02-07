@@ -15,31 +15,47 @@ Create and update one cloud entitlement based on a configuration.
 ## Example Usage
 
 ```hcl
-resource "fortiflexvm_config" "example"{
-  product_type = "FC_EMS_CLOUD"
+# Create one cloud configuration and entitlement.
+resource "fortiflexvm_config" "example" {
+  product_type          = "FC_EMS_CLOUD"
   program_serial_number = "ELAVMS0000xxxxxx"
-  name = "FC_EMS_OP_template"
+  name                  = "FC_EMS_OP_template"
   fc_ems_cloud {
-    ztna_num = 225                # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    ztna_fgf_num = 225            # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_num = 125            # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_fgf_num = 125        # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    chromebook = 100              # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
-    addons = ["BPS"]              # [] or ["BPS"]
+    ztna_num         = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    ztna_fgf_num     = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    epp_ztna_num     = 125     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    epp_ztna_fgf_num = 125     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    chromebook       = 100     # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
+    addons           = ["BPS"] # [] or ["BPS"]
   }
   status = "ACTIVE"
 }
 
 # Each account can create at most one entitlement for each cloud product.
-resource "fortiflexvm_entitlements_cloud" "example"{ 
-  config_id = fortiflexvm_config.example.id
-  description = "Use v2 terraform" # Optional.
-  end_date = "2023-12-12T00:00:00" # Optional. If not set or empty "", it will use the program's end date automatically.
-  folder_path = "My Assets/v2" # Optional. If not set, new VM will be in "My Assets"
-  # status = "ACTIVE" # Optional, It has many restrictions. Not recommended to set it manually.
+resource "fortiflexvm_entitlements_cloud" "example" {
+  config_id   = fortiflexvm_config.example.id
+  description = "Use v2 terraform"    # Optional.
+  end_date    = "2024-12-12T00:00:00" # Optional. If not set or empty "", it will use the program's end date automatically.
+  folder_path = "My Assets/v2"        # Optional. If not set, new VM will be in "My Assets"
+  # status    = "ACTIVE" # Optional, It has many restrictions. Not recommended to set it manually.
 }
-output "new_entitlement"{
-    value = fortiflexvm_entitlements_cloud.example
+output "new_entitlement" {
+  value = fortiflexvm_entitlements_cloud.example
+}
+
+# Update entitlement information
+# If import, use: terraform import fortiflexvm_entitlements_cloud.labelname <serial_number>.<config_id>
+# After you create or import a fortiflexvm_entitlements_cloud resource, you can update it:
+resource "fortiflexvm_entitlements_cloud" "example" {
+  config_id   = fortiflexvm_config.example.id # new config_id value or unchanged
+  description = "Your description"            # Optional.
+  end_date    = "2024-11-12T00:00:00"         # Optional. If not set, it will use the program end date automatically.
+}
+
+# Stop or reactivate a could
+resource "fortiflexvm_entitlements_cloud" "example" {
+  config_id = fortiflexvm_config.example.id # Previous config_id
+  status    = "STOPPED"                     # "ACTIVE" or "STOPPED". Optional.
 }
 ```
 
@@ -61,7 +77,7 @@ The following attribute is exported:
 * `account_id` - (Number) Account ID.
 * `id` - (String) The ID of the resource. Its value will be {serial_number}.{config_id}. For example: "FEMSPO8823000143.3196"
 * `serial_number` - (String) The ID of the cloud entitlement.
-* `start_date` - (String) Start date. Its format is `YYYY-MM-DDThh:mm:ss.sss`. For example: "2023-07-07T14:32:09.873".
+* `start_date` - (String) Start date. Its format is `YYYY-MM-DDThh:mm:ss.sss`. For example: "2024-07-07T14:32:09.873".
 * `status` (String) Four possible values: "PENDING", "ACTIVE", "EXPIRED" and "STOPPED". This attribute can be set as "ACTIVE" or "STOPPED" manually.
 
 ## Import

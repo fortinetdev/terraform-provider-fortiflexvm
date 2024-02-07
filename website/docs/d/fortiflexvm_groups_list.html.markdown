@@ -16,11 +16,11 @@ Returns list of FortiFlex groups (asset folders that have FortiFlex products in 
 
 ```hcl
 data "fortiflexvm_groups_list" "example" {
-    # account_id = 12345 # optional
+  # account_id = 12345 # optional
 }
 
-output "my_groups_list"{
-    value = data.fortiflexvm_groups_list.example
+output "my_groups_list" {
+  value = data.fortiflexvm_groups_list.example
 }
 ```
 

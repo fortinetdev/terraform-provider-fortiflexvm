@@ -94,7 +94,7 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fgt_vm_bundle", "cpu_size", "string"
 	case 2:
 		return "fgt_vm_bundle", "service_pkg", "string"
-	case 3:
+	case 3: // Deprecated, keep it for backward compatible
 		return "fmg_vm", "managed_dev", "int"
 	case 4:
 		return "fwb_vm", "cpu_size", "string"

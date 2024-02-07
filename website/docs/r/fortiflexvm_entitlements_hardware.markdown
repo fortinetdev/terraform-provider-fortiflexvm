@@ -16,13 +16,31 @@ Create and update one hardware entitlement based on a configuration.
 ```hcl
 # If import, use: terraform import fortiflexvm_entitlements_hardware.labelname <serial_number>.<config_id>
 # For example: terraform import fortiflexvm_entitlements_hardware.example FGT70FTK22000001.5010
-resource "fortiflexvm_entitlements_hardware" "example"{ 
-  config_id = 5010
-  end_date = "2023-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
-  # status = "ACTIVE" # "ACTIVE" or "STOPPED". Optional. It has many restrictions. Not recommended to set it manually.
+resource "fortiflexvm_entitlements_hardware" "example" {
+  serial_number = "FGT60FTK00000000"
+  config_id     = 5010
+  end_date      = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
+  # status      = "ACTIVE" # "ACTIVE" or "STOPPED". Optional. It has many restrictions. Not recommended to set it manually.
 }
-output "new_entitlement_hw"{
-    value = fortiflexvm_entitlements_hardware.example
+output "new_entitlement_hw" {
+  value = fortiflexvm_entitlements_hardware.example
+}
+
+# Update entitlement information
+# If import, use: terraform import fortiflexvm_entitlements_hardware.labelname <serial_number>.<config_id>
+# After you create or import a fortiflexvm_entitlements_hardware resource, you can update it:
+resource "fortiflexvm_entitlements_hardware" "example" {
+  serial_number = "FGT60FTK00000000"
+  config_id     = 5010                  # new config_id value or unchanged>
+  description   = "Your description"    # Optional.
+  end_date      = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
+}
+
+# Stop or reactivate a hardware
+resource "fortiflexvm_entitlements_hardware" "example" {
+  serial_number = "FGT60FTK00000000"
+  config_id     = 5010      # Previous config_id
+  status        = "STOPPED" # "ACTIVE" or "STOPPED". Optional.
 }
 ```
 
@@ -42,7 +60,7 @@ The following attribute is exported:
 * `account_id` - (Number) Account ID.
 * `id` - (String) The ID of the resource. Its value will be {serial_number}.{config_id}. For example: "FGT70FTK22000001.5010"
 * `serial_number` - (String) The ID of the hardware entitlement.
-* `start_date` - (String) Start date. Its format is `YYYY-MM-DDThh:mm:ss.sss`. For example: "2023-07-07T14:32:09.873".
+* `start_date` - (String) Start date. Its format is `YYYY-MM-DDThh:mm:ss.sss`. For example: "2024-07-07T14:32:09.873".
 * `status` (String) Four possible values: "PENDING", "ACTIVE", "EXPIRED" and "STOPPED". This attribute can be set as "ACTIVE" or "STOPPED" manually.
 
 ## Import

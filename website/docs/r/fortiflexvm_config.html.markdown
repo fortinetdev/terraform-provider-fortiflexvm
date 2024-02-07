@@ -17,143 +17,143 @@ Create a new configuration under a FortiFlex Program.
 -> You need to specify what type of product you want to create in `product_type` and then fill in the correspond block.
 
 ```hcl
-resource "fortiflexvm_config" "example1"{
-  product_type = "FGT_VM_Bundle"
+resource "fortiflexvm_config" "example1" {
+  product_type          = "FGT_VM_Bundle"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FGT_VM_Bundle_example"
+  name                  = "FGT_VM_Bundle_example"
   fgt_vm_bundle {
-    cpu_size = 2          # 1 ~ 96
-    service_pkg = "ATP"   # "FC", "UTP", "ENT", "ATP"
-    vdom_num = 10         # 0 ~ 500
+    cpu_size            = 2           # 1 ~ 96
+    service_pkg         = "ATP"       # "FC", "UTP", "ENT", "ATP"
+    vdom_num            = 10          # 0 ~ 500
     fortiguard_services = ["FGTAVDB"] # "FGTAVDB", "FGTFAIS", "FGTISSS", "FGTDLDB", "FGTFGSA", "FGTFCSS"
-    cloud_services = []   # "FGTFAMS", "FGTSWNM", "FGTSOCA", "FGTFAZC", "FGTSWOS", "FGTFSPA"
+    cloud_services      = []          # "FGTFAMS", "FGTSWNM", "FGTSOCA", "FGTFAZC", "FGTSWOS", "FGTFSPA"
     # support_service = "FGTFCELU" # "NONE", "FGTFCELU"
   }
 }
 
 
-resource "fortiflexvm_config" "example2"{
-  product_type = "FWB_VM"
+resource "fortiflexvm_config" "example2" {
+  product_type          = "FWB_VM"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FWB_VM_example"
+  name                  = "FWB_VM_example"
   fwb_vm {
-    cpu_size =  "2"           # "1", "2", "4", "8", "16"
-    service_pkg = "FWBSTD"    # "FWBSTD", "FWBADV"
+    cpu_size    = "2"      # "1", "2", "4", "8", "16"
+    service_pkg = "FWBSTD" # "FWBSTD", "FWBADV"
   }
 }
 
 
-resource "fortiflexvm_config" "example3"{
-  product_type = "FMG_VM"
+resource "fortiflexvm_config" "example3" {
+  product_type          = "FMG_VM"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FMG_VM_example"
+  name                  = "FMG_VM_example"
   fmg_vm {
-    managed_dev =  1     # 1 ~ 100000
-    adom_num = 1         # 1 ~ 100000
+    managed_dev = 1 # 1 ~ 100000
+    adom_num    = 1 # 1 ~ 100000
   }
 }
 
 
-resource "fortiflexvm_config" "example4"{
-  product_type = "FGT_VM_LCS"
+resource "fortiflexvm_config" "example4" {
+  product_type          = "FGT_VM_LCS"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FGT_VM_LCS_example"
+  name                  = "FGT_VM_LCS_example"
   fgt_vm_lcs {
-    cpu_size = 3                                # 1 ~ 96
-    vdom_num = 3                                # 1 ~ 500
-    support_service = "FC247"                   # "FC247", "ASET"
-    cloud_services = []                         # "FAMS", "SWNM", "AFAC", "FAZC"
-    fortiguard_services = ["IPS", "AVDB"]       # "IPS", "AVDB", "FGSA", "DLDB", "FAIS", "FURLDNS"
+    cpu_size            = 3               # 1 ~ 96
+    vdom_num            = 3               # 1 ~ 500
+    support_service     = "FC247"         # "FC247", "ASET"
+    cloud_services      = []              # "FAMS", "SWNM", "AFAC", "FAZC"
+    fortiguard_services = ["IPS", "AVDB"] # "IPS", "AVDB", "FGSA", "DLDB", "FAIS", "FURLDNS"
   }
 }
 
 
-resource "fortiflexvm_config" "example5"{
-  product_type = "FAZ_VM"
+resource "fortiflexvm_config" "example5" {
+  product_type          = "FAZ_VM"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FAZ_VM_example"
+  name                  = "FAZ_VM_example"
   faz_vm {
-    daily_storage = 11                  # 5 ~ 8300
-    support_service = "FAZFC247"        # "FAZFC247"
-    adom_num =  0                       # 0 ~ 1200
+    daily_storage   = 11         # 5 ~ 8300
+    support_service = "FAZFC247" # "FAZFC247"
+    adom_num        = 0          # 0 ~ 1200
   }
 }
 
 
-resource "fortiflexvm_config" "example6"{
-  product_type = "FPC_VM"
+resource "fortiflexvm_config" "example6" {
+  product_type          = "FPC_VM"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FPC_VM_example"
+  name                  = "FPC_VM_example"
   fpc_vm {
-    managed_dev = 1       # 0 ~ 100000
+    managed_dev = 1 # 0 ~ 100000
   }
 }
 
 
-resource "fortiflexvm_config" "example7"{
-  product_type = "FAD_VM"
+resource "fortiflexvm_config" "example7" {
+  product_type          = "FAD_VM"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FAD_VM_example"
+  name                  = "FAD_VM_example"
   fad_vm {
-    cpu_size = "1"                # "1", "2", "4", "8", "16", "32"
-    service_pkg = "FDVSTD"        # "FDVSTD", "FDVADV", "FDVFC247"
+    cpu_size    = "1"      # "1", "2", "4", "8", "16", "32"
+    service_pkg = "FDVSTD" # "FDVSTD", "FDVADV", "FDVFC247"
   }
 }
 
 
-resource "fortiflexvm_config" "example8"{
-  product_type = "FGT_HW"
+resource "fortiflexvm_config" "example8" {
+  product_type          = "FGT_HW"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FGT_HW_example"
+  name                  = "FGT_HW_example"
   fgt_hw {
-    device_model = "FGT60F"   # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex
-                              # "FGT40F", "FGT60F", "FGT70F", "FGT80F", "FG100F", "FGT60E", "FGT61F", "FG100E", "FG101F", "FG200E", 
-                              # "FG200F", "FG201F", "FG4H0F", "FG6H0F", "FWF40F", "FWF60F", "FGR60F", "FR70FB", "FGT81F", "FG101E",
-                              # "FG4H1F", "FG1K0F", "FG180F", "F2K60F", "FG3K0F", "FG3K1F", "FG3K2F" ...
+    device_model = "FGT60F" # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex
+    # "FGT40F", "FGT60F", "FGT70F", "FGT80F", "FG100F", "FGT60E", "FGT61F", "FG100E", "FG101F", "FG200E", 
+    # "FG200F", "FG201F", "FG4H0F", "FG6H0F", "FWF40F", "FWF60F", "FGR60F", "FR70FB", "FGT81F", "FG101E",
+    # "FG4H1F", "FG1K0F", "FG180F", "F2K60F", "FG3K0F", "FG3K1F", "FG3K2F" ...
     service_pkg = "FGHWFC247" # "FGHWFC247", "FGHWFCEL", "FGHWATP", "FGHWUTP", "FGHWENT"
-    addons = []               # List of string, "FGHWFCELU", "FGHWFAMS", "FGHWFAIS", "FGHWSWNM", "FGHWDLDB", "FGHWFAZC", "FGHWSOCA",
-                              # "FGHWMGAS", "FGHWSPAL", "FGHWFCSS"
+    addons      = []          # List of string, "FGHWFCELU", "FGHWFAMS", "FGHWFAIS", "FGHWSWNM", "FGHWDLDB", "FGHWFAZC", "FGHWSOCA",
+    # "FGHWMGAS", "FGHWSPAL", "FGHWFCSS"
   }
 }
 
-resource "fortiflexvm_config" "example9"{
-  product_type = "FC_EMS_OP"
+resource "fortiflexvm_config" "example9" {
+  product_type          = "FC_EMS_OP"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FC_EMS_OP_example"
+  name                  = "FC_EMS_OP_example"
   fc_ems_op {
-    ztna_num = 225                # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_num = 125            # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    chromebook = 100              # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
-    support_service = "FCTFC247"  # "FCTFC247"
-    addons = []                   # [] or ["BPS"]
+    ztna_num        = 225        # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    epp_ztna_num    = 125        # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    chromebook      = 100        # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
+    support_service = "FCTFC247" # "FCTFC247"
+    addons          = []         # [] or ["BPS"]
   }
   status = "ACTIVE"
 }
 
-resource "fortiflexvm_config" "example10"{
-  product_type = "FWBC_PUBLIC"
+resource "fortiflexvm_config" "example10" {
+  product_type          = "FWBC_PUBLIC"
   program_serial_number = "ELAVMS00000XXXXX"
-  name = "FWBC_PUBLIC_example"
+  name                  = "FWBC_PUBLIC_example"
   fwbc_public {
-    average_throughput = 150   # 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600,
-                               # 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-                               # 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000
-    web_applications = 100     # Number between 0 and 2000 (inclusive) 
+    average_throughput = 150 # 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600,
+    # 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+    # 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000
+    web_applications = 100 # Number between 0 and 2000 (inclusive) 
   }
   status = "ACTIVE"
 }
 
-resource "fortiflexvm_config" "example11"{
-  product_type = "FC_EMS_CLOUD"
+resource "fortiflexvm_config" "example11" {
+  product_type          = "FC_EMS_CLOUD"
   program_serial_number = "ELAVMS0000000601"
-  name = "FC_EMS_OP_terraform4"
+  name                  = "FC_EMS_OP_terraform4"
   fc_ems_cloud {
-    ztna_num = 225                # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    ztna_fgf_num = 225            # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_num = 125            # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_fgf_num = 125        # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    chromebook = 100              # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
-    addons = ["BPS"]              # [] or ["BPS"]
+    ztna_num         = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    ztna_fgf_num     = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    epp_ztna_num     = 125     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    epp_ztna_fgf_num = 125     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
+    chromebook       = 100     # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
+    addons           = ["BPS"] # [] or ["BPS"]
   }
   status = "ACTIVE"
 }
@@ -233,7 +233,7 @@ The `fc_ems_op` block contains:
 <a id="nestedblock--fgt_hw"></a>
 The `fgt_hw` block contains:
 
-* `device_model` - (Required if `product_type = "FGT_HW"`/String) Device Model. Options: 
+* `device_model` - (Required if `product_type = "FGT_HW"`/String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Options: 
   * `"FGT40F"`: FortiGate 40F
   * `"FWF40F"`: FortiWifi 40F
   * `"FGT60E"`: FortiGate 60E

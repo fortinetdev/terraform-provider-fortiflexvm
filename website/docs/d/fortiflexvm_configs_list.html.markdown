@@ -13,11 +13,11 @@ Get list of configurations for a FortiFlex Program.
 
 ```hcl
 data "fortiflexvm_configs_list" "example" {
-    program_serial_number = "ELAVMS000000XXXX"
+  program_serial_number = "ELAVMS000000XXXX"
 }
 
-output "my_configs_list"{
-    value = data.fortiflexvm_configs_list.example
+output "my_configs_list" {
+  value = data.fortiflexvm_configs_list.example
 }
 ```
 
@@ -110,7 +110,7 @@ The `configs.fc_ems_op` block contains:
 <a id="nestedobjatt--configs--fgt_hw"></a>
 The `configs.fgt_hw` block contains:
 
-* `device_model` - (String) Device Model. Possible values: 
+* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values: 
   * `"FGT40F"`: FortiGate 40F
   * `"FWF40F"`: FortiWifi 40F
   * `"FGT60E"`: FortiGate 60E

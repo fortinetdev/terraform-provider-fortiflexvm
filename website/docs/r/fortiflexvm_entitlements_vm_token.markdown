@@ -14,13 +14,13 @@ Regenerate token for a VM.
 
 ```hcl
 # if import, use: terraform import fortiflexvm_entitlements_vm_token.example FGVMMLTM23001325.3196
-resource "fortiflexvm_entitlements_vm_token" "example"{ 
-  config_id = 3196
-  serial_number = "FGVMMLTM23001325"
+resource "fortiflexvm_entitlements_vm_token" "example" {
+  config_id        = 3196
+  serial_number    = "FGVMMLTM23001325"
   regenerate_token = true # If set as false, the provider would only provide the token and not regenerate the token.
 }
-output "entitlement_token"{
-    value = fortiflexvm_entitlements_vm_token.example.token
+output "entitlement_token" {
+  value = fortiflexvm_entitlements_vm_token.example.token
 }
 ```
 
