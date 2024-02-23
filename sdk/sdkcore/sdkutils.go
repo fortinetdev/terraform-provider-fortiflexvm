@@ -80,7 +80,7 @@ func sendRequest(c *FortiSDKClient, method string, path string, params *map[stri
 	var locJSON []byte
 	if params != nil {
 		locJSON, err = json.Marshal(params)
-		log.Printf("FortiFlex request body: %s", string(locJSON))
+		log.Printf("FortiFlex request %s: %s", path, string(locJSON))
 		if err != nil {
 			log.Fatal(err)
 			return nil, "", err
@@ -119,6 +119,6 @@ func sendRequest(c *FortiSDKClient, method string, path string, params *map[stri
 		}
 		break
 	}
-	log.Printf("FortiFlex reading response %s: %s", path, string(body))
+	log.Printf("FortiFlex reading %s: %s", path, string(body))
 	return result, string(body), err
 }

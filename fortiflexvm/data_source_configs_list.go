@@ -324,7 +324,6 @@ func dataSourceConfigsList() *schema.Resource {
 
 func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Prepare data
 	request_obj := make(map[string]interface{})

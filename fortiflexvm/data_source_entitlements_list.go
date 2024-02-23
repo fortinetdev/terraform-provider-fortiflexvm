@@ -25,7 +25,23 @@ func dataSourceEntitlementsList() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"program_serial_number": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"serial_number": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"token_status": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -79,7 +95,6 @@ func dataSourceEntitlementsList() *schema.Resource {
 
 func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
@@ -88,7 +103,7 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 	program_serial_number := d.Get("program_serial_number").(string)
 	recource_id := ""
 	if config_id == 0 && (account_id == 0 || program_serial_number == "") {
-		return fmt.Errorf("Either config_id or (account_id + program_serial_number) should be provided in request payload.")
+		return fmt.Errorf("either config_id or (account_id + program_serial_number) should be provided in request payload")
 	}
 	if config_id != 0 {
 		recource_id = strconv.Itoa(config_id)
@@ -99,18 +114,29 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 	if v, ok := d.GetOk("account_id"); ok {
 		request_obj["accountId"] = v
 	}
-	if v, ok := d.GetOk("program_serial_number"); ok {
-		request_obj["serialNumber"] = v // Bug in FortiFlex API, need to specify serialNumber
-		request_obj["programSerialNumber"] = v
-	}
 	if v, ok := d.GetOk("config_id"); ok {
 		request_obj["configId"] = v
+	}
+	if v, ok := d.GetOk("description"); ok {
+		request_obj["description"] = v
+	}
+	if v, ok := d.GetOk("program_serial_number"); ok {
+		request_obj["programSerialNumber"] = v
+	}
+	if v, ok := d.GetOk("serial_number"); ok {
+		request_obj["serialNumber"] = v
+	}
+	if v, ok := d.GetOk("status"); ok {
+		request_obj["status"] = v
+	}
+	if v, ok := d.GetOk("token_status"); ok {
+		request_obj["tokenStatus"] = v
 	}
 
 	// Send request
 	o, err := c.ReadEntitlementsList(&request_obj)
 	if err != nil {
-		return fmt.Errorf("Error describing EntitlementsList: %v", err)
+		return fmt.Errorf("error describing EntitlementsList: %v", err)
 	}
 
 	if o == nil {
@@ -121,7 +147,7 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 	// Update status
 	err = dataSourceRefreshObjectEntitlementsList(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing EntitlementsList from API: %v", err)
+		return fmt.Errorf("error describing EntitlementsList from API: %v", err)
 	}
 
 	d.SetId(recource_id)
@@ -134,7 +160,7 @@ func dataSourceRefreshObjectEntitlementsList(d *schema.ResourceData, o map[strin
 
 	if err = d.Set("entitlements", dataSourceFlattenEntitlementsListEntitlements(o["entitlements"])); err != nil {
 		if !fortiAPIPatch(o["entitlements"]) {
-			return fmt.Errorf("Error reading entitlements: %v", err)
+			return fmt.Errorf("error reading entitlements: %v", err)
 		}
 	}
 

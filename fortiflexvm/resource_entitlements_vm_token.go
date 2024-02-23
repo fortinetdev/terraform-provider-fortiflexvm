@@ -73,7 +73,6 @@ func resourceEntitlementsVMTokenRead(ctx context.Context, d *schema.ResourceData
 func resourceEntitlementsVMTokenUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	config_id := d.Get("config_id")
 	serial_number := d.Get("serial_number")

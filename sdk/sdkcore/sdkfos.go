@@ -196,13 +196,8 @@ func (c *FortiSDKClient) ReadGroupsList(params *map[string]interface{}) (mapTmp 
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadGroupsNexttoken(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
 	HTTPMethod := "POST"
-	path := "/ES/api/flexvm/v1/groups/nexttoken"
+	path := "/ES/api/fortiflex/v2/groups/nexttoken"
 	rspKey := "entitlements"
-	if value, ok := (*params)["accountId"]; ok {
-		if value != 0 {
-			path = "/ES/api/fortiflex/v2/groups/nexttoken"
-		}
-	}
 
 	mapTmp, err = read(c, HTTPMethod, path, true, rspKey, params)
 	return

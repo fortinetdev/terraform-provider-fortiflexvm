@@ -30,7 +30,6 @@ resource "fortiflexvm_config" "example" {
   }
   status = "ACTIVE"
 }
-
 # Each account can create at most one entitlement for each cloud product.
 resource "fortiflexvm_entitlements_cloud" "example" {
   config_id   = fortiflexvm_config.example.id
@@ -43,20 +42,16 @@ output "new_entitlement" {
   value = fortiflexvm_entitlements_cloud.example
 }
 
-# Update entitlement information
-# If import, use: terraform import fortiflexvm_entitlements_cloud.labelname <serial_number>.<config_id>
-# After you create or import a fortiflexvm_entitlements_cloud resource, you can update it:
+# Import & update existing entitlement
+# If specify both serial_number and config_id, it will import the existing entitlement.
 resource "fortiflexvm_entitlements_cloud" "example" {
-  config_id   = fortiflexvm_config.example.id # new config_id value or unchanged
-  description = "Your description"            # Optional.
-  end_date    = "2024-11-12T00:00:00"         # Optional. If not set, it will use the program end date automatically.
+  config_id     = fortiflexvm_config.example.id # new config_id value or unchanged
+  serial_number = "FWBXXXXX00000000"
+  # description = "Your description"    # Optional.
+  # end_date    = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
+  # status      = "ACTIVE"              # "ACTIVE" or "STOPPED". Optional.
 }
-
-# Stop or reactivate a could
-resource "fortiflexvm_entitlements_cloud" "example" {
-  config_id = fortiflexvm_config.example.id # Previous config_id
-  status    = "STOPPED"                     # "ACTIVE" or "STOPPED". Optional.
-}
+# You can also import by using: terraform import fortiflexvm_entitlements_cloud.labelname <serial_number>.<config_id>
 ```
 
 ## Argument Reference
@@ -68,6 +63,7 @@ The following arguments are supported:
 * `description` - (Optional/String) The description of the entitlement.
 * `end_date` - (Optional/String) Cloud entitlement end date. It can not be before today's date or after the program's end date. Any format that satisfies [ISO 8601](https://www.w3.org/TR/NOTE-datetime-970915.html) is accepted. Recommended format: `YYYY-MM-DDThh:mm:ss`. If not specify, it will use the program end date automatically.
 * `folder_path` - (Optional/String) The folder path of the cloud entitlement. If not set, the new cloud entitlement will be in "My Assets"
+* `serial_number` - (Optional/String) If you specify serial_number, terraform will import the existing entitlement. If you don't specify it, terraform will create a new entitlement.
 * `status` - (Optional/String) "ACTIVE" or "STOPPED". Use "STOPPED" if you want to stop the cloud entitlement. Use "ACTIVE" if you want to reactivate it. It has many restrictions. Not recommended to set it manually.
 
 ## Attribute Reference

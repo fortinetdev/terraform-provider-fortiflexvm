@@ -58,7 +58,6 @@ func dataSourceEntitlementsPoints() *schema.Resource {
 
 func dataSourceEntitlementsPointRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
@@ -76,7 +75,7 @@ func dataSourceEntitlementsPointRead(d *schema.ResourceData, m interface{}) erro
 	// Send request
 	o, err := c.ReadEntitlementsPoint(&request_obj)
 	if err != nil {
-		return fmt.Errorf("Error describing EntitlementsPoint: %v", err)
+		return fmt.Errorf("error describing EntitlementsPoint: %v", err)
 	}
 
 	if o == nil {
@@ -87,7 +86,7 @@ func dataSourceEntitlementsPointRead(d *schema.ResourceData, m interface{}) erro
 	// Update status
 	err = dataSourceRefreshObjectEntitlementsPoint(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing EntitlementsPoint from API: %v", err)
+		return fmt.Errorf("error describing EntitlementsPoint from API: %v", err)
 	}
 
 	resource_id := fmt.Sprintf("%v.%v.%v", config_id, start_date, end_date)
@@ -101,7 +100,7 @@ func dataSourceRefreshObjectEntitlementsPoint(d *schema.ResourceData, o map[stri
 
 	if err = d.Set("entitlements", dataSourceFlattenEntitlementsPointEntitlements(o["entitlements"], d)); err != nil {
 		if !fortiAPIPatch(o["entitlements"]) {
-			return fmt.Errorf("Error reading entitlements: %v", err)
+			return fmt.Errorf("error reading entitlements: %v", err)
 		}
 	}
 

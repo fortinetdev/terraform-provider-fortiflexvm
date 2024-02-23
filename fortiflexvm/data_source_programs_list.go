@@ -50,12 +50,11 @@ func dataSourceProgramsList() *schema.Resource {
 
 func dataSourceProgramsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Send request
 	o, err := c.ReadProgramsList(nil)
 	if err != nil {
-		return fmt.Errorf("Error describing ProgramsList: %v", err)
+		return fmt.Errorf("error describing ProgramsList: %v", err)
 	}
 
 	if o == nil {
@@ -66,7 +65,7 @@ func dataSourceProgramsListRead(d *schema.ResourceData, m interface{}) error {
 	// Update status
 	err = dataSourceRefreshObjectProgramsList(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing ProgramsList from API: %v", err)
+		return fmt.Errorf("error describing ProgramsList from API: %v", err)
 	}
 
 	d.SetId("ProgramsList")
@@ -78,7 +77,7 @@ func dataSourceRefreshObjectProgramsList(d *schema.ResourceData, o map[string]in
 	var err error
 	if err = d.Set("programs", dataSourceFlattenProgramsListPrograms(o["programs"])); err != nil {
 		if !fortiAPIPatch(o["programs"]) {
-			return fmt.Errorf("Error reading programs: %v", err)
+			return fmt.Errorf("error reading programs: %v", err)
 		}
 	}
 	return nil

@@ -386,17 +386,16 @@ func resourceConfig() *schema.Resource {
 
 func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	obj, err := getObjectConfig(d, "create")
 	if err != nil {
-		return fmt.Errorf("Error creating Config resource while getting object: %v", err)
+		return fmt.Errorf("error creating Config resource while getting object: %v", err)
 	}
 
 	response_data, err := c.CreateConfig(obj)
 
 	if err != nil {
-		return fmt.Errorf("Error creating Config resource: %v", err)
+		return fmt.Errorf("error creating Config resource: %v", err)
 	}
 
 	if response_data["id"] != nil && response_data["id"] != "" {
@@ -410,7 +409,7 @@ func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 		if set_status, ok := d.GetOk("status"); ok && current_status != set_status.(string) {
 			obj, err = getObjectConfig(d, "id")
 			if err != nil {
-				return fmt.Errorf("Error creating Config resource while getting object: %v", err)
+				return fmt.Errorf("error creating Config resource while getting object: %v", err)
 			}
 
 			var op string
@@ -421,7 +420,7 @@ func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 			}
 			response_data, err = c.UpdateConfigStatus(obj, op)
 			if err != nil {
-				return fmt.Errorf("Error update Config status: %v", err)
+				return fmt.Errorf("error update Config status: %v", err)
 			}
 			if st, ok := response_data["status"].(string); ok {
 				if st != d.Get("status").(string) {
@@ -436,7 +435,7 @@ func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 	// refresh schema
 	err = refreshObjectConfig(d, response_data)
 	if err != nil {
-		return fmt.Errorf("Error refresh Config resource: %v", err)
+		return fmt.Errorf("error refresh Config resource: %v", err)
 	}
 
 	return nil
@@ -444,22 +443,21 @@ func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourceConfigRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	if d.Get("program_serial_number") == "" {
 		psn := importOptionChecking(m.(*FortiClient).Cfg, "program_serial_number")
 		if err := d.Set("program_serial_number", psn); err != nil {
-			return fmt.Errorf("Error set params program_serial_number: %v", err)
+			return fmt.Errorf("error set params program_serial_number: %v", err)
 		}
 	}
 	obj, err := getObjectConfig(d, "read")
 	if err != nil {
-		return fmt.Errorf("Error reading Config while getting required parameters: %v", err)
+		return fmt.Errorf("error reading Config while getting required parameters: %v", err)
 	}
 
 	o, err := c.ReadConfigsList(obj)
 	if err != nil {
-		return fmt.Errorf("Error reading Config resource: %v", err)
+		return fmt.Errorf("error reading Config resource: %v", err)
 	}
 
 	co, err := getConfigReadResponse(o, d.Id())
@@ -470,26 +468,24 @@ func resourceConfigRead(d *schema.ResourceData, m interface{}) error {
 
 	err = refreshObjectConfig(d, co)
 	if err != nil {
-		return fmt.Errorf("Error reading Config resource from API: %v", err)
+		return fmt.Errorf("error reading Config resource from API: %v", err)
 	}
 	return nil
 }
 
 func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	obj, err := getObjectConfig(d, "update")
 	if err != nil {
-		return fmt.Errorf("Error updating Config resource while getting object: %v", err)
+		return fmt.Errorf("error updating Config resource while getting object: %v", err)
 	}
 
 	o, err := c.UpdateConfig(obj)
 	if err != nil {
-		return fmt.Errorf("Error updating Config resource: %v", err)
+		return fmt.Errorf("error updating Config resource: %v", err)
 	}
 
-	log.Printf(strconv.Itoa(c.Retries))
 	if o["id"] != nil && o["id"] != "" {
 		d.SetId(fmt.Sprintf("%v", o["id"]))
 	} else {
@@ -500,7 +496,7 @@ func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 		if statusV, ok := d.GetOk("status"); ok && st != statusV.(string) {
 			obj, err = getObjectConfig(d, "id")
 			if err != nil {
-				return fmt.Errorf("Error creating Config resource while getting object: %v", err)
+				return fmt.Errorf("error creating Config resource while getting object: %v", err)
 			}
 
 			var op string
@@ -512,7 +508,7 @@ func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 
 			o, err = c.UpdateConfigStatus(obj, op)
 			if err != nil {
-				return fmt.Errorf("Error update Config status: %v", err)
+				return fmt.Errorf("error update Config status: %v", err)
 			}
 			if st, ok := o["status"].(string); ok {
 				if st != d.Get("status").(string) {
@@ -526,7 +522,7 @@ func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 
 	err = refreshObjectConfig(d, o)
 	if err != nil {
-		return fmt.Errorf("Error refresh Config resource: %v", err)
+		return fmt.Errorf("error refresh Config resource: %v", err)
 	}
 
 	return nil
@@ -534,17 +530,16 @@ func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceConfigDelete(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	if d.Get("status").(string) != "DISABLED" {
 		obj, err := getObjectConfig(d, "id")
 		if err != nil {
-			return fmt.Errorf("Error creating Config resource while getting object: %v", err)
+			return fmt.Errorf("error creating Config resource while getting object: %v", err)
 		}
 
 		o, err := c.UpdateConfigStatus(obj, "disable")
 		if err != nil {
-			return fmt.Errorf("Error update Config status: %v", err)
+			return fmt.Errorf("error update Config status: %v", err)
 		}
 		if st, ok := o["status"].(string); ok {
 			if st != d.Get("status").(string) {
@@ -554,7 +549,7 @@ func resourceConfigDelete(d *schema.ResourceData, m interface{}) error {
 
 		err = refreshObjectConfig(d, o)
 		if err != nil {
-			return fmt.Errorf("Error refresh Config resource: %v", err)
+			return fmt.Errorf("error refresh Config resource: %v", err)
 		}
 	}
 
@@ -656,7 +651,7 @@ func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error
 	}
 	if err = d.Set("product_type", flattenConfigProductType(o["productType"])); err != nil {
 		if !fortiAPIPatch(o["productType"]) {
-			return fmt.Errorf("Error reading product_type: %v", err)
+			return fmt.Errorf("error reading product_type: %v", err)
 		}
 	}
 	if value, ok := o["status"]; ok {
@@ -673,7 +668,7 @@ func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error
 	pType := strings.ToLower(d.Get("product_type").(string))
 	if err = d.Set(pType, flattenConfigParameters(o["parameters"])); err != nil {
 		if !fortiAPIPatch(o["parameters"]) {
-			return fmt.Errorf("Error reading %v: %v", pType, err)
+			return fmt.Errorf("error reading %v: %v", pType, err)
 		}
 	}
 

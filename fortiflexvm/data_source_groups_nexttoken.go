@@ -29,6 +29,13 @@ func dataSourceGroupsNexttoken() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"status": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"entitlements": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -79,7 +86,6 @@ func dataSourceGroupsNexttoken() *schema.Resource {
 
 func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
@@ -97,15 +103,17 @@ func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error 
 	if v, ok := d.GetOk("account_id"); ok {
 		request_obj["accountId"] = v
 	}
-
+	if v, ok := d.GetOk("status"); ok {
+		request_obj["status"] = v
+	}
 	if len(request_obj) == 0 {
-		return fmt.Errorf("Either config_id or folder_path is required.")
+		return fmt.Errorf("either config_id or folder_path is required")
 	}
 
 	// Send request
 	o, err := c.ReadGroupsNexttoken(&request_obj)
 	if err != nil {
-		return fmt.Errorf("Error describing GroupsNexttoken: %v", err)
+		return fmt.Errorf("error describing GroupsNexttoken: %v", err)
 	}
 
 	if o == nil {
@@ -116,7 +124,7 @@ func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error 
 	// Update status
 	err = dataSourceRefreshObjectGroupsNexttoken(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing GroupsNexttoken from API: %v", err)
+		return fmt.Errorf("error describing GroupsNexttoken from API: %v", err)
 	}
 
 	resource_id := fmt.Sprintf("%v.%v", config_id, folder_path)
@@ -133,13 +141,13 @@ func dataSourceRefreshObjectGroupsNexttoken(d *schema.ResourceData, o map[string
 		entitlements_list = append(entitlements_list, o["entitlements"].(map[string]interface{}))
 		if err = d.Set("entitlements", dataSourceFlattenGroupsNexttokenEntitlements(entitlements_list)); err != nil {
 			if !fortiAPIPatch(o["entitlements"]) {
-				return fmt.Errorf("Error reading entitlements: %v", err)
+				return fmt.Errorf("error reading entitlements: %v", err)
 			}
 		}
 	case []interface{}:
 		if err = d.Set("entitlements", dataSourceFlattenGroupsNexttokenEntitlements(o["entitlements"])); err != nil {
 			if !fortiAPIPatch(o["entitlements"]) {
-				return fmt.Errorf("Error reading entitlements: %v", err)
+				return fmt.Errorf("error reading entitlements: %v", err)
 			}
 		}
 	default:

@@ -63,7 +63,6 @@ func resourceEntitlementsHW() *schema.Resource {
 func resourceEntitlementsHWCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Send request
 	obj := make(map[string]interface{})
@@ -114,7 +113,6 @@ func resourceEntitlementsHWUpdate(ctx context.Context, d *schema.ResourceData, m
 	var diags diag.Diagnostics
 	var err error
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Get ID
 	serial_number, previous_config_id, diags := splitID(d.Id())
@@ -128,41 +126,17 @@ func resourceEntitlementsHWUpdate(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 
-	// check status
+	// Check status
 	current_status := target_entitlement["status"].(string)
-	set_status := ""
-	if v, ok := d.GetOk("status"); ok {
-		set_status = v.(string)
-	}
-	if current_status != "ACTIVE" {
-		// active entitlements
-		if set_status == "ACTIVE" && current_status == "STOPPED" {
+	set_status := d.Get("status")
+	if set_status != "" && current_status != set_status {
+		if set_status == "ACTIVE" {
 			target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "reactivate", m)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-		} else { // can't update
-			switch current_status {
-			case "PENDING":
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Unable to Update fortiflexvm_entitlements_hardware",
-					Detail:   fmt.Sprintf("Current entitlement status is PENDING. Please use the VM token to activate a virtual machine before using this API."),
-				})
-			case "STOPPED":
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Unable to Update fortiflexvm_entitlements_hardware",
-					Detail:   fmt.Sprintf("Current entitlement status is STOPPED. You can't update a STOPPED entitlement. Please set `status = ACTIVE`."),
-				})
-			default:
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Unable to Update fortiflexvm_entitlements_hardware",
-					Detail:   fmt.Sprintf("Current entitlement status is %v. FlexVM only could update ACTIVE entitlements.", current_status),
-				})
-			}
-			return diags
+		} else if set_status == "STOPPED" {
+			target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "stop", m)
+		}
+		if err != nil {
+			return diag.FromErr(err)
 		}
 	}
 
@@ -178,19 +152,15 @@ func resourceEntitlementsHWUpdate(ctx context.Context, d *schema.ResourceData, m
 		obj["description"] = v
 	}
 	if v, ok := d.GetOk("end_date"); ok {
+		current_end_date := target_entitlement["endDate"].(string)
+		if v != current_end_date {
+			obj["endDate"] = v
+		}
 		obj["endDate"] = v
 	}
 	target_entitlement, err = c.UpdateVmUpdate(&obj)
 	if err != nil {
 		return diag.FromErr(err)
-	}
-
-	// stop entitlement
-	if set_status == "STOPPED" {
-		target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "stop", m)
-		if err != nil {
-			return diag.FromErr(err)
-		}
 	}
 
 	// Update status

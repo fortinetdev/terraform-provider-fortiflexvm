@@ -48,6 +48,7 @@ func resourceEntitlementsVM() *schema.Resource {
 			},
 			"serial_number": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
 				Computed: true,
 			},
 			"start_date": &schema.Schema{
@@ -67,6 +68,11 @@ func resourceEntitlementsVM() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"refresh_token_when_destroy": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 		},
 	}
 }
@@ -74,34 +80,48 @@ func resourceEntitlementsVM() *schema.Resource {
 func resourceEntitlementsVMCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
-	// Send request
-	obj := make(map[string]interface{})
-	obj["configId"] = d.Get("config_id")
-	obj["count"] = 1
-	if v, ok := d.GetOk("description"); ok {
-		obj["description"] = v
-	}
-	if v, ok := d.GetOk("folder_path"); ok {
-		obj["folderPath"] = v
-	}
-	if v, ok := d.GetOk("end_date"); ok {
-		obj["endDate"] = v
-	}
-	target_entitlement, err := c.CreateEntitlementsVM(&obj)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	// Update status
-	diags = refreshObjectEntitlementsVM(d, target_entitlement)
-	if diags.HasError() {
-		return diags
+	// If the user does not specify serial_number, create a new one, else, retrieve the old one.
+	config_id := d.Get("config_id")
+	serial_number := d.Get("serial_number")
+	var target_entitlement map[string]interface{}
+	if serial_number != "" {
+		// Query existing entitlement
+		resource_id := fmt.Sprintf("%v.%v", serial_number, config_id)
+		target_entitlement, diags = getEntitlementFromId(resource_id, m)
+		if diags.HasError() {
+			return diags
+		}
+	} else {
+		// Send create request
+		obj := make(map[string]interface{})
+		obj["configId"] = config_id
+		obj["count"] = 1
+		if v, ok := d.GetOk("description"); ok {
+			obj["description"] = v
+		}
+		if v, ok := d.GetOk("folder_path"); ok {
+			obj["folderPath"] = v
+		}
+		if v, ok := d.GetOk("end_date"); ok {
+			obj["endDate"] = v
+		}
+		var err error
+		target_entitlement, err = c.CreateEntitlementsVM(&obj)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	resource_id := fmt.Sprintf("%v.%v", target_entitlement["serialNumber"], target_entitlement["configId"])
 	d.SetId(resource_id)
+
+	if serial_number != "" {
+		// Only send update request if the user specifies serial_number
+		diags = resourceEntitlementsVMUpdate(ctx, d, m)
+	} else {
+		diags = refreshObjectEntitlementsVM(d, target_entitlement)
+	}
 	return diags
 }
 
@@ -121,7 +141,6 @@ func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m
 	var diags diag.Diagnostics
 	var err error
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Get ID
 	serial_number, previous_config_id, diags := splitID(d.Id())
@@ -135,41 +154,25 @@ func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 
-	// check status
+	// Check status
 	current_status := target_entitlement["status"].(string)
-	set_status := ""
-	if v, ok := d.GetOk("status"); ok {
-		set_status = v.(string)
-	}
-	if current_status != "ACTIVE" {
-		// active entitlements
-		if set_status == "ACTIVE" && (current_status == "STOPPED" || current_status == "EXPIRED") {
+	set_status := d.Get("status")
+	if set_status != "" && current_status != set_status {
+		if set_status == "ACTIVE" {
+			if current_status == "PENDING" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Warning,
+					Summary:  "Unable to change status from PENDING to ACTIVE",
+					Detail: "The current entitlement status is PENDING. You can't manually change PENDING to ACTIVE. " +
+						"Once you use the token, the entitlement becomes ACTIVE.",
+				})
+			}
 			target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "reactivate", m)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-		} else { // can't update
-			switch current_status {
-			case "PENDING":
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Unable to Update fortiflexvm_entitlements_vm",
-					Detail:   fmt.Sprintf("Current entitlement status is PENDING. Please use the VM token to activate a virtual machine before using this API."),
-				})
-			case "STOPPED":
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Unable to Update fortiflexvm_entitlements_vm",
-					Detail:   fmt.Sprintf("Current entitlement status is STOPPED. You can't update a STOPPED entitlement. Please set `status = ACTIVE`."),
-				})
-			default:
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Unable to Update fortiflexvm_entitlements_vm",
-					Detail:   fmt.Sprintf("Current entitlement status is %v. FlexVM only could update ACTIVE entitlements.", current_status),
-				})
-			}
-			return diags
+		} else if set_status == "STOPPED" {
+			target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "stop", m)
+		}
+		if err != nil {
+			return diag.FromErr(err)
 		}
 	}
 
@@ -184,25 +187,20 @@ func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m
 		obj["description"] = v
 	}
 	if v, ok := d.GetOk("end_date"); ok {
-		obj["endDate"] = v
+		current_end_date := target_entitlement["endDate"].(string)
+		if v != current_end_date {
+			obj["endDate"] = v
+		}
 	}
 	target_entitlement, err = c.UpdateVmUpdate(&obj)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	// stop entitlement
-	if set_status == "STOPPED" {
-		target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "stop", m)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
-
 	// Update status
-	diags = refreshObjectEntitlementsVM(d, target_entitlement)
-	if diags.HasError() {
-		return diags
+	update_diags := refreshObjectEntitlementsVM(d, target_entitlement)
+	if update_diags.HasError() {
+		return update_diags
 	}
 	resource_id := fmt.Sprintf("%v.%v", target_entitlement["serialNumber"], target_entitlement["configId"])
 	d.SetId(resource_id)
@@ -212,21 +210,32 @@ func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m
 
 func resourceEntitlementsVMDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
+	c := m.(*FortiClient).Client
 
-	// If entitlement is ACTIVE, stop it.
-	if d.Get("status").(string) == "ACTIVE" {
-		// Get ID
-		serial_number, _, diags := splitID(d.Id())
-		if diags.HasError() {
-			return diags
-		}
-		// Send delete request
+	// Get ID
+	serial_number, _, diags := splitID(d.Id())
+	if diags.HasError() {
+		return diags
+	}
+
+	// Send delete request
+	target_entitlement, diags := getEntitlementFromId(d.Id(), m)
+	if target_entitlement["status"] != "STOPPED" {
 		_, err := changeVMStatus(serial_number, "stop", m)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
+	// If refresh_token_when_destroy, refresh token
+	if d.Get("refresh_token_when_destroy").(bool) {
+		request_obj := make(map[string]interface{})
+		request_obj["serialNumber"] = serial_number
+		_, err := c.UpdateVmUpdateRegenerateToken(&request_obj)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
 	// Update status
 	d.SetId("")
 	return diags

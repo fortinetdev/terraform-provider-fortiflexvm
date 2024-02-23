@@ -17,7 +17,8 @@ Returns first available token by asset folder or Configuration id (or both can b
 data "fortiflexvm_groups_nexttoken" "example" {
   # account_id = 12345 # optional
   config_id   = 42
-  folder_path = "My Assets"
+  folder_path = "My Assets"           # optional
+  status      = ["ACTIVE", "PENDING"] # optional
 }
 
 output "my_groups_nexttoken" {
@@ -34,6 +35,7 @@ The following arguments are supported:
 * `account_id` - (Optional/Number) The account ID.
 * `config_id` (Optional/Number) The ID of a configuration.
 * `folder_path` (Optional/String) Folder path.
+* `status` (Optional/List of String) The status of the entitlement.
 
 ## Attribute Reference
 
@@ -53,7 +55,7 @@ The `entitlements` block contains:
 * `start_date` - (String) Entitlement creation date.
 * `status` - (String) Entitlement status. Possible values: `PENDING`, `ACTIVE`, `STOPPED` or `EXPIRED`.
 * `token` - (String) Entitlement token. Empty for hardware entitlements.
-* `token_status` - (String) (String) The status of the Entitlement token. Possible values: `NOTUSED` or `USED`. Empty for hardware entitlements.
+* `token_status` - (String) The status of the Entitlement token. Possible values: `NOTUSED` or `USED`. Empty for hardware entitlements.
 
 
 

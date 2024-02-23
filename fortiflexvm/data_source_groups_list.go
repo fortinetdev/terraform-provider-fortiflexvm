@@ -50,7 +50,6 @@ func dataSourceGroupsList() *schema.Resource {
 
 func dataSourceGroupsListRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
@@ -61,7 +60,7 @@ func dataSourceGroupsListRead(d *schema.ResourceData, m interface{}) error {
 	// Send request
 	o, err := c.ReadGroupsList(&request_obj)
 	if err != nil {
-		return fmt.Errorf("Error describing GroupsList: %v", err)
+		return fmt.Errorf("error describing GroupsList: %v", err)
 	}
 
 	if o == nil {
@@ -72,7 +71,7 @@ func dataSourceGroupsListRead(d *schema.ResourceData, m interface{}) error {
 	// Update status
 	err = dataSourceRefreshObjectGroupsList(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing GroupsList from API: %v", err)
+		return fmt.Errorf("error describing GroupsList from API: %v", err)
 	}
 
 	d.SetId("GroupsList")
@@ -85,7 +84,7 @@ func dataSourceRefreshObjectGroupsList(d *schema.ResourceData, o map[string]inte
 
 	if err = d.Set("groups", dataSourceFlattenGroupsListGroups(o["groups"])); err != nil {
 		if !fortiAPIPatch(o["groups"]) {
-			return fmt.Errorf("Error reading groups: %v", err)
+			return fmt.Errorf("error reading groups: %v", err)
 		}
 	}
 

@@ -51,6 +51,7 @@ func Provider() *schema.Provider {
 			"fortiflexvm_entitlements_hardware": resourceEntitlementsHW(),
 			"fortiflexvm_entitlements_cloud":    resourceEntitlementsCloud(),
 			"fortiflexvm_entitlements_vm_token": resourceEntitlementsVMToken(),
+			"fortiflexvm_retrieve_vm_group":     resourceRetrieveVMGroup(),
 		},
 
 		ConfigureFunc: providerConfigure,

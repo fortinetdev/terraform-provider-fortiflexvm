@@ -10,16 +10,22 @@ description: |-
 
 Get list of existing entitlements for a configuration.
 
-Either config_id or (account_id + serial_number) should be provided.
+Either config_id or (account_id + program_serial_number) should be provided.
 
 ## Example Usage
 
 ```hcl
 data "fortiflexvm_entitlements_list" "example" {
+  # either config_id or (account_id + program_serial_number) should be provided
   config_id = 42
-  # either config_id or (account_id + serial_number) should be provided
   # account_id = 12345
-  # serial_number = "ELAVMR0000000101"
+  # program_serial_number = "ELAVMR0000000101"
+
+  # Filter options:
+  # description   = ""                 # optional
+  # serial_number = "FGVMXXXX00000000" # optional
+  # status        = "PENDING"          # optional ACTIVE, PENDING, EXPIRED, STOPPED
+  # token_status  = "NOTUSED"          # optional USED, NOTUSED
 }
 output "my_entitlements_list" {
   value = data.fortiflexvm_entitlements_list.example
@@ -34,7 +40,12 @@ Either config_id or (account_id + serial_number) should be provided.
 
 * `account_id` - (Optional/Number) Account ID.
 * `config_id` - (Optional/Number) The ID of the configuration.
+* `description` - (Optional/String) Filter option. The retrieved entitlments must have the same description.
 * `program_serial_number` - (Optional/String) The unique serial number of the Program.
+* `serial_number` - (Optional/String) The retrieved entitlments must have the same serial_number.
+* `status` - (Optional/String) Filter option. The retrieved entitlments must have the same status. `ACTIVE`, `STOPPED`, `PENDING` or `EXPIRED`.
+* `token_status` - (Optional/String) Filter option. The retrieved entitlments must have the same token_status. `USED` or `NOTUSED`
+
 
 ## Attribute Reference
 

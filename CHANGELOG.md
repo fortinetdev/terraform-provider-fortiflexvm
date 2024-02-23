@@ -1,4 +1,17 @@
-## 2.2.2 (Unreleased)
+## 2.3.1 (Unreleased)
+
+## 2.3.0 (Feburary 23, 2024)
+
+FEATURES:
+
+* **New Resource:** `fortiflexvm_retrieve_vm_group`
+
+IMPROVEMENTS:
+
+* Data resource `fortiflexvm_entitlements_list` supports new input arguments `description`,  `serial_number`, `status`, `token_status`.
+* Data resource `fortiflexvm_groups_nexttoken` supports new input argument `status`.
+* Improve the logic of the resource `fortiflexvm_entitlements_vm` and `fortiflexvm_entitlements_cloud`. If you specify the argument `serial_number` and `config_id` at the same time, it will import an existing resource rather than create a new one.
+* Resource `fortiflexvm_entitlements_vm` supports new input argument `refresh_token_when_destroy`. If set it as true, the token of this entitlement will be refreshed when you use `terraform destroy`.
 
 ## 2.2.1 (Feburary 9, 2024)
 

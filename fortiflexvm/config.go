@@ -445,8 +445,8 @@ func splitID(resource_id string) (string, string, diag.Diagnostics) {
 }
 
 func getEntitlementFromId(resource_id string, m interface{}) (map[string]interface{}, diag.Diagnostics) {
+	// ID is 'serial_number.config_id'
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	serial_number, config_id, diags := splitID(resource_id)
 	if diags.HasError() {
@@ -456,6 +456,7 @@ func getEntitlementFromId(resource_id string, m interface{}) (map[string]interfa
 	// Get entitlements list
 	obj := make(map[string]interface{})
 	obj["configId"] = config_id
+	obj["serialNumber"] = serial_number
 	return_data, err := c.ReadEntitlementsList(&obj)
 	if err != nil {
 		return nil, diag.FromErr(err)
@@ -490,7 +491,6 @@ func findEntitlementFromList(entitlement_list map[string]interface{}, serial_num
 
 func changeVMStatus(serial_number string, action string, m interface{}) (map[string]interface{}, error) {
 	c := m.(*FortiClient).Client
-	c.Retries = 1
 
 	obj := make(map[string]interface{})
 	obj["serialNumber"] = serial_number
