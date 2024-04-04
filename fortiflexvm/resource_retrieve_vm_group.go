@@ -49,6 +49,16 @@ func resourceRetrieveVMGroup() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"require_exact_count": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+			"retrieve_status": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"entitlements": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -104,6 +114,18 @@ func resourceRetrieveVMGroupCreate(ctx context.Context, d *schema.ResourceData, 
 		return diags
 	}
 	d.Set("entitlements", result_entitlements)
+	report_error := d.Get("require_exact_count").(bool)
+	if report_error && found_number < count_number {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  fmt.Sprintf("Unable to retrieve %v entitlement(s).", count_number),
+			Detail: fmt.Sprintf("Only retrieve %v entitlement(s), while asking for %v. ", found_number, count_number) +
+				"You get this error because you set require_exact_count as true. All retrieved entitlements by this resource are released now.",
+		})
+		delete_diags := resourceRetrieveVMGroupDelete(ctx, d, m)
+		diags = append(diags, delete_diags...)
+		return diags
+	}
 	d.Set("count_num", found_number)
 	d.SetId(d.Get("task_name").(string))
 	return diags
@@ -215,6 +237,14 @@ func retrieveStoppedEntitlements(want_num int, d *schema.ResourceData, m interfa
 	found_number := 0
 	result_entitlements := make([]map[string]interface{}, 0, want_num)
 	preempt_interval := d.Get("preempt_interval").(float64)
+	rawAllowStatus := d.Get("retrieve_status").([]interface{})
+	allow_status := []string{}
+	if len(rawAllowStatus) == 0 {
+		allow_status = append(allow_status, "STOPPED")
+	}
+	for _, v := range rawAllowStatus {
+		allow_status = append(allow_status, v.(string))
+	}
 	c := m.(*FortiClient).Client
 	// Retrieve all entitlements with the required config_id
 	request_obj := make(map[string]interface{})
@@ -235,7 +265,15 @@ func retrieveStoppedEntitlements(want_num int, d *schema.ResourceData, m interfa
 		// Query again to get the latest information
 		resource_id := fmt.Sprintf("%v.%v", serial_number, config_id)
 		entitlement, _ = getEntitlementFromId(resource_id, m)
-		if entitlement["status"] == "STOPPED" && (entitlement["description"] == "" || entitlement["description"] == nil) {
+		current_status := entitlement["status"]
+		found := false
+		for _, s := range allow_status {
+			if current_status == s {
+				found = true
+				break
+			}
+		}
+		if found && (entitlement["description"] == "" || entitlement["description"] == nil) {
 			// Preempt this entitlement
 			request_obj = make(map[string]interface{})
 			request_obj["serialNumber"] = serial_number

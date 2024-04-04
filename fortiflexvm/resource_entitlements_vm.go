@@ -9,6 +9,7 @@ package fortiflexvm
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -120,6 +121,19 @@ func resourceEntitlementsVMCreate(ctx context.Context, d *schema.ResourceData, m
 		// Only send update request if the user specifies serial_number
 		diags = resourceEntitlementsVMUpdate(ctx, d, m)
 	} else {
+		var err error
+		current_status := target_entitlement["status"].(string)
+		set_status := d.Get("status")
+		if set_status != "" && current_status != set_status {
+			if set_status == "ACTIVE" {
+				target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "reactivate", m)
+			} else if set_status == "STOPPED" {
+				target_entitlement, err = changeVMStatus(target_entitlement["serialNumber"].(string), "stop", m)
+			}
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
 		diags = refreshObjectEntitlementsVM(d, target_entitlement)
 	}
 	return diags
@@ -135,6 +149,25 @@ func resourceEntitlementsVMRead(ctx context.Context, d *schema.ResourceData, m i
 	// Update status
 	diags = refreshObjectEntitlementsVM(d, target_entitlement)
 	return diags
+}
+
+func tryParseISO8601(timeStr string) (time.Time, error) {
+	var layouts = []string{
+		time.RFC3339,
+		"2006-01-02T15:04:05",
+		"2006-01-02T15:04",
+		"2006-01-02T15",
+		"2006-01-02",
+		"2006-01-02T15:04:05.999999999",
+	}
+
+	for _, layout := range layouts {
+		t, err := time.Parse(layout, timeStr)
+		if err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, fmt.Errorf("unsupport time format: %s", timeStr)
 }
 
 func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -187,9 +220,24 @@ func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m
 		obj["description"] = v
 	}
 	if v, ok := d.GetOk("end_date"); ok {
-		current_end_date := target_entitlement["endDate"].(string)
-		if v != current_end_date {
+		now := time.Now()
+		current_end_date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+		user_end_date, err := tryParseISO8601(v.(string))
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "Unable to parsing end_date, ignoring update end_date",
+				Detail:   fmt.Sprintf("Unable to parsing %v, please check the format.", v),
+			})
+		}
+		if current_end_date.Before(user_end_date) {
 			obj["endDate"] = v
+		} else {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "end_date can not be before today's date, ignoring update end_date",
+				Detail:   fmt.Sprintf("today's date: %v, end_date: %v.", current_end_date, user_end_date),
+			})
 		}
 	}
 	target_entitlement, err = c.UpdateVmUpdate(&obj)

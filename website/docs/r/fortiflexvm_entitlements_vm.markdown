@@ -17,8 +17,8 @@ Create and update one VM entitlement based on a configuration.
 
 ## Example Usage
 
+Create one VM entitlement
 ```hcl
-# Create one VM entitlement
 # If you don't specify serial_number, it will create a new entitlement.
 resource "fortiflexvm_entitlements_vm" "example" {
   config_id     = 42
@@ -34,15 +34,17 @@ output "new_entitlement" {
 output "new_entitlement_token" {
   value = fortiflexvm_entitlements_vm.example.token
 }
+```
 
-# Import & update existing entitlement
+Import & update existing entitlement
+```hcl
 # If specify both serial_number and config_id, it will import the existing entitlement.
 resource "fortiflexvm_entitlements_vm" "example" {
   config_id     = 42                    # New config_id value or unchanged
   serial_number = "FGVMXXXX00000000"
   # description = "Your description"    # Optional.
   # end_date    = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
-  # status      = "ACTIVE"              # "ACTIVE" or "STOPPED". Optional.
+  status      = "ACTIVE"                # "ACTIVE" or "STOPPED". Optional.
 }
 # You can also import by using: terraform import fortiflexvm_entitlements_vm.labelname <serial_number>.<config_id>
 ```
@@ -74,6 +76,20 @@ The following attribute is exported:
 
 ## Import
 
+Method 1: Specify `config_id`
+```hcl
+# If specify both serial_number and config_id, it will import the existing entitlement.
+resource "fortiflexvm_entitlements_vm" "example" {
+  config_id     = 42                    # New config_id value or unchanged
+  serial_number = "FGVMXXXX00000000"
+  # description = "Your description"    # Optional.
+  # end_date    = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
+  status      = "ACTIVE"                # "ACTIVE" or "STOPPED". Optional.
+}
+# You can also import by using: terraform import fortiflexvm_entitlements_vm.labelname <serial_number>.<config_id>
+```
+
+Method 2: Use `terraform import`
 ```
 terraform import fortiflexvm_entitlements_vm.labelname {{serial_number}}.{{config_id}}
 # For example: terraform import fortiflexvm_entitlements_vm.example FGVMMLTM23001273.3196

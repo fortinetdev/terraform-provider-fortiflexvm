@@ -9,6 +9,7 @@ package fortiflexvm
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -166,8 +167,21 @@ func resourceEntitlementsCloudUpdate(ctx context.Context, d *schema.ResourceData
 		obj["description"] = v
 	}
 	if v, ok := d.GetOk("end_date"); ok {
-		current_end_date := target_entitlement["endDate"].(string)
-		if v != current_end_date {
+		err_flag := false
+		current_end_date, err := time.Parse(time.RFC3339, target_entitlement["endDate"].(string))
+		if err != nil {
+			err_flag = true
+		}
+		user_end_date, err := time.Parse(time.RFC3339, v.(string))
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "Unable to parsing end_date, ignoring update end_date",
+				Detail:   fmt.Sprintf("Unable to parsing %v, please check the format.", v),
+			})
+			return diags
+		}
+		if !err_flag && current_end_date.Before(user_end_date) {
 			obj["endDate"] = v
 		}
 	}

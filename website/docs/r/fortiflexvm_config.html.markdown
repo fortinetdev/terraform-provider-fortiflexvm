@@ -16,6 +16,51 @@ Create a new configuration under a FortiFlex Program.
 
 -> You need to specify what type of product you want to create in `product_type` and then fill in the correspond block.
 
+Create or import configuration
+```hcl
+// Create a new configuration
+resource "fortiflexvm_config" "create_example" {
+  product_type          = "FGT_VM_Bundle"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FGT_VM_Bundle_example"
+  fgt_vm_bundle {
+    cpu_size            = 2           # 1 ~ 96
+    service_pkg         = "ATP"       # "FC", "UTP", "ENT", "ATP"
+    vdom_num            = 10          # 0 ~ 500
+    fortiguard_services = ["FGTAVDB"] # "FGTAVDB", "FGTFAIS", "FGTISSS", "FGTDLDB", "FGTFGSA", "FGTFCSS"
+    cloud_services      = []          # "FGTFAMS", "FGTSWNM", "FGTSOCA", "FGTFAZC", "FGTSWOS", "FGTFSPA"
+    # support_service = "FGTFCELU"    # "NONE", "FGTFCELU"
+  }
+}
+
+// Import an existing configuration
+resource "fortiflexvm_config" "import_example" {
+  config_id             = 12345
+  product_type          = "FGT_VM_Bundle"
+  program_serial_number = "ELAVMS00000XXXXX"
+}
+
+// Import an existing configuration and update it
+// You need to run "terraform apply" twice.
+// The first one is for import and the second one is for update
+resource "fortiflexvm_config" "import_and_update" {
+  status                = "ACTIVE"
+  config_id             = 12345
+  product_type          = "FGT_VM_Bundle"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FGT_VM_Bundle_example"
+  fgt_vm_bundle {
+    cpu_size            = 2           # 1 ~ 96
+    service_pkg         = "ATP"       # "FC", "UTP", "ENT", "ATP"
+    vdom_num            = 10          # 0 ~ 500
+    fortiguard_services = ["FGTAVDB"] # "FGTAVDB", "FGTFAIS", "FGTISSS", "FGTDLDB", "FGTFGSA", "FGTFCSS"
+    cloud_services      = []          # "FGTFAMS", "FGTSWNM", "FGTSOCA", "FGTFAZC", "FGTSWOS", "FGTFSPA"
+    # support_service = "FGTFCELU"    # "NONE", "FGTFCELU"
+  }
+}
+```
+
+Examples of creating configurations.
 ```hcl
 resource "fortiflexvm_config" "example1" {
   product_type          = "FGT_VM_Bundle"
@@ -121,9 +166,9 @@ resource "fortiflexvm_config" "example9" {
   program_serial_number = "ELAVMS00000XXXXX"
   name                  = "FC_EMS_OP_example"
   fc_ems_op {
-    ztna_num        = 225        # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_num    = 125        # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    chromebook      = 100        # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
+    ztna_num        = 225        # Value should be 0 or between 25 and 25000 (inclusive)
+    epp_ztna_num    = 125        # Value should be 0 or between 25 and 25000 (inclusive)
+    chromebook      = 100        # Value should be 0 or between 25 and 25000 (inclusive) 
     support_service = "FCTFC247" # "FCTFC247"
     addons          = []         # [] or ["BPS"]
   }
@@ -145,18 +190,31 @@ resource "fortiflexvm_config" "example10" {
 
 resource "fortiflexvm_config" "example11" {
   product_type          = "FC_EMS_CLOUD"
-  program_serial_number = "ELAVMS0000000601"
-  name                  = "FC_EMS_OP_terraform4"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FC_EMS_OP_example"
   fc_ems_cloud {
-    ztna_num         = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    ztna_fgf_num     = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_num     = 125     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    epp_ztna_fgf_num = 125     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
-    chromebook       = 100     # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
+    ztna_num         = 225     # Value should be 0 or between 25 and 25000 (inclusive)
+    ztna_fgf_num     = 225     # Value should be 0 or between 25 and 25000 (inclusive)
+    epp_ztna_num     = 125     # Value should be 0 or between 25 and 25000 (inclusive)
+    epp_ztna_fgf_num = 125     # Value should be 0 or between 25 and 25000 (inclusive)
+    chromebook       = 100     # Value should be 0 or between 25 and 25000 (inclusive) 
     addons           = ["BPS"] # [] or ["BPS"]
   }
   status = "ACTIVE"
 }
+
+resource "fortiflexvm_config" "example12" {
+  product_type          = "FORTISASE"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FORTISASE_example"
+  fortisase {
+    users         = 50         # Number between 50 and 50,000 (inclusive)
+    service_pkg   = "FSASESTD" # "FSASESTD" (Standard) or "FSASEADV" (Advanced)
+    bandwidth     = 1000       # Number between 25 and 10,000
+    dedicated_ips = 4          # Number between 4 and 65,534 (inclusive)
+  }
+}
+
 ```
 
 ## Argument Reference
@@ -164,6 +222,7 @@ resource "fortiflexvm_config" "example11" {
 The following arguments are supported:
 
 * `account_id` - (Optional/Number) Account ID. Once the fortiflexvm_config is created, you can't change the account ID of this configuration by changing `account_id`.
+* `config_id` - (Optional/Number) Configuration ID. If you specify this argument, this resource will import this configuration rather than create a new one.
 * `product_type` (Required/String) Product type, must be one of the following options:
   * `FAD_VM`: FortiADC Virtual Machine
   * `FAZ_VM`: FortiAnalyzer Virtual Machine
@@ -177,6 +236,8 @@ The following arguments are supported:
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
+  * `FORTISASE`: FortiSASE
+  * `FORTIEDR`: FortiEDR
 * `program_serial_number` - (Required/String) The serial number of your FortiFlex Program. This serial number should start with `"ELAVMR"`.
 * `name` - (Required unless you only update the status/String) The name of your configuration.
 * `status` - (Optional/String) Configuration status. If you don't specify, the configuration status keeps unchanged. The default status is `ACTIVE` once you create a configuration. It must be one of the following options:
@@ -194,6 +255,8 @@ The following arguments are supported:
 * `fwb_vm` - (Block List) You must fill in this block if your `product_type` is `"FWB_VM"`. The structure of [`fwb_vm` block](#nestedblock--fwb_vm) is documented below.
 * `fwbc_private` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PRIVATE"`. The structure of [`fwbc_private` block](#nestedblock--fwbc_private) is documented below.
 * `fwbc_public` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PUBLIC"`. The structure of [`fwbc_public` block](#nestedblock--fwbc_public) is documented below.
+* `fortisase` - (Block List) You must fill in this block if your `product_type` is `"FORTISASE"`. The structure of [`fortisase` block](#nestedblock--fortisase) is documented below.
+* `fortiedr` - (Block List) You must fill in this block if your `product_type` is `"FORTIEDR"`. The structure of [`fortiedr` block](#nestedblock--fortiedr) is documented below.
 
 <a id="nestedblock--fad_vm"></a>
 The `fad_vm` block contains:
@@ -213,20 +276,20 @@ The `faz_vm` block contains:
 <a id="nestedblock--fc_ems_cloud"></a>
 The `fc_ems_cloud` block contains:
 
-* `ztna_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `ztna_fgf_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) ZTNA/VPN + FortiGuard Forensics(number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `epp_ztna_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `epp_ztna_fgf_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) EPP/ATP + ZTNA/VPN + FortiGuard Forensics (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `chromebook` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) Chromebook (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `ztna_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `ztna_fgf_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) ZTNA/VPN + FortiGuard Forensics(number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `epp_ztna_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `epp_ztna_fgf_num` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) EPP/ATP + ZTNA/VPN + FortiGuard Forensics (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `chromebook` - (Required if `product_type = "FC_EMS_CLOUD"`/Number) Chromebook (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
 * `addons` - (Optional/List of String) The default value is an empty list. Options: `"BPS"` (FortiCare Best Practice).
 
 
 <a id="nestedblock--fc_ems_op"></a>
 The `fc_ems_op` block contains:
 
-* `ztna_num` - (Required if `product_type = "FC_EMS_OP"`/Number) ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `epp_ztna_num` - (Required if `product_type = "FC_EMS_OP"`/Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `chromebook` - (Required if `product_type = "FC_EMS_OP"`/Number) Chromebook (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `ztna_num` - (Required if `product_type = "FC_EMS_OP"`/Number) ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `epp_ztna_num` - (Required if `product_type = "FC_EMS_OP"`/Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `chromebook` - (Required if `product_type = "FC_EMS_OP"`/Number) Chromebook (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
 * `support_service` - (Required if `product_type = "FC_EMS_OP"`/String) Option: `"FCTFC247"` (FortiCare Premium).
 * `addons` - (Optional/List of String) The default value is an empty list. Options: `"BPS"` (FortiCare Best Practice).
 
@@ -382,6 +445,21 @@ The `fwbc_public` block contains:
 * `average_throughput` - (Required if `product_type = "FWBC_PUBLIC"`/Number) Average Throughput (Mbps). Options: 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000.
 * `web_applications` - (Required if `product_type = "FWBC_PUBLIC"`/Number) Number between 0 and 2000 (inclusive) 
 
+<a id="nestedblock--fortisase"></a>
+The `fortisase` block contains:
+
+* `users` - (Required if `product_type = "FORTISASE"`/Number) Number between 50 and 50,000 (inclusive).
+* `service_pkg` - (Required if `product_type = "FORTISASE"`/String) `"FSASESTD"` (Standard) or `"FSASEADV"` (Advanced).
+* `bandwidth` - (Required if `product_type = "FORTISASE"`/Number) Mbps. Number between 25 and 10,000 (inclusive).
+* `dedicated_ips` - (Required if `product_type = "FORTISASE"`/Number) Number between 4 and 65,534 (inclusive).
+
+<a id="nestedblock--fortiedr"></a>
+The `fortisase` block contains:
+
+* `service_pkg` - (Required if `product_type = "FORTIEDR"`/String) `"FEDRPDR"` (Discover/Protect/Respond).
+* `endpoints` - (Read only/Number) Number of endpoints. Read only.
+* `addons` - (Optional/List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).
+
 
 ## Attribute Reference
 
@@ -393,6 +471,17 @@ The following attribute is exported:
 
 FortiFlex Configuration can be imported by using the following steps:
 
+Method 1: Specify `config_id`
+```
+resource "fortiflexvm_config" "import_example" {
+  config_id             = 12345
+  product_type          = "FGT_VM_Bundle"
+  program_serial_number = "ELAVMS00000XXXXX"
+}
+```
+
+
+Method 2: Use `terraform import`
 First, specify the `program_serial_number` when you configure the provider.
 ```
 provider "fortiflexvm" {

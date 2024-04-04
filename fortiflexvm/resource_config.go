@@ -32,6 +32,11 @@ func resourceConfig() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"config_id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
 			"program_serial_number": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -57,9 +62,11 @@ func resourceConfig() *schema.Resource {
 				FGT_HW: FortiGate Hardware;
 				FWBC_PRIVATE: FortiWeb Cloud - Private;
 				FWBC_PUBLIC: FortiWeb Cloud - Public;
-				FC_EMS_CLOUD: FortiClient EMS Cloud.`,
+				FC_EMS_CLOUD: FortiClient EMS Cloud;
+				FORTISASE: FortiSASE;
+				FORTIEDR: FortiEDR.`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
-					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC"}),
+					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -380,20 +387,135 @@ func resourceConfig() *schema.Resource {
 					},
 				},
 			},
+			"fortisase": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"users": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"bandwidth": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"dedicated_ips": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"fortiedr": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"endpoints": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
 		},
 	}
 }
 
-func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
+func importExistingConfig(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
+	var err error
+	var response_data map[string]interface{}
+	config_id := d.Get("config_id").(int)
+	request_obj := make(map[string]interface{})
+	program_serial_number := d.Get("program_serial_number").(string)
+	request_obj["programSerialNumber"] = program_serial_number
+	if v, ok := d.GetOk("account_id"); ok {
+		request_obj["accountId"] = v
+	}
+	config_list, err := c.ReadConfigsList(&request_obj)
+	if err != nil {
+		return fmt.Errorf("can not read configuration list: %v", err)
+	}
+	response_data, err = findConfigFromList(config_list, config_id)
+	if err != nil {
+		return err
+	}
+	if response_data["id"] != nil && response_data["id"] != "" {
+		d.SetId(fmt.Sprintf("%v", response_data["id"]))
+	} else {
+		d.SetId("Config")
+	}
 
+	// Update status if needed
+	if current_status, ok := response_data["status"].(string); ok {
+		if set_status, ok := d.GetOk("status"); ok && current_status != set_status.(string) {
+			obj, err := getObjectConfig(d, "id")
+			if err != nil {
+				return fmt.Errorf("error creating Config resource while getting object: %v", err)
+			}
+
+			var op string
+			if d.Get("status").(string) == "ACTIVE" {
+				op = "enable"
+			} else {
+				op = "disable"
+			}
+			response_data, err = c.UpdateConfigStatus(obj, op)
+			if err != nil {
+				return fmt.Errorf("error update Config status: %v", err)
+			}
+			if st, ok := response_data["status"].(string); ok {
+				if st != d.Get("status").(string) {
+					log.Printf("[WARN] Could not update the status of Config %v", d.Id())
+				}
+			}
+		}
+	} else {
+		log.Printf("[WARN] Could not get status from HTTP response")
+	}
+
+	// refresh schema
+	err = refreshObjectConfig(d, response_data)
+	if err != nil {
+		return fmt.Errorf("error refresh Config resource: %v", err)
+	}
+
+	return err
+}
+
+func createNewConfig(d *schema.ResourceData, m interface{}) error {
+	c := m.(*FortiClient).Client
+	var err error
+	var response_data map[string]interface{}
 	obj, err := getObjectConfig(d, "create")
 	if err != nil {
 		return fmt.Errorf("error creating Config resource while getting object: %v", err)
 	}
 
-	response_data, err := c.CreateConfig(obj)
-
+	response_data, err = c.CreateConfig(obj)
 	if err != nil {
 		return fmt.Errorf("error creating Config resource: %v", err)
 	}
@@ -404,10 +526,10 @@ func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 		d.SetId("Config")
 	}
 
-	// set status
+	// Update status if needed
 	if current_status, ok := response_data["status"].(string); ok {
 		if set_status, ok := d.GetOk("status"); ok && current_status != set_status.(string) {
-			obj, err = getObjectConfig(d, "id")
+			obj, err := getObjectConfig(d, "id")
 			if err != nil {
 				return fmt.Errorf("error creating Config resource while getting object: %v", err)
 			}
@@ -439,6 +561,17 @@ func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	return nil
+}
+
+func resourceConfigCreate(d *schema.ResourceData, m interface{}) error {
+	config_id := d.Get("config_id").(int)
+	if config_id != 0 {
+		// Import existing one
+		return importExistingConfig(d, m)
+	} else {
+		// Create a new configuration
+		return createNewConfig(d, m)
+	}
 }
 
 func resourceConfigRead(d *schema.ResourceData, m interface{}) error {
@@ -561,7 +694,7 @@ func getConfigReadResponse(o map[string]interface{}, mkey string) (map[string]in
 	var err error
 	if o == nil {
 		log.Printf("[WARN] resource (%s) not found, removing from state", mkey)
-		err = fmt.Errorf("Response is nil")
+		err = fmt.Errorf("response is nil")
 		return nil, err
 	}
 
@@ -621,7 +754,7 @@ func flattenConfigParameters(v interface{}) interface{} {
 			case "string":
 				tmp[cName] = cValue.(string)
 			case "list":
-				if _, ok := tmp[cName]; ok == false {
+				if _, ok := tmp[cName]; !ok {
 					tmp[cName] = []interface{}{}
 				}
 				if cValue != "NONE" {
@@ -643,6 +776,9 @@ func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error
 	if value, ok := o["accountId"]; ok {
 		d.Set("account_id", value)
 	}
+	if value, ok := o["id"]; ok {
+		d.Set("config_id", value)
+	}
 	if value, ok := o["programSerialNumber"]; ok {
 		d.Set("program_serial_number", value)
 	}
@@ -658,7 +794,7 @@ func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error
 		d.Set("status", value)
 	}
 
-	// initialize product variables. This can fix the problem of inconsistent output.
+	// Initialize product variables. This can fix the problem of inconsistent output.
 	for _, type_name := range PRODUCT_TYPES {
 		empty_interface := make([]map[string]interface{}, 0)
 		d.Set(type_name, empty_interface)
@@ -676,11 +812,10 @@ func refreshObjectConfig(d *schema.ResourceData, o map[string]interface{}) error
 }
 
 func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) (interface{}, error) {
-	var typeId interface{}
-	typeId = convProductTypeName2Id(v.(string))
+	typeId := convProductTypeName2Id(v.(string))
 	if typeId == 0 {
 		err := fmt.Errorf("product_type invalid: %v, should be one of [%v]", v.(string),
-			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FGT_HW, FWBC_PRIVATE, FWBC_PUBLIC, FC_EMS_CLOUD")
+			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FGT_HW, FWBC_PRIVATE, FWBC_PUBLIC, FC_EMS_CLOUD, FORTISASE, FORTIEDR")
 		return typeId, err
 	}
 	return typeId, nil
@@ -700,23 +835,15 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 		// }
 		ckId := convConfParsNameList2Id(pre, ck)
 		if ckId == 0 {
-			err := fmt.Errorf("Could not get target argument ID, this is a plugin error.")
+			err := fmt.Errorf("could not get target argument ID, this is a plugin error")
 			log.Printf("[ERROR] %v", err)
 			return result, err
 		}
+		if ckId == 47 { // This arugment is read only
+			continue
+		}
 		if cvList, ok := cv.([]interface{}); ok {
 			for _, csv := range cvList {
-				// 				if pre == "fgt_vm_lcs" { // input check
-				// 					fortiguard_services_valid_values := []string{"IPS", "AVDB", "FURL", "IOTH", "FGSA", "ISSS"}
-				// 					cloud_services_valid_values := []string{"FAMS", "SWNM", "FMGC", "AFAC"}
-				// 					if ck == "fortiguard_services" && !contains(fortiguard_services_valid_values, csv.(string)) {
-				// 						return result, fmt.Errorf(`Invalid fgt_vm_lcs.fortiguard_services input %v
-				// Valid values (you can select multiple values): %v`, csv.(string), fortiguard_services_valid_values)
-				// 					} else if ck == "cloud_services" && !contains(cloud_services_valid_values, csv.(string)) {
-				// 						return result, fmt.Errorf(`Invalid fgt_vm_lcs.cloud_services input %v
-				// Valid values (you can select multiple values): %v`, csv.(string), cloud_services_valid_values)
-				// 					}
-				// 				}
 				tmp := make(map[string]interface{})
 				tmp["id"] = ckId
 				tmp["value"] = csv

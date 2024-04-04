@@ -10,7 +10,7 @@ import (
 )
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
-	"fpc_vm", "fad_vm", "fgt_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud"}
+	"fpc_vm", "fad_vm", "fgt_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -52,6 +52,10 @@ func convProductTypeName2Id(p_type string) int {
 		return 203
 	case "FC_EMS_CLOUD":
 		return 204
+	case "FORTISASE":
+		return 205
+	case "FORTIEDR":
+		return 206
 	default:
 		return 0
 	}
@@ -83,6 +87,10 @@ func convProductTypeId2Name(p_id int) string {
 		return "FWBC_PUBLIC"
 	case 204:
 		return "FC_EMS_CLOUD"
+	case 205:
+		return "FORTISASE"
+	case 206:
+		return "FORTIEDR"
 	default:
 		return ""
 	}
@@ -170,6 +178,20 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fgt_vm_bundle", "cloud_services", "list"
 	case 45:
 		return "fgt_vm_bundle", "support_service", "string"
+	case 46:
+		return "fortiedr", "service_pkg", "string"
+	case 47:
+		return "fortiedr", "endpoints", "int" // Read only
+	case 48:
+		return "fortisase", "users", "int"
+	case 49:
+		return "fortisase", "service_pkg", "string"
+	case 50:
+		return "fortisase", "bandwidth", "int"
+	case 51:
+		return "fortisase", "dedicated_ips", "int"
+	case 52:
+		return "fortiedr", "addons", "list"
 	default:
 		return "", "", ""
 	}
@@ -312,6 +334,30 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 41
 		case "addons":
 			return 42
+		default:
+			return 0
+		}
+	case "fortisase":
+		switch c_name {
+		case "users":
+			return 48
+		case "service_pkg":
+			return 49
+		case "bandwidth":
+			return 50
+		case "dedicated_ips":
+			return 51
+		default:
+			return 0
+		}
+	case "fortiedr":
+		switch c_name {
+		case "service_pkg":
+			return 46
+		case "endpoints":
+			return 47
+		case "addons":
+			return 52
 		default:
 			return 0
 		}
@@ -473,7 +519,7 @@ func getEntitlementFromId(resource_id string, m interface{}) (map[string]interfa
 
 func findEntitlementFromList(entitlement_list map[string]interface{}, serial_number string) (map[string]interface{}, error) {
 	if entitlement_list == nil {
-		return nil, fmt.Errorf("Response from FlexVM API is nil")
+		return nil, fmt.Errorf("response from FlexVM API is nil")
 	}
 
 	if ent_list, ok := entitlement_list["entitlements"].([]interface{}); ok {
@@ -486,7 +532,25 @@ func findEntitlementFromList(entitlement_list map[string]interface{}, serial_num
 			}
 		}
 	}
-	return nil, fmt.Errorf("Target entitlement %v not exist", serial_number)
+	return nil, fmt.Errorf("target entitlement %v not exist", serial_number)
+}
+
+func findConfigFromList(config_list map[string]interface{}, config_id int) (map[string]interface{}, error) {
+	if config_list == nil {
+		return nil, fmt.Errorf("response from FlexVM API is nil")
+	}
+	want_id := fmt.Sprintf("%v", config_id)
+	if conf_list, ok := config_list["configs"].([]interface{}); ok {
+		for _, conf_item := range conf_list {
+			if conf, ok := conf_item.(map[string]interface{}); ok {
+				cId := fmt.Sprintf("%v", conf["id"])
+				if cId == want_id {
+					return conf, nil
+				}
+			}
+		}
+	}
+	return nil, fmt.Errorf("target config %v not exist", config_id)
 }
 
 func changeVMStatus(serial_number string, action string, m interface{}) (map[string]interface{}, error) {

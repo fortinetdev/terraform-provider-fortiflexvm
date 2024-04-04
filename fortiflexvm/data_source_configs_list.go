@@ -315,6 +315,51 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fortisase": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"users": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"bandwidth": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"dedicated_ips": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"fortiedr": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"endpoints": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -336,7 +381,7 @@ func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 	// Send request
 	o, err := c.ReadConfigsList(&request_obj)
 	if err != nil {
-		return fmt.Errorf("Error describing ConfigsList: %v", err)
+		return fmt.Errorf("error describing ConfigsList: %v", err)
 	}
 
 	if o == nil {
@@ -347,7 +392,7 @@ func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 	// Update status
 	err = dataSourceRefreshObjectConfigsList(d, o)
 	if err != nil {
-		return fmt.Errorf("Error describing ConfigsList from API: %v", err)
+		return fmt.Errorf("error describing ConfigsList from API: %v", err)
 	}
 
 	d.SetId(program_serial_number)
@@ -360,7 +405,7 @@ func dataSourceRefreshObjectConfigsList(d *schema.ResourceData, o map[string]int
 
 	if err = d.Set("configs", dataSourceFlattenConfigsListConfigs(o["configs"], d)); err != nil {
 		if !fortiAPIPatch(o["configs"]) {
-			return fmt.Errorf("Error reading configs: %v", err)
+			return fmt.Errorf("error reading configs: %v", err)
 		}
 	}
 
@@ -454,7 +499,7 @@ func dataSourceFlattenConfigsListConfigsParameters(v interface{}) interface{} {
 			case "string":
 				tmp[cName] = cValue.(string)
 			case "list":
-				if _, ok := tmp[cName]; ok == false {
+				if _, ok := tmp[cName]; !ok {
 					tmp[cName] = []interface{}{}
 				}
 				if cValue != "NONE" {

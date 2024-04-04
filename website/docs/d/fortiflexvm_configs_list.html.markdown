@@ -51,6 +51,8 @@ The `configs` block contains:
 * `fwb_vm` - (List of Object) FortiWeb Virtual Machine. The structure of [`configs.fwb_vm` block](#nestedobjatt--configs--fwb_vm) is documented below.
 * `fwbc_private` - (List of Object) FortiWeb Cloud - Private. The structure of [`configs.fwbc_private` block](#nestedobjatt--configs--fwbc_private) is documented below.
 * `fwbc_public` - (List of Object) FortiWeb Cloud - Public. The structure of [`configs.fwbc_public` block](#nestedobjatt--configs--fwbc_public) is documented below.
+* `fortisase` - (List of Object) FortiSASE. The structure of [`configs.fortisase` block](#nestedobjatt--configs--fortisase) is documented below.
+* `fortiedr` - (List of Object) FortiEDR. The structure of [`configs.fortiedr` block](#nestedobjatt--configs--fortiedr) is documented below.
 * `account_id` - (Optional/Number) Account ID.
 * `id` - (Number) The unqiue number of the configuration.
 * `name` - (String) Configuration name.
@@ -67,6 +69,8 @@ The `configs` block contains:
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
+  * `FORTISASE`: FortiSASE
+  * `FORTIEDR`: FortiEDR
 * `program_serial_number` - (String) The unique serial number of the FortiFlex Program this configuration belongs to.
 * `status` - (String) The status of this configuration. `ACTIVATE` or `DISABLED`.
 
@@ -89,20 +93,20 @@ The `configs.faz_vm` block contains:
 <a id="nestedobjatt--configs--fc_ems_cloud"></a>
 The `configs.fc_ems_cloud` block contains:
 
-* `ztna_num` - (Number) ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `ztna_fgf_num` - (Number) ZTNA/VPN + FortiGuard Forensics(number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `epp_ztna_num` - (Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `epp_ztna_fgf_num` - (Number) EPP/ATP + ZTNA/VPN + FortiGuard Forensics (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `chromebook` - (Number) Chromebook (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `ztna_num` - (Number) ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `ztna_fgf_num` - (Number) ZTNA/VPN + FortiGuard Forensics(number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `epp_ztna_num` - (Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `epp_ztna_fgf_num` - (Number) EPP/ATP + ZTNA/VPN + FortiGuard Forensics (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `chromebook` - (Number) Chromebook (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
 * `addons` - (List of String) The default value is an empty list. Options: `"BPS"` (FortiCare Best Practice).
 
 
 <a id="nestedobjatt--configs--fc_ems_op"></a>
 The `configs.fc_ems_op` block contains:
 
-* `ztna_num` - (Number) ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `epp_ztna_num` - (Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
-* `chromebook` - (Number) Chromebook (number of endpoints). Value should be divisible by 25. Number between 0 and 25000 (inclusive).
+* `ztna_num` - (Number) ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `epp_ztna_num` - (Number) EPP/ATP + ZTNA/VPN (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
+* `chromebook` - (Number) Chromebook (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
 * `support_service` - (String) Possible value: `"FCTFC247"` (FortiCare Premium).
 * `addons` - (List of String) Possible value: `"BPS"` (FortiCare Best Practice).
 
@@ -259,3 +263,18 @@ The `configs.fwbc_public` block contains:
 
 * `average_throughput` - (Number) Average Throughput (Mbps). Possible values: 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000.
 * `web_applications` - (Number) Number between 0 and 2000 (inclusive).
+
+<a id="nestedobjatt--configs--fortisase"></a>
+The `configs.fortisase` block contains:
+
+* `users` - (Number) Number between 50 and 50,000 (inclusive).
+* `service_pkg` - (String) `"FSASESTD"` (Standard) or `"FSASEADV"` (Advanced).
+* `bandwidth` - (Number) Mbps. Number between 25 and 10,000 (inclusive).
+* `dedicated_ips` - (Number) Number between 4 and 65,534 (inclusive).
+
+<a id="nestedobjatt--configs--fortiedr"></a>
+The `configs.fortiedr` block contains:
+
+* `service_pkg` - (String) `"FEDRPDR"` (Discover/Protect/Respond).
+* `endpoints` - (Number) Number of endpoints. Read only.
+* `addons` - (List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).

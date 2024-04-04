@@ -8,7 +8,7 @@ description: |-
 
 # fortiflexvm_retrieve_vm_group
 
-This resource is used to retrieve a group of existing `STOPPED` VM entitlements (with empty description) and change them to `ACTIVE`.
+This resource is used to retrieve a group of existing `STOPPED` (or `STOPPED` and `PENDING`) VM entitlements (with empty description) and change them to `ACTIVE`.
 
 When you destroy this resource, the retrieved entitlements will refresh their token, change their status back to `STOPPED` and change their description to empty.
 
@@ -18,29 +18,43 @@ If you want to create new entitlements, please use `fortiflexvm_entitlements_vm`
 
 ~> This resource is special. It is important to know how this resource works before you use it.
 
-To determine whether this resource can hold one entitlement, this resource queries the information of this entitlement first. If the status of this entitlement is "STOPPED" and the description is an empty string, the resource will update the entitlement's description to its `task_name` (to pre-hold this entitlement), sleep for `preempt_interval` (default is 1) second, and query the information of this entitlement again. If the description is still the same, then the resource owns this entitlement and changes entitlement status to ACTIVE. If the description has changed, it means other tasks pre-hold this entitlement at the same time. Then the resource gives up this entitlement. 
+To determine whether this resource can hold one entitlement, this resource queries the information of this entitlement first. If the status of this entitlement is "STOPPED" and the description is an empty string, the resource will update the entitlement's description to its `task_name` (to pre-hold this entitlement), sleep for `preempt_interval` (default is 1) second, and query the information of this entitlement again. If the description is still the same, then the resource owns this entitlement and changes entitlement status to "ACTIVE". If the description has changed, it means other tasks pre-hold this entitlement at the same time. Then the resource gives up this entitlement. 
 
 By doing the above steps, this resource can do its best effort to avoid entitlement overlap when more than 2 retrieving entitlement requests are running at the same time.
 
 
 ## Example Usage
 
+Retrieve "STOPPED" entitlements
 ```hcl
 resource "fortiflexvm_retrieve_vm_group" "task1" {
   task_name = "task1" # Unique task name
   config_id = 1234    # Your config ID
   count_num = 3
+  require_exact_count = true   # If retrieve less than 3 (count_num) entitlements, release retrieved entitlements and report an error
 }
 resource "fortiflexvm_retrieve_vm_group" "task2" {
   task_name = "task2" # Unique task name
   config_id = 1234    # Your config ID
   count_num = 3
+  require_exact_count = true   # If retrieve less than 3 (count_num) entitlements, release retrieved entitlements and report an error
 }
 output "task1_tokens" {
   value = { for key, vm in fortiflexvm_retrieve_vm_group.task1.entitlements : vm.serial_number => vm.token }
 }
 output "task2_tokens" {
   value = { for key, vm in fortiflexvm_retrieve_vm_group.task2.entitlements : vm.serial_number => vm.token }
+}
+```
+
+Retrieve both "STOPPED" and "PENDING" entitlements
+```hcl
+resource "fortiflexvm_retrieve_vm_group" "task1" {
+  task_name           = "task1" # Unique task name
+  config_id           = 1234    # Your config ID
+  count_num           = 3
+  retrieve_status     = ["STOPPED", "PENDING"] # Default value is ["STOPPED"]
+  require_exact_count = true   # If retrieve less than 3 (count_num) entitlements, release retrieved entitlements and report an error
 }
 ```
 
@@ -52,6 +66,8 @@ output "task2_tokens" {
 * `preempt_interval` - (Optinal/Number) Default is 1. The second wait to preempt each entitlement. The larger this value, the longer time you need to wait, and the less probability you get entitlement overlap. Normally, 1 second is good enough.
 * `refresh_token_when_destroy` - (Optinal/Boolean) Default value is true. If it is true, the token of all entitlements will be refreshed when you use `terraform destroy`.
 * `refresh_token_when_create` - (Optinal/Boolean) Default value is false. If it is true, the token of all entitlements will be refreshed when you use `terraform apply` and create the resource.
+* `retrieve_status` - (Optinal/List of string) The entitlements with what status you want to retrieve. The default value is ["STOPPED"]. You can set it as ["STOPPED", "PENDING"] if you want to retrieve both "STOPPED" and "PENDING" entitlements.
+* `require_exact_count`- (Optinal/Boolean) Default value is false. If it is true and the resource retrieves less than (count_num) entitlements, it will release retrieved entitlements and report an error.
 
 
 ## Attribute Reference
