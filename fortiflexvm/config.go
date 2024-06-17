@@ -10,7 +10,8 @@ import (
 )
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
-	"fpc_vm", "fad_vm", "fgt_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr"}
+	"fpc_vm", "fad_vm", "fgt_hw", "fap_hw", "fsw_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud",
+	"fortisase", "fortiedr"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -46,6 +47,10 @@ func convProductTypeName2Id(p_type string) int {
 		return 9
 	case "FGT_HW":
 		return 101
+	case "FAP_HW":
+		return 102
+	case "FSW_HW":
+		return 103
 	case "FWBC_PRIVATE":
 		return 202
 	case "FWBC_PUBLIC":
@@ -81,6 +86,10 @@ func convProductTypeId2Name(p_id int) string {
 		return "FAD_VM"
 	case 101:
 		return "FGT_HW"
+	case 102:
+		return "FAP_HW"
+	case 103:
+		return "FSW_HW"
 	case 202:
 		return "FWBC_PRIVATE"
 	case 203:
@@ -192,6 +201,18 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fortisase", "dedicated_ips", "int"
 	case 52:
 		return "fortiedr", "addons", "list"
+	case 53:
+		return "fsw_hw", "device_model", "string"
+	case 54:
+		return "fsw_hw", "service_pkg", "string"
+	case 55:
+		return "fap_hw", "device_model", "string"
+	case 56:
+		return "fap_hw", "service_pkg", "string"
+	case 57:
+		return "fap_hw", "addons", "list"
+	case 58:
+		return "faz_vm", "addons", "list"
 	default:
 		return "", "", ""
 	}
@@ -272,6 +293,8 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 22
 		case "support_service":
 			return 23
+		case "addons":
+			return 58
 		default:
 			return 0
 		}
@@ -299,6 +322,26 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 28
 		case "addons":
 			return 29
+		default:
+			return 0
+		}
+	case "fsw_hw":
+		switch c_name {
+		case "device_model":
+			return 53
+		case "service_pkg":
+			return 54
+		default:
+			return 0
+		}
+	case "fap_hw":
+		switch c_name {
+		case "device_model":
+			return 55
+		case "service_pkg":
+			return 56
+		case "addons":
+			return 57
 		default:
 			return 0
 		}

@@ -121,6 +121,7 @@ resource "fortiflexvm_config" "example5" {
     daily_storage   = 11         # 5 ~ 8300
     support_service = "FAZFC247" # "FAZFC247"
     adom_num        = 0          # 0 ~ 1200
+    addons = []                  # "FAZISSS", "FAZFGSA"
   }
 }
 
@@ -141,7 +142,7 @@ resource "fortiflexvm_config" "example7" {
   name                  = "FAD_VM_example"
   fad_vm {
     cpu_size    = "1"      # "1", "2", "4", "8", "16", "32"
-    service_pkg = "FDVSTD" # "FDVSTD", "FDVADV", "FDVFC247"
+    service_pkg = "FDVSTD" # "FDVFC247", "FDVNET", "FDVAPP", "FDVAI"
   }
 }
 
@@ -215,6 +216,48 @@ resource "fortiflexvm_config" "example12" {
   }
 }
 
+resource "fortiflexvm_config" "example13" {
+  product_type          = "FORTIEDR"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FORTIEDR_example"
+  fortiedr {
+    service_pkg = "FEDRPDR"   # Only support "FEDRPDR" (Discover/Protect/Respond) now
+    addons      = ["FEDRXDR"] # Empty list or ["FEDRXDR"]
+  }
+}
+
+resource "fortiflexvm_config" "example14" {
+  product_type          = "FAP_HW"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FAP_HW_example"
+  fap_hw {
+    device_model = "FP23JF"   # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex
+    # "FP23JF", "FP221E", "FP223E", "FP231F", "FP231G", "FP233G", "FP234F"
+    # "FP234G", "FP431F", "FP431G", "FP432F", "F432FR", "FP432G", "FP433F"
+    # "FP433G", "FP441K", "FP443K", "FP831F", "PU231F", "PU234F", "PU422E"
+    # "PU431F", "PU432F", "PU433F"
+    service_pkg = "FAPHWFC247" # "FAPHWFC247", "FAPHWFCEL"
+    addons      = []           # List of string, "FAPHWFSFG"
+  }
+}
+
+resource "fortiflexvm_config" "example15" {
+  product_type          = "FSW_HW"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FSW_HW_example"
+  fsw_hw {
+    device_model = "S108EN"   # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex
+    # "S108EN", "S108EF", "S108EP", "S108FN", "S108FF", "S108FP", "S124EN", "S124EF", 
+    # "S124EP", "S124FN", "S124FF", "S124FP", "S148EN", "S148EP", "S148FN", "S148FF",
+    # "S148FP", "S224DF", "S224EN", "S224EP", "S248DN", "S248EF", "S248EP", "S424DN",
+    # "S424DF", "S424DP", "S424EN", "S424EF", "S424EI", "S424EP", "S448DN", "S448DP",
+    # "S448EN", "S448EF", "S448EP", "S524DN", "S524DF", "S548DN", "S548DF", "S624FN",
+    # "S624FF", "S648FN", "S648FF", "FS1D24", "FS1E24", "FS1D48", "FS1E48", "FS2F48",
+    # "FS3D32", "FS3E32", "S426EF", "ST1E24", "SR12DP", "SR24DN"
+    service_pkg = "FSWHWFC247" # "FSWHWFC247", "FSWHWFCEL"
+  }
+}
+
 ```
 
 ## Argument Reference
@@ -225,6 +268,7 @@ The following arguments are supported:
 * `config_id` - (Optional/Number) Configuration ID. If you specify this argument, this resource will import this configuration rather than create a new one.
 * `product_type` (Required/String) Product type, must be one of the following options:
   * `FAD_VM`: FortiADC Virtual Machine
+  * `FAP_HW`: FortiAP Hardware
   * `FAZ_VM`: FortiAnalyzer Virtual Machine
   * `FC_EMS_CLOUD`: FortiClient EMS Cloud
   * `FC_EMS_OP`: FortiClient EMS On-Prem
@@ -233,6 +277,7 @@ The following arguments are supported:
   * `FGT_VM_LCS`: FortiGate Virtual Machine - A La Carte Services
   * `FMG_VM`: FortiManager Virtual Machine
   * `FPC_VM`: FortiPortal Virtual Machine
+  * `FSW_HW`: FortiSwitch Hardware
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
@@ -244,6 +289,7 @@ The following arguments are supported:
 	* `ACTIVE`: Enable a configuration
 	* `DISABLED`: Disable a configuration
 * `fad_vm` - (Block List) You must fill in this block if your `product_type` is `"FAD_VM"`. The structure of [`fad_vm` block](#nestedblock--fad_vm) is documented below.
+* `fap_hw` - (Block List) You must fill in this block if your `product_type` is `"FAP_HW"`. The structure of [`fap_hw` block](#nestedblock--fap_hw) is documented below.
 * `faz_vm` - (Block List) You must fill in this block if your `product_type` is `"FAZ_VM"`. The structure of [`faz_vm` block](#nestedblock--faz_vm) is documented below.
 * `fc_ems_cloud` - (Block List) You must fill in this block if your `product_type` is `"FC_EMS_CLOUD"`. The structure of [`fc_ems_cloud` block](#nestedblock--fc_ems_cloud) is documented below.
 * `fc_ems_op` - (Block List) You must fill in this block if your `product_type` is `"FC_EMS_OP"`. The structure of [`fc_ems_op` block](#nestedblock--fc_ems_op) is documented below.
@@ -252,6 +298,7 @@ The following arguments are supported:
 * `fgt_vm_lcs` - (Block List) You must fill in this block if your `product_type` is `"FGT_VM_LCS"`. The structure of [`fgt_vm_lcs` block](#nestedblock--fgt_vm_lcs) is documented below.
 * `fmg_vm` - (Block List) You must fill in this block if your `product_type` is `"FMG_VM"`. The structure of [`fmg_vm` block](#nestedblock--fmg_vm) is documented below.
 * `fpc_vm` - (Block List) You must fill in this block if your `product_type` is `"FPC_VM"`. The structure of [`fpc_vm` block](#nestedblock--fpc_vm) is documented below.
+* `fsw_hw` - (Block List) You must fill in this block if your `product_type` is `"FSW_HW"`. The structure of [`fsw_hw` block](#nestedblock--fsw_hw) is documented below.
 * `fwb_vm` - (Block List) You must fill in this block if your `product_type` is `"FWB_VM"`. The structure of [`fwb_vm` block](#nestedblock--fwb_vm) is documented below.
 * `fwbc_private` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PRIVATE"`. The structure of [`fwbc_private` block](#nestedblock--fwbc_private) is documented below.
 * `fwbc_public` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PUBLIC"`. The structure of [`fwbc_public` block](#nestedblock--fwbc_public) is documented below.
@@ -262,8 +309,40 @@ The following arguments are supported:
 The `fad_vm` block contains:
 
 * `cpu_size` - (Required if `product_type = "FAD_VM"`/String) The number of CPUs. The value of this attribute is one of `"1"`, `"2"`, `"4"`, `"8"`, `"16"`, `"32"`.
-* `service_pkg` - (Required if `product_type = "FAD_VM"`/String) Options: `"FDVSTD"` (Standard), `"FDVADV"` (Advanced) or `"FDVFC247"` (FortiCare Premium).
+* `service_pkg` - (Required if `product_type = "FAD_VM"`/String) Options: `"FDVFC247"` (FortiCare Premium), `"FDVNET"` (Network Security), `"FDVAPP"` (Application Security),  `"FDVAI"` (AI Security).
 
+
+<a id="nestedblock--fap_vm"></a>
+The `fap_vm` block contains:
+
+* `device_model` - (Required if `product_type = "FAP_HW"`/String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Options:
+  * `"FP23JF"`: FortiAP-23JF
+  * `"FP221E"`: FortiAP-221E
+  * `"FP223E"`: FortiAP-223E
+  * `"FP231F"`: FortiAP-231F
+  * `"FP231G"`: FortiAP-231G
+  * `"FP233G"`: FortiAP-233G
+  * `"FP234F"`: FortiAP-234F
+  * `"FP234G"`: FortiAP-234G
+  * `"FP431F"`: FortiAP-431F
+  * `"FP431G"`: FortiAP-431G
+  * `"FP432F"`: FortiAP-432F
+  * `"F432FR"`: FortiAP-432FR
+  * `"FP432G"`: FortiAP-432G
+  * `"FP433F"`: FortiAP-433F
+  * `"FP433G"`: FortiAP-433G
+  * `"FP441K"`: FortiAP-441K
+  * `"FP443K"`: FortiAP-443K
+  * `"FP831F"`: FortiAP-831F
+  * `"PU231F"`: FortiAP-U231F
+  * `"PU234F"`: FortiAP-U234F
+  * `"PU422E"`: FortiAP-U422EV
+  * `"PU431F"`: FortiAP-U431F
+  * `"PU432F"`: FortiAP-U432F
+  * `"PU433F"`: FortiAP-U433F
+* `service_pkg` - (Required if `product_type = "FAP_HW"`/String) Possible values: `"FAPHWFC247"` (FortiCare Premium), `"FAPHWFCEL"` (FortiCare Elite).
+* `addons` - (Optional/List of String) Possible values:
+  * `"FAPHWFSFG"`: FortiSASE Cloud Managed AP
 
 <a id="nestedblock--faz_vm"></a>
 The `faz_vm` block contains:
@@ -271,7 +350,7 @@ The `faz_vm` block contains:
 * `adom_num` - (Required if `product_type = "FAZ_VM"`/Number) Number of ADOMs. A number between 0 and 1200 (inclusive).
 * `daily_storage` - (Required if `product_type = "FAZ_VM"`/Number) Daily Storage (GB). A number between 5 and 8300 (inclusive).
 * `support_service` - (Required if `product_type = "FAZ_VM"`/String) Support Service. Option: `"FAZFC247"` (FortiCare Premium).
-
+* `addons` - (Optional) The default value is an empty list. Options: `"FAZISSS"` (OT Security Service), `"FAZFGSA"` (Attack Surface Security Service).
 
 <a id="nestedblock--fc_ems_cloud"></a>
 The `fc_ems_cloud` block contains:
@@ -423,6 +502,66 @@ The `fmg_vm` block contains:
 The `fpc_vm` block contains:
 
 * `managed_dev` - (Required if `product_type = "FPC_VM"`/Number) Number of managed devices. A number between 0 and 100000 (inclusive).
+
+<a id="nestedblock--fsw_hw"></a>
+The `fsw_hw` block contains:
+
+* `device_model` - (Required if `product_type = "FSW_HW"`/String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values: 
+	* `"S108EN"`: FortiSwitch-108E
+  * `"S108EF"`: FortiSwitch-108E-FPOE
+  * `"S108EP"`: FortiSwitch-108E-POE
+  * `"S108FN"`: FortiSwitch-108F
+  * `"S108FF"`: FortiSwitch-108F-FPOE
+  * `"S108FP"`: FortiSwitch-108F-POE
+  * `"S124EN"`: FortiSwitch-124E
+  * `"S124EF"`: FortiSwitch-124E-FPOE
+  * `"S124EP"`: FortiSwitch-124E-POE
+  * `"S124FN"`: FortiSwitch-124F
+  * `"S124FF"`: FortiSwitch-124F-FPOE
+  * `"S124FP"`: FortiSwitch-124F-POE
+  * `"S148EN"`: FortiSwitch-148E
+  * `"S148EP"`: FortiSwitch-148E-POE
+  * `"S148FN"`: FortiSwitch-148F
+  * `"S148FF"`: FortiSwitch-148F-FPOE
+  * `"S148FP"`: FortiSwitch-148F-POE
+  * `"S224DF"`: FortiSwitch-224D-FPOE
+  * `"S224EN"`: FortiSwitch-224E
+  * `"S224EP"`: FortiSwitch-224E-POE
+  * `"S248DN"`: FortiSwitch-248D
+  * `"S248EF"`: FortiSwitch-248E-FPOE
+  * `"S248EP"`: FortiSwitch-248E-POE
+  * `"S424DN"`: FortiSwitch-424D
+  * `"S424DF"`: FortiSwitch-424D-FPOE
+  * `"S424DP"`: FortiSwitch-424D-POE
+  * `"S424EN"`: FortiSwitch-424E
+  * `"S424EF"`: FortiSwitch-424E-FPOE
+  * `"S424EI"`: FortiSwitch-424E-Fiber
+  * `"S424EP"`: FortiSwitch-424E-POE
+  * `"S448DN"`: FortiSwitch-448D
+  * `"S448DP"`: FortiSwitch-448D-POE
+  * `"S448EN"`: FortiSwitch-448E
+  * `"S448EF"`: FortiSwitch-448E-FPOE
+  * `"S448EP"`: FortiSwitch-448E-POE
+  * `"S524DN"`: FortiSwitch-524D
+  * `"S524DF"`: FortiSwitch-524D-FPOE
+  * `"S548DN"`: FortiSwitch-548D
+  * `"S548DF"`: FortiSwitch-548D-FPOE
+  * `"S624FN"`: FortiSwitch-624F
+  * `"S624FF"`: FortiSwitch-624F-FPOE
+  * `"S648FN"`: FortiSwitch-648F
+  * `"S648FF"`: FortiSwitch-648F-FPOE
+  * `"FS1D24"`: FortiSwitch-1024D
+  * `"FS1E24"`: FortiSwitch-1024E
+  * `"FS1D48"`: FortiSwitch-1048D
+  * `"FS1E48"`: FortiSwitch-1048E
+  * `"FS2F48"`: FortiSwitch-2048F
+  * `"FS3D32"`: FortiSwitch-3032D
+  * `"FS3E32"`: FortiSwitch-3032E
+  * `"S426EF"`: FortiSwitch-M426E-FPOE
+  * `"ST1E24"`: FortiSwitch-T1024E
+  * `"SR12DP"`: FortiSwitchRugged-112D-POE
+  * `"SR24DN"`: FortiSwitchRugged-124D
+* `service_pkg` - (Required if `product_type = "FSW_HW"`/String) Possible values: `"FSWHWFC247"` (FortiCare Premium), `"FSWHWFCEL"` (FortiCare Elite).
 
 
 <a id="nestedblock--fwb_vm"></a>

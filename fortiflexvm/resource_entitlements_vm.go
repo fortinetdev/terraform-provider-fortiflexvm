@@ -52,6 +52,11 @@ func resourceEntitlementsVM() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"skip_pending": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"start_date": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -103,6 +108,9 @@ func resourceEntitlementsVMCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 		if v, ok := d.GetOk("folder_path"); ok {
 			obj["folderPath"] = v
+		}
+		if v, ok := d.GetOk("skip_pending"); ok {
+			obj["skipPending"] = v
 		}
 		if v, ok := d.GetOk("end_date"); ok {
 			obj["endDate"] = v

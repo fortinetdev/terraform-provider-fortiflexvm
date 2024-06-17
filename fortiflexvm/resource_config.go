@@ -60,13 +60,16 @@ func resourceConfig() *schema.Resource {
 				FPC_VM: FortiPortal Virtual Machine;
 				FAD_VM: FortiADC Virtual Machine;
 				FGT_HW: FortiGate Hardware;
+				FAP_HW: FortiAP Hardware;
+				FSW_HW: FortiSwitch Hardware;
 				FWBC_PRIVATE: FortiWeb Cloud - Private;
 				FWBC_PUBLIC: FortiWeb Cloud - Public;
 				FC_EMS_CLOUD: FortiClient EMS Cloud;
 				FORTISASE: FortiSASE;
 				FORTIEDR: FortiEDR.`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
-					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR"}),
+					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FAP_HW", "FSW_HW",
+					"FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -248,6 +251,12 @@ func resourceConfig() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
 					},
 				},
 			},
@@ -305,6 +314,50 @@ func resourceConfig() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
+			"fap_hw": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"device_model": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
+			"fsw_hw": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"device_model": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
 						},
 					},
 				},

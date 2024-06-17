@@ -1,13 +1,22 @@
 ## 2.4.0 (Unreleased)
 
+## 2.3.2 (June 17, 2024)
+
+IMPROVEMENTS:
+
+* Supported 2 new configurations: `FortiAP Hardware` (`fap_hw`) and `FortiSwitch Hardware` (`fsw_hw`).
+* Configuration `faz_vm` added one new argument `addons`.
+* `fortiflexvm_entitlements_vm` supported new input argument `skip_pending`.
+
+
 ## 2.3.1 (April 3, 2024)
 
 IMPROVEMENTS:
 
 * Supported 2 new configurations: `FortiSASE` (`fortisase`) and `FortiEDR` (`fortiedr`).
-* `fortiflex_config` supported input argument `config_id`. You can import existing configurations by specifying this argument.
-* `fortiflex_retrieve_vm_group` supported input argument `retrieve_status`. It can retrieve both PENDING and STOPPED entitlements if you set `retrieve_status = ["STOPPED", "PENDING"]`.
-* `fortiflex_retrieve_vm_group` supported input argument `require_exact_count`. The default value is false, if set as true, the resource will release retrieved entitlements and report an error if the resource doesn't get enough `count_num` entitlements.
+* `fortiflexvm_config` supported input argument `config_id`. You can import existing configurations by specifying this argument.
+* `fortiflexvm_retrieve_vm_group` supported input argument `retrieve_status`. It can retrieve both PENDING and STOPPED entitlements if you set `retrieve_status = ["STOPPED", "PENDING"]`.
+* `fortiflexvm_retrieve_vm_group` supported input argument `require_exact_count`. The default value is false, if set as true, the resource will release retrieved entitlements and report an error if the resource doesn't get enough `count_num` entitlements.
 * Reported a warning rather than an error if `end_date` in `fortiflexvm_entitlements_vm` is set incorrectly.
 
 ## 2.3.0 (Feburary 23, 2024)

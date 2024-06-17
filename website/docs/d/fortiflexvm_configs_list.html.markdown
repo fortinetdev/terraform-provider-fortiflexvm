@@ -40,6 +40,7 @@ The following attributes are exported:
 The `configs` block contains:
 
 * `fad_vm` - (List of Object) FortiADC Virtual Machine. The structure of [`configs.fad_vm` block](#nestedobjatt--configs--fad_vm) is documented below.
+* `fap_hw` - (List of Object) FortiAP Hardware. The structure of [`configs.fap_hw` block](#nestedobjatt--configs--fap_hw) is documented below.
 * `faz_vm` - (List of Object) FortiAnalyzer Virtual Machine. The structure of [`configs.faz_vm` block](#nestedobjatt--configs--faz_vm) is documented below.
 * `fc_ems_cloud` - (List of Object) FortiClient EMS Cloud. The structure of [`configs.fc_ems_cloud` block](#nestedobjatt--configs--fc_ems_cloud) is documented below.
 * `fc_ems_op` - (List of Object) FortiClient EMS On-Prem. The structure of [`configs.fc_ems_op` block](#nestedobjatt--configs--fc_ems_op) is documented below.
@@ -48,6 +49,7 @@ The `configs` block contains:
 * `fgt_vm_lcs` - (List of Object) FortiGate Virtual Machine (A La Carte Services). The structure of [`configs.fgt_vm_lcs` block](#nestedobjatt--configs--fgt_vm_lcs) is documented below.
 * `fmg_vm` - (List of Object) FortiManager Virtual Machine. The structure of [`configs.fmg_vm` block](#nestedobjatt--configs--fmg_vm) is documented below.
 * `fpc_vm` - (List of Object) FortiPortal Virtual Machine. The structure of [`configs.fpc_vm` block](#nestedobjatt--configs--fpc_vm) is documented below.
+* `fsw_hw` - (List of Object) FortiSwitch Hardware. The structure of [`configs.fsw_hw` block](#nestedobjatt--configs--fsw_hw) is documented below.
 * `fwb_vm` - (List of Object) FortiWeb Virtual Machine. The structure of [`configs.fwb_vm` block](#nestedobjatt--configs--fwb_vm) is documented below.
 * `fwbc_private` - (List of Object) FortiWeb Cloud - Private. The structure of [`configs.fwbc_private` block](#nestedobjatt--configs--fwbc_private) is documented below.
 * `fwbc_public` - (List of Object) FortiWeb Cloud - Public. The structure of [`configs.fwbc_public` block](#nestedobjatt--configs--fwbc_public) is documented below.
@@ -58,6 +60,7 @@ The `configs` block contains:
 * `name` - (String) Configuration name.
 * `product_type` - (String) Configuration type. Possible values: 
   * `FAD_VM`: FortiADC Virtual Machine
+  * `FAP_HW`: FortiAP Hardware
   * `FAZ_VM`: FortiAnalyzer Virtual Machine
   * `FC_EMS_CLOUD`: FortiClient EMS Cloud
   * `FC_EMS_OP`: FortiClient EMS On-Prem
@@ -66,6 +69,7 @@ The `configs` block contains:
   * `FGT_VM_LCS`: FortiGate Virtual Machine - A La Carte Services
   * `FMG_VM`: FortiManager Virtual Machine
   * `FPC_VM`: FortiPortal Virtual Machine
+  * `FSW_HW`: FortiSwitch Hardware
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
@@ -79,7 +83,40 @@ The `configs` block contains:
 The `configs.fad_vm` block contains:
 
 * `cpu_size` - (String) The number of CPUs. The value of this attribute is one of `"1"`, `"2"`, `"4"`, `"8"`, `"16"`, `"32"`.
-* `service_pkg` - (String) The value of this attribute is one of `"FDVSTD"` (Standard), `"FDVADV"` (Advanced) or `"FDVFC247"` (FortiCare Premium).
+* `service_pkg` - (String) The value of this attribute is one of `"FDVFC247"` (FortiCare Premium), `"FDVNET"` (Network Security), `"FDVAPP"` (Application Security),  `"FDVAI"` (AI Security).
+
+
+<a id="nestedobjatt--configs--fap_hw"></a>
+The `configs.fap_hw` block contains:
+
+* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values:
+  * `"FP23JF"`: FortiAP-23JF
+  * `"FP221E"`: FortiAP-221E
+  * `"FP223E"`: FortiAP-223E
+  * `"FP231F"`: FortiAP-231F
+  * `"FP231G"`: FortiAP-231G
+  * `"FP233G"`: FortiAP-233G
+  * `"FP234F"`: FortiAP-234F
+  * `"FP234G"`: FortiAP-234G
+  * `"FP431F"`: FortiAP-431F
+  * `"FP431G"`: FortiAP-431G
+  * `"FP432F"`: FortiAP-432F
+  * `"F432FR"`: FortiAP-432FR
+  * `"FP432G"`: FortiAP-432G
+  * `"FP433F"`: FortiAP-433F
+  * `"FP433G"`: FortiAP-433G
+  * `"FP441K"`: FortiAP-441K
+  * `"FP443K"`: FortiAP-443K
+  * `"FP831F"`: FortiAP-831F
+  * `"PU231F"`: FortiAP-U231F
+  * `"PU234F"`: FortiAP-U234F
+  * `"PU422E"`: FortiAP-U422EV
+  * `"PU431F"`: FortiAP-U431F
+  * `"PU432F"`: FortiAP-U432F
+  * `"PU433F"`: FortiAP-U433F
+* `service_pkg` - (String) Possible values: `"FAPHWFC247"` (FortiCare Premium), `"FAPHWFCEL"` (FortiCare Elite).
+* `addons` - (List of String) Possible values:
+  * `"FAPHWFSFG"`: FortiSASE Cloud Managed AP
 
 
 <a id="nestedobjatt--configs--faz_vm"></a>
@@ -88,6 +125,7 @@ The `configs.faz_vm` block contains:
 * `adom_num` - (Number) Number of ADOMs. A number between 0 and 1200 (inclusive).
 * `daily_storage` - (Number) Daily Storage (GB). A number between 5 and 8300 (inclusive).
 * `support_service` - (String) Support Service. Possible value: `"FAZFC247"` (FortiCare Premium).
+* `addons` - (List of String) The default value is an empty list. Options: `"FAZISSS"` (OT Security Service), `"FAZFGSA"` (Attack Surface Security Service).
 
 
 <a id="nestedobjatt--configs--fc_ems_cloud"></a>
@@ -243,6 +281,65 @@ The `configs.fpc_vm` block contains:
 
 * `managed_dev` - (Number) Number of managed devices. A number between 0 and 100000 (inclusive).
 
+<a id="nestedobjatt--configs--fsw_hw"></a>
+The `configs.fsw_hw` block contains:
+
+* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values: 
+	* `"S108EN"`: FortiSwitch-108E
+  * `"S108EF"`: FortiSwitch-108E-FPOE
+  * `"S108EP"`: FortiSwitch-108E-POE
+  * `"S108FN"`: FortiSwitch-108F
+  * `"S108FF"`: FortiSwitch-108F-FPOE
+  * `"S108FP"`: FortiSwitch-108F-POE
+  * `"S124EN"`: FortiSwitch-124E
+  * `"S124EF"`: FortiSwitch-124E-FPOE
+  * `"S124EP"`: FortiSwitch-124E-POE
+  * `"S124FN"`: FortiSwitch-124F
+  * `"S124FF"`: FortiSwitch-124F-FPOE
+  * `"S124FP"`: FortiSwitch-124F-POE
+  * `"S148EN"`: FortiSwitch-148E
+  * `"S148EP"`: FortiSwitch-148E-POE
+  * `"S148FN"`: FortiSwitch-148F
+  * `"S148FF"`: FortiSwitch-148F-FPOE
+  * `"S148FP"`: FortiSwitch-148F-POE
+  * `"S224DF"`: FortiSwitch-224D-FPOE
+  * `"S224EN"`: FortiSwitch-224E
+  * `"S224EP"`: FortiSwitch-224E-POE
+  * `"S248DN"`: FortiSwitch-248D
+  * `"S248EF"`: FortiSwitch-248E-FPOE
+  * `"S248EP"`: FortiSwitch-248E-POE
+  * `"S424DN"`: FortiSwitch-424D
+  * `"S424DF"`: FortiSwitch-424D-FPOE
+  * `"S424DP"`: FortiSwitch-424D-POE
+  * `"S424EN"`: FortiSwitch-424E
+  * `"S424EF"`: FortiSwitch-424E-FPOE
+  * `"S424EI"`: FortiSwitch-424E-Fiber
+  * `"S424EP"`: FortiSwitch-424E-POE
+  * `"S448DN"`: FortiSwitch-448D
+  * `"S448DP"`: FortiSwitch-448D-POE
+  * `"S448EN"`: FortiSwitch-448E
+  * `"S448EF"`: FortiSwitch-448E-FPOE
+  * `"S448EP"`: FortiSwitch-448E-POE
+  * `"S524DN"`: FortiSwitch-524D
+  * `"S524DF"`: FortiSwitch-524D-FPOE
+  * `"S548DN"`: FortiSwitch-548D
+  * `"S548DF"`: FortiSwitch-548D-FPOE
+  * `"S624FN"`: FortiSwitch-624F
+  * `"S624FF"`: FortiSwitch-624F-FPOE
+  * `"S648FN"`: FortiSwitch-648F
+  * `"S648FF"`: FortiSwitch-648F-FPOE
+  * `"FS1D24"`: FortiSwitch-1024D
+  * `"FS1E24"`: FortiSwitch-1024E
+  * `"FS1D48"`: FortiSwitch-1048D
+  * `"FS1E48"`: FortiSwitch-1048E
+  * `"FS2F48"`: FortiSwitch-2048F
+  * `"FS3D32"`: FortiSwitch-3032D
+  * `"FS3E32"`: FortiSwitch-3032E
+  * `"S426EF"`: FortiSwitch-M426E-FPOE
+  * `"ST1E24"`: FortiSwitch-T1024E
+  * `"SR12DP"`: FortiSwitchRugged-112D-POE
+  * `"SR24DN"`: FortiSwitchRugged-124D
+* `service_pkg` - (String) Possible values: `"FSWHWFC247"` (FortiCare Premium), `"FSWHWFCEL"` (FortiCare Elite).
 
 <a id="nestedobjatt--configs--fwb_vm"></a>
 The `configs.fwb_vm` block contains:
