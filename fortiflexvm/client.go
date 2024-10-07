@@ -1,83 +1,53 @@
 package fortiflexvm
 
 import (
-	"crypto/tls"
-	"fmt"
-	"net/http"
-	"time"
+	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/auth"
-	forticlient "github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/sdkcore"
+	fortisdk "github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/sdkcore"
 )
-
-// Config gets the authentication information from the given metadata
-type Config struct {
-	Username      string
-	Password      string
-	ImportOptions *schema.Set
-}
 
 // FortiClient contains the basic FortiFlex SDK connection information to FortiFlex
 // It can be used to as a client of FortiFlex for the plugin
 type FortiClient struct {
-	Client *forticlient.FortiSDKClient
-	Cfg    *Config
+	Client        *fortisdk.FortiSDKClient
+	ImportOptions *schema.Set // Only used in terraform import
 }
 
-// CreateClient creates a FortiClient Object with the authentication information.
+// providerConfigure creates a FortiClient Object with the authentication information.
 // It returns the FortiClient Object for the use when the plugin is initialized.
-func (c *Config) CreateClient() (interface{}, error) {
-	var fClient FortiClient
-
-	err := createFortiFlexClient(&fClient, c)
+func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+	log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+	username := d.Get("username").(string)
+	password := d.Get("password").(string)
+	client, err := fortisdk.NewClient(username, password)
 	if err != nil {
-		return nil, fmt.Errorf("Error create fortiflex client: %v", err)
+		return nil, err
 	}
-	return &fClient, nil
+	return &FortiClient{
+		Client:        client,
+		ImportOptions: d.Get("import_options").(*schema.Set),
+	}, nil
 }
 
-func createFortiFlexClient(fClient *FortiClient, c *Config) error {
-	config := &tls.Config{}
+func importOptionChecking(ImportOptions *schema.Set, para string) string {
+	v := ImportOptions.List()
+	if len(v) == 0 {
+		return ""
+	}
 
-	auth := auth.NewAuth(c.Username, c.Password)
+	for _, v1 := range v {
+		if v2, ok := v1.(string); ok {
+			v3 := strings.Split(v2, "=")
 
-	if auth.Username == "" {
-		_, err := auth.GetEnvUsername()
-		if err != nil {
-			return fmt.Errorf("Error reading Username")
+			if len(v3) == 2 { // Example "program_serial_number=******"
+				if v3[0] == para {
+					return v3[1]
+				}
+			}
 		}
 	}
 
-	if auth.Password == "" {
-		_, err := auth.GetEnvPassword()
-		if err != nil {
-			return fmt.Errorf("Error reading Password")
-		}
-	}
-
-	tr := &http.Transport{
-		TLSClientConfig: config,
-	}
-
-	client := &http.Client{
-		Transport: tr,
-		Timeout:   time.Second * 250,
-	}
-
-	fc, err := forticlient.NewClient(auth, client)
-
-	if err != nil {
-		return fmt.Errorf("connection error: %v", err)
-	}
-
-	err = fc.GenerateToken()
-	if err != nil {
-		return fmt.Errorf("Fail to generate Token: %v", err)
-	}
-
-	fClient.Cfg = c
-	fClient.Client = fc
-
-	return nil
+	return ""
 }

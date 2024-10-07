@@ -2,6 +2,7 @@ package forticlient
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,96 +11,69 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
-	"strings"
+	"time"
 
-	"github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/auth"
-	"github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/config"
-	"github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/request"
-	// "strconv"
+	auth "github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/auth"
+	request "github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/request"
 )
-
-// MultValue describes the nested structure in the results
-type MultValue struct {
-	Name string `json:"name"`
-}
-
-// MultValues describes the nested structure in the results
-type MultValues []MultValue
 
 // FortiSDKClient describes the global FortiFlex plugin client instance
 type FortiSDKClient struct {
-	Config  config.Config
-	Retries int
-}
-
-// ExtractString extracts strings from result and put them into a string array,
-// and return the string array
-func ExtractString(members []MultValue) []string {
-	vs := make([]string, 0, len(members))
-	for _, v := range members {
-		c := v.Name
-		vs = append(vs, c)
-	}
-	return vs
-}
-
-func escapeURLString(v string) string { // doesn't support "<>()"'#"
-	return strings.Replace(url.QueryEscape(v), "+", "%20", -1)
+	Auth    *auth.Auth
+	HTTPCon *http.Client
 }
 
 // NewClient initializes a new global plugin client
 // It returns the created client object
-func NewClient(auth *auth.Auth, client *http.Client) (*FortiSDKClient, error) {
-	c := &FortiSDKClient{}
-
-	c.Config.Auth = auth
-	c.Config.HTTPCon = client
-
-	return c, nil
+func NewClient(username string, password string) (*FortiSDKClient, error) {
+	author, err := auth.NewAuth(username, password)
+	if err != nil {
+		return nil, err
+	}
+	client := &FortiSDKClient{
+		Auth: author,
+		HTTPCon: &http.Client{
+			Transport: &http.Transport{TLSClientConfig: &tls.Config{}},
+			Timeout:   time.Second * 250,
+		},
+	}
+	err = client.generateToken()
+	if err != nil {
+		return nil, fmt.Errorf("Fail to generate Token: %v", err)
+	}
+	return client, nil
 }
 
-// NewRequest creates the request to FortiFlex for the client
-// and return it to the client
-func (c *FortiSDKClient) NewRequest(method string, path string, params interface{}, data *bytes.Buffer) *request.Request {
-	return request.New(c.Config, method, path, params, data)
-}
-
-// GenerateToken() generate token from the Device
+// generateToken() generate token from the Device
 // It returns the token
-func (c *FortiSDKClient) GenerateToken() error {
+func (client *FortiSDKClient) generateToken() error {
 	var err error
 
 	data := map[string]string{
-		"username":   c.Config.Auth.Username,
-		"password":   c.Config.Auth.Password,
+		"username":   client.Auth.Username,
+		"password":   client.Auth.Password,
 		"client_id":  "flexvm",
 		"grant_type": "password",
 	}
 
 	dataJson, err := json.Marshal(data)
 	if err != nil {
-		err = fmt.Errorf("Could not marshal login data: %s", err)
+		err = fmt.Errorf("Could not login: %s", err)
 		return err
 	}
 
-	dataBytes := bytes.NewBuffer(dataJson)
-
-	req := c.NewRequest("POST", "", nil, dataBytes)
-	req.HTTPRequest.Header.Set("Content-Type", "application/json")
+	req := request.NewRequest(client.Auth, client.HTTPCon, "POST", "", nil, bytes.NewBuffer(dataJson))
 	u := "https://customerapiauth.fortinet.com/api/v1/oauth/token/"
-
 	req.HTTPRequest.URL, err = url.Parse(u)
 	if err != nil {
 		err = fmt.Errorf("Could not parse URL: %s", err)
 		return err
 	}
 
-	rsp, err := req.Config.HTTPCon.Do(req.HTTPRequest)
-
+	rsp, err := req.HTTPCon.Do(req.HTTPRequest)
 	body, err := ioutil.ReadAll(rsp.Body)
-	rsp.Body.Close() //#
-	log.Printf("FortiFlex login: %s", string(body))
-
+	rsp.Body.Close()
+	log.Printf("[INFO] FortiFlex login response: %s", string(body))
 	if err != nil || body == nil {
 		err = fmt.Errorf("cannot get response body %v", err)
 		return err
@@ -107,31 +81,14 @@ func (c *FortiSDKClient) GenerateToken() error {
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(string(body)), &result)
-	// err = fortiAPIErrorFormat(result, string(body))
-
-	if err == nil {
-		if result["access_token"] != nil && result["access_token"] != "" {
-			c.Config.Auth.Token = result["access_token"].(string)
-		} else {
-			err = fmt.Errorf("Can not get Token.")
-			return err
-		}
+	if result["access_token"] != nil && result["access_token"] != "" {
+		client.Auth.Token = result["access_token"].(string)
+	} else {
+		err = fmt.Errorf("Can not get Token.")
+		return err
 	}
 
 	return nil
-}
-
-func fortiAPIHttpStatus404Checking(result map[string]interface{}) (b404 bool) {
-	b404 = false
-
-	if result != nil {
-		if result["http_status"] != nil && result["http_status"] == 404.0 {
-			b404 = true
-			return
-		}
-	}
-
-	return
 }
 
 func fortiAPIErrorFormat(result map[string]interface{}, body string) (err error) {
@@ -278,6 +235,26 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fortisase", "dedicated_ips", "int"
 	case 52:
 		return "fortiedr", "addons", "list"
+	case 53:
+		return "fsw_hw", "device_model", "string"
+	case 54:
+		return "fsw_hw", "service_pkg", "string"
+	case 55:
+		return "fap_hw", "device_model", "string"
+	case 56:
+		return "fap_hw", "service_pkg", "string"
+	case 57:
+		return "fap_hw", "addons", "list"
+	case 58:
+		return "faz_vm", "addons", "list"
+	case 59:
+		return "fortisase", "additional_compute_region", "int"
+	case 66:
+		return "siem_cloud", "compute_units", "int"
+	case 67:
+		return "siem_cloud", "additional_online_storage", "int"
+	case 68:
+		return "siem_cloud", "archive_storage", "int"
 	default:
 		return "", "", ""
 	}

@@ -74,7 +74,7 @@ The following attribute is exported:
 * `id` - (String) The ID of the resource. Its value will be {serial_number}.{config_id}. For example: "FEMSPO8823000143.3196"
 * `serial_number` - (String) The ID of the cloud entitlement.
 * `start_date` - (String) Start date. Its format is `YYYY-MM-DDThh:mm:ss.sss`. For example: "2024-07-07T14:32:09.873".
-* `status` (String) Four possible values: "PENDING", "ACTIVE", "EXPIRED" and "STOPPED". This attribute can be set as "ACTIVE" or "STOPPED" manually.
+* `status` - (String) Four possible values: "PENDING", "ACTIVE", "EXPIRED" and "STOPPED". This attribute can be set as "ACTIVE" or "STOPPED" manually.
 
 ## Import
 

@@ -1,4 +1,4 @@
-// Copyright 2023 Fortinet, Inc. All rights reserved.
+// Copyright 2023-2024 Fortinet, Inc. All rights reserved.
 // Author: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 // Documentation: Xing Li (@lix-fortinet), Xinwei Du (@dux-fortinet), Hongbin Lu (@fgtdev-hblu)
 
@@ -25,14 +25,15 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",
-				Description: "",
+				Description: "The API password.",
 			},
 
 			"import_options": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeSet,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Optional:    true,
+				Computed:    true,
+				Description: "Used in terraform import. Check fortiflexvm_config document for usage.",
 			},
 		},
 
@@ -56,17 +57,4 @@ func Provider() *schema.Provider {
 
 		ConfigureFunc: providerConfigure,
 	}
-}
-
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-
-	// Init client config with the values from TF files
-	config := Config{
-		Username:      d.Get("username").(string),
-		Password:      d.Get("password").(string),
-		ImportOptions: d.Get("import_options").(*schema.Set),
-	}
-
-	// Create Client for later connections
-	return config.CreateClient()
 }

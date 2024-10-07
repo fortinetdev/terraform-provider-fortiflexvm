@@ -213,6 +213,7 @@ resource "fortiflexvm_config" "example12" {
     service_pkg   = "FSASESTD" # "FSASESTD" (Standard) or "FSASEADV" (Advanced)
     bandwidth     = 1000       # Number between 25 and 10,000
     dedicated_ips = 4          # Number between 4 and 65,534 (inclusive)
+    # additional_compute_region = 0 # It can be scaled up in an increment of 1 but scaling down is NOT allowed.
   }
 }
 
@@ -258,6 +259,19 @@ resource "fortiflexvm_config" "example15" {
   }
 }
 
+resource "fortiflexvm_config" "example16" {
+  product_type          = "SIEM_CLOUD"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "SIEM_CLOUD_example"
+  siem_cloud {
+    compute_units = 10               # Number between 10 and 600 (inclusive). Value should be divisible by 10.
+    additional_online_storage =  500 # Number between 500 and 60,000 (inclusive). Value should be divisible by 500.
+                                     # It can be scaled up in an increment of 500 but scaling down is NOT allowed.
+    archive_storage = 0              # Number between 0 and 60,000 (inclusive). Value should be divisible by 500.
+                                     # It can be scaled up in an increment of 500 but scaling down is NOT allowed.
+  }
+}
+
 ```
 
 ## Argument Reference
@@ -266,7 +280,7 @@ The following arguments are supported:
 
 * `account_id` - (Optional/Number) Account ID. Once the fortiflexvm_config is created, you can't change the account ID of this configuration by changing `account_id`.
 * `config_id` - (Optional/Number) Configuration ID. If you specify this argument, this resource will import this configuration rather than create a new one.
-* `product_type` (Required/String) Product type, must be one of the following options:
+* `product_type` - (Required/String) Product type, must be one of the following options:
   * `FAD_VM`: FortiADC Virtual Machine
   * `FAP_HW`: FortiAP Hardware
   * `FAZ_VM`: FortiAnalyzer Virtual Machine
@@ -283,6 +297,7 @@ The following arguments are supported:
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
   * `FORTISASE`: FortiSASE
   * `FORTIEDR`: FortiEDR
+  * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (Required/String) The serial number of your FortiFlex Program. This serial number should start with `"ELAVMR"`.
 * `name` - (Required unless you only update the status/String) The name of your configuration.
 * `status` - (Optional/String) Configuration status. If you don't specify, the configuration status keeps unchanged. The default status is `ACTIVE` once you create a configuration. It must be one of the following options:
@@ -304,6 +319,7 @@ The following arguments are supported:
 * `fwbc_public` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PUBLIC"`. The structure of [`fwbc_public` block](#nestedblock--fwbc_public) is documented below.
 * `fortisase` - (Block List) You must fill in this block if your `product_type` is `"FORTISASE"`. The structure of [`fortisase` block](#nestedblock--fortisase) is documented below.
 * `fortiedr` - (Block List) You must fill in this block if your `product_type` is `"FORTIEDR"`. The structure of [`fortiedr` block](#nestedblock--fortiedr) is documented below.
+* `siem_cloud` - (Block List) You must fill in this block if your `product_type` is `"SIEM_CLOUD"`. The structure of [`siem_cloud` block](#nestedblock--siem_cloud) is documented below.
 
 <a id="nestedblock--fad_vm"></a>
 The `fad_vm` block contains:
@@ -591,6 +607,7 @@ The `fortisase` block contains:
 * `service_pkg` - (Required if `product_type = "FORTISASE"`/String) `"FSASESTD"` (Standard) or `"FSASEADV"` (Advanced).
 * `bandwidth` - (Required if `product_type = "FORTISASE"`/Number) Mbps. Number between 25 and 10,000 (inclusive).
 * `dedicated_ips` - (Required if `product_type = "FORTISASE"`/Number) Number between 4 and 65,534 (inclusive).
+* `additional_compute_region` - (Optional) The 'Additional Compute Region' can be scaled up in an increment of 1 but scaling down is NOT allowed.
 
 <a id="nestedblock--fortiedr"></a>
 The `fortisase` block contains:
@@ -599,6 +616,13 @@ The `fortisase` block contains:
 * `endpoints` - (Read only/Number) Number of endpoints. Read only.
 * `addons` - (Optional/List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).
 
+
+<a id="nestedblock--siem_cloud"></a>
+The `siem_cloud` block contains:
+
+* `compute_units` - (Required if `product_type = "SIEM_CLOUD"`/Number) Number of Compute Units. Number between 10 and 600 (inclusive). Value should be divisible by 10.
+* `additional_online_storage` - (Required if `product_type = "SIEM_CLOUD"`/Number) Additional Online Storage. Number between 500 and 60,000 (inclusive). Value should be divisible by 500. The 'Additional Online Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
+* `archive_storage` - (Optional/Number) Additional Online Storage. Number between 0 and 60,000 (inclusive). Value should be divisible by 500. The 'Archive Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
 
 ## Attribute Reference
 

@@ -378,6 +378,10 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeInt,
 										Computed: true,
 									},
+									"additional_compute_region": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
 								},
 							},
 						},
@@ -398,6 +402,30 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeList,
 										Computed: true,
 										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
+						"siem_cloud": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"compute_units": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+										Computed: true,
+									},
+									"additional_online_storage": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+										Computed: true,
+									},
+									"archive_storage": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+										Computed: true,
 									},
 								},
 							},

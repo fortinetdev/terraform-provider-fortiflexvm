@@ -67,7 +67,7 @@ resource "fortiflexvm_retrieve_vm_group" "task1" {
 * `refresh_token_when_destroy` - (Optinal/Boolean) Default value is true. If it is true, the token of all entitlements will be refreshed when you use `terraform destroy`.
 * `refresh_token_when_create` - (Optinal/Boolean) Default value is false. If it is true, the token of all entitlements will be refreshed when you use `terraform apply` and create the resource.
 * `retrieve_status` - (Optinal/List of string) The entitlements with what status you want to retrieve. The default value is ["STOPPED"]. You can set it as ["STOPPED", "PENDING"] if you want to retrieve both "STOPPED" and "PENDING" entitlements.
-* `require_exact_count`- (Optinal/Boolean) Default value is false. If it is true and the resource retrieves less than (count_num) entitlements, it will release retrieved entitlements and report an error.
+* `require_exact_count` - (Optinal/Boolean) Default value is false. If it is true and the resource retrieves less than (count_num) entitlements, it will release retrieved entitlements and report an error.
 
 
 ## Attribute Reference

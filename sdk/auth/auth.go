@@ -13,16 +13,29 @@ type Auth struct {
 }
 
 // NewAuth inits Auth object with the given metadata
-func NewAuth(username, password string) *Auth {
-	return &Auth{
+func NewAuth(username, password string) (*Auth, error) {
+	auth := &Auth{
 		Username: username,
 		Password: password,
 	}
+	if auth.Username == "" {
+		_, err := auth.getEnvUsername()
+		if err != nil {
+			return nil, fmt.Errorf("Error reading Username")
+		}
+	}
+	if auth.Password == "" {
+		_, err := auth.getEnvPassword()
+		if err != nil {
+			return nil, fmt.Errorf("Error reading Password")
+		}
+	}
+	return auth, nil
 }
 
-// GetEnvPassword gets password from OS environment
+// getEnvPassword gets password from OS environment
 // It returns the password
-func (m *Auth) GetEnvPassword() (string, error) {
+func (m *Auth) getEnvPassword() (string, error) {
 	password := os.Getenv("FORTIFLEX_ACCESS_PASSWORD")
 
 	if password == "" {
@@ -34,9 +47,9 @@ func (m *Auth) GetEnvPassword() (string, error) {
 	return password, nil
 }
 
-// GetEnvUsername gets username from OS environment
+// getEnvUsername gets username from OS environment
 // It returns the username
-func (m *Auth) GetEnvUsername() (string, error) {
+func (m *Auth) getEnvUsername() (string, error) {
 	h := os.Getenv("FORTIFLEX_ACCESS_USERNAME")
 
 	if h == "" {

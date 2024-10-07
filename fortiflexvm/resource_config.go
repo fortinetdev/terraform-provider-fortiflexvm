@@ -65,11 +65,12 @@ func resourceConfig() *schema.Resource {
 				FWBC_PRIVATE: FortiWeb Cloud - Private;
 				FWBC_PUBLIC: FortiWeb Cloud - Public;
 				FC_EMS_CLOUD: FortiClient EMS Cloud;
+				SIEM_CLOUD: FortiSIEM Cloud;
 				FORTISASE: FortiSASE;
 				FORTIEDR: FortiEDR.`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
 					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FAP_HW", "FSW_HW",
-					"FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR"}),
+					"FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR", "SIEM_CLOUD"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -466,6 +467,11 @@ func resourceConfig() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"additional_compute_region": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -489,6 +495,30 @@ func resourceConfig() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
+			"siem_cloud": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"compute_units": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"additional_online_storage": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"archive_storage": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -631,7 +661,7 @@ func resourceConfigRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 
 	if d.Get("program_serial_number") == "" {
-		psn := importOptionChecking(m.(*FortiClient).Cfg, "program_serial_number")
+		psn := importOptionChecking(m.(*FortiClient).ImportOptions, "program_serial_number")
 		if err := d.Set("program_serial_number", psn); err != nil {
 			return fmt.Errorf("error set params program_serial_number: %v", err)
 		}

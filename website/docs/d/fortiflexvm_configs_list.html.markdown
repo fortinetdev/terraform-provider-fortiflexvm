@@ -55,6 +55,7 @@ The `configs` block contains:
 * `fwbc_public` - (List of Object) FortiWeb Cloud - Public. The structure of [`configs.fwbc_public` block](#nestedobjatt--configs--fwbc_public) is documented below.
 * `fortisase` - (List of Object) FortiSASE. The structure of [`configs.fortisase` block](#nestedobjatt--configs--fortisase) is documented below.
 * `fortiedr` - (List of Object) FortiEDR. The structure of [`configs.fortiedr` block](#nestedobjatt--configs--fortiedr) is documented below.
+* `siem_cloud` - (List of Object) FortiSIEM Cloud. The structure of [`configs.siem_cloud` block](#nestedobjatt--configs--siem_cloud) is documented below.
 * `account_id` - (Optional/Number) Account ID.
 * `id` - (Number) The unqiue number of the configuration.
 * `name` - (String) Configuration name.
@@ -75,6 +76,7 @@ The `configs` block contains:
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
   * `FORTISASE`: FortiSASE
   * `FORTIEDR`: FortiEDR
+  * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (String) The unique serial number of the FortiFlex Program this configuration belongs to.
 * `status` - (String) The status of this configuration. `ACTIVATE` or `DISABLED`.
 
@@ -368,6 +370,7 @@ The `configs.fortisase` block contains:
 * `service_pkg` - (String) `"FSASESTD"` (Standard) or `"FSASEADV"` (Advanced).
 * `bandwidth` - (Number) Mbps. Number between 25 and 10,000 (inclusive).
 * `dedicated_ips` - (Number) Number between 4 and 65,534 (inclusive).
+* `additional_compute_region` - (Number) The 'Additional Compute Region' can be scaled up in an increment of 1 but scaling down is NOT allowed.
 
 <a id="nestedobjatt--configs--fortiedr"></a>
 The `configs.fortiedr` block contains:
@@ -375,3 +378,10 @@ The `configs.fortiedr` block contains:
 * `service_pkg` - (String) `"FEDRPDR"` (Discover/Protect/Respond).
 * `endpoints` - (Number) Number of endpoints. Read only.
 * `addons` - (List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).
+
+<a id="nestedobjatt--configs--siem_cloud"></a>
+The `configs.siem_cloud` block contains:
+
+* `compute_units` - (Number) Number of Compute Units. Number between 10 and 600 (inclusive). Value should be divisible by 10.
+* `additional_online_storage` - (Number) Additional Online Storage. Number between 500 and 60,000 (inclusive). Value should be divisible by 500. The 'Additional Online Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
+* `archive_storage` - (Number) Additional Online Storage. Number between 0 and 60,000 (inclusive). Value should be divisible by 500. The 'Archive Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.

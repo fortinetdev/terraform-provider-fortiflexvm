@@ -61,6 +61,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 205
 	case "FORTIEDR":
 		return 206
+	case "SIEM_CLOUD":
+		return 209
 	default:
 		return 0
 	}
@@ -100,6 +102,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTISASE"
 	case 206:
 		return "FORTIEDR"
+	case 209:
+		return "SIEM_CLOUD"
 	default:
 		return ""
 	}
@@ -213,6 +217,14 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fap_hw", "addons", "list"
 	case 58:
 		return "faz_vm", "addons", "list"
+	case 59:
+		return "fortisase", "additional_compute_region", "int"
+	case 66:
+		return "siem_cloud", "compute_units", "int"
+	case 67:
+		return "siem_cloud", "additional_online_storage", "int"
+	case 68:
+		return "siem_cloud", "archive_storage", "int"
 	default:
 		return "", "", ""
 	}
@@ -390,6 +402,8 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 50
 		case "dedicated_ips":
 			return 51
+		case "additional_compute_region":
+			return 59
 		default:
 			return 0
 		}
@@ -401,6 +415,17 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 47
 		case "addons":
 			return 52
+		default:
+			return 0
+		}
+	case "siem_cloud":
+		switch c_name {
+		case "compute_units":
+			return 66
+		case "additional_online_storage":
+			return 67
+		case "archive_storage":
+			return 68
 		default:
 			return 0
 		}
@@ -426,27 +451,6 @@ func isInterfaceEmpty(i interface{}) bool {
 	default:
 		return false
 	}
-}
-
-func importOptionChecking(c *Config, para string) string {
-	v := c.ImportOptions.List()
-	if len(v) == 0 {
-		return ""
-	}
-
-	for _, v1 := range v {
-		if v2, ok := v1.(string); ok {
-			v3 := strings.Split(v2, "=")
-
-			if len(v3) == 2 { // Example "program_serial_number=******"
-				if v3[0] == para {
-					return v3[1]
-				}
-			}
-		}
-	}
-
-	return ""
 }
 
 func contains(str_list []string, target string) bool {
