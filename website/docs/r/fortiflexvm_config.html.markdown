@@ -272,6 +272,18 @@ resource "fortiflexvm_config" "example16" {
   }
 }
 
+resource "fortiflexvm_config" "example17" {
+  product_type          = "FORTIRECON"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FORTIRECON_example"
+  fortirecon {
+    service_pkg   = "FRNEASM" # "FRNEASM", "FRNEASMBP" or "FRNEASMBPACI"
+    asset_num     = 200       # Number of Monitored Assets. Number between 200 and 1,000,000 (inclusive). Value should be divisible by 50.
+    network_num   = 0         # Internal Attack Surface Monitoring. Number between 0 and 100 (inclusive)
+    executive_num = 0         # Executive Monitoring. Number between 0 and 1,000 (inclusive). This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
+    vendor_num    = 0         # Vendor Monitoring. Number between 0 and 1,000 (inclusive) This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
+  }
+}
 ```
 
 ## Argument Reference
@@ -297,6 +309,7 @@ The following arguments are supported:
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
   * `FORTISASE`: FortiSASE
   * `FORTIEDR`: FortiEDR
+  * `FORTIRECON`: FortiRecon
   * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (Required/String) The serial number of your FortiFlex Program. This serial number should start with `"ELAVMR"`.
 * `name` - (Required unless you only update the status/String) The name of your configuration.
@@ -319,6 +332,7 @@ The following arguments are supported:
 * `fwbc_public` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PUBLIC"`. The structure of [`fwbc_public` block](#nestedblock--fwbc_public) is documented below.
 * `fortisase` - (Block List) You must fill in this block if your `product_type` is `"FORTISASE"`. The structure of [`fortisase` block](#nestedblock--fortisase) is documented below.
 * `fortiedr` - (Block List) You must fill in this block if your `product_type` is `"FORTIEDR"`. The structure of [`fortiedr` block](#nestedblock--fortiedr) is documented below.
+* `fortirecon` - (Block List) You must fill in this block if your `product_type` is `"FORTIRECON"`. The structure of [`fortirecon` block](#nestedblock--fortirecon) is documented below.
 * `siem_cloud` - (Block List) You must fill in this block if your `product_type` is `"SIEM_CLOUD"`. The structure of [`siem_cloud` block](#nestedblock--siem_cloud) is documented below.
 
 <a id="nestedblock--fad_vm"></a>
@@ -616,6 +630,17 @@ The `fortisase` block contains:
 * `endpoints` - (Read only/Number) Number of endpoints. Read only.
 * `addons` - (Optional/List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).
 
+<a id="nestedblock--fortirecon"></a>
+The `fortisase` block contains:
+
+* `service_pkg` - (Required if `product_type = "FORTITRECON"`/String) Possible values are:
+  * `"FRNEASM"` (External Attack Surface Monitoring)
+  * `"FRNEASMBP"` (External Attack Surface Monitoring & Brand Protect)
+  * `"FRNEASMBPACI"` (External Attack Surface Monitoring & Brand Protect & Adversary Centric Intelligence)
+* `asset_num` - (Required if `product_type = "FORTITRECON"`/Number) Number of Monitored Assets. Number between 200 and 1,000,000 (inclusive). Value should be divisible by 50.
+* `network_num` - (Optional/Number) Internal Attack Surface Monitoring. Number between 0 and 100 (inclusive)
+* `executive_num` - (Optional/Number) Executive Monitoring. Number between 0 and 1,000 (inclusive). This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
+* `vendor_num` - (Optional/Number) Vendor Monitoring. Number between 0 and 1,000 (inclusive) This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
 
 <a id="nestedblock--siem_cloud"></a>
 The `siem_cloud` block contains:

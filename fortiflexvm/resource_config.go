@@ -67,10 +67,11 @@ func resourceConfig() *schema.Resource {
 				FC_EMS_CLOUD: FortiClient EMS Cloud;
 				SIEM_CLOUD: FortiSIEM Cloud;
 				FORTISASE: FortiSASE;
-				FORTIEDR: FortiEDR.`,
+				FORTIEDR: FortiEDR;
+				FORTIRECOND: FortiRecon.`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
 					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FGT_HW", "FAP_HW", "FSW_HW",
-					"FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR", "SIEM_CLOUD"}),
+					"FWBC_PRIVATE", "FWBC_PUBLIC", "FORTISASE", "FORTIEDR", "FORTIRECON", "SIEM_CLOUD"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -499,6 +500,40 @@ func resourceConfig() *schema.Resource {
 					},
 				},
 			},
+			"fortirecon": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"asset_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"network_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"executive_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"vendor_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"siem_cloud": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -898,7 +933,7 @@ func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) 
 	typeId := convProductTypeName2Id(v.(string))
 	if typeId == 0 {
 		err := fmt.Errorf("product_type invalid: %v, should be one of [%v]", v.(string),
-			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FGT_HW, FWBC_PRIVATE, FWBC_PUBLIC, FC_EMS_CLOUD, FORTISASE, FORTIEDR")
+			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FGT_HW, FWBC_PRIVATE, FWBC_PUBLIC, FC_EMS_CLOUD, FORTISASE, FORTIEDR, FORTIRECON")
 		return typeId, err
 	}
 	return typeId, nil

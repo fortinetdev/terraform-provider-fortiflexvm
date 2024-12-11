@@ -118,7 +118,7 @@ func fortiAPIErrorFormat(result map[string]interface{}, body string) (err error)
 func replaceMessage(result map[string]interface{}) map[string]interface{} {
 	if result["message"] != nil {
 		message := fmt.Sprintf("%v", result["message"])
-		re, compile_err := regexp.Compile(`Parameter id (\d+)`)
+		re, compile_err := regexp.Compile(`(?i)Parameter id (\d+)`)
 		if compile_err != nil {
 			return result
 		}
@@ -249,6 +249,16 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "faz_vm", "addons", "list"
 	case 59:
 		return "fortisase", "additional_compute_region", "int"
+	case 61:
+		return "fortirecon", "service_pkg", "string"
+	case 62:
+		return "fortirecon", "asset_num", "int"
+	case 63:
+		return "fortirecon", "network_num", "int"
+	case 64:
+		return "fortirecon", "executive_num", "int"
+	case 65:
+		return "fortirecon", "vendor_num", "int"
 	case 66:
 		return "siem_cloud", "compute_units", "int"
 	case 67:

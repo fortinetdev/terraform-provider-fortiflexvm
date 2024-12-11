@@ -55,6 +55,7 @@ The `configs` block contains:
 * `fwbc_public` - (List of Object) FortiWeb Cloud - Public. The structure of [`configs.fwbc_public` block](#nestedobjatt--configs--fwbc_public) is documented below.
 * `fortisase` - (List of Object) FortiSASE. The structure of [`configs.fortisase` block](#nestedobjatt--configs--fortisase) is documented below.
 * `fortiedr` - (List of Object) FortiEDR. The structure of [`configs.fortiedr` block](#nestedobjatt--configs--fortiedr) is documented below.
+* `fortirecon` - (List of Object) FortiRecon. The structure of [`configs.fortirecon` block](#nestedobjatt--configs--fortirecon) is documented below.
 * `siem_cloud` - (List of Object) FortiSIEM Cloud. The structure of [`configs.siem_cloud` block](#nestedobjatt--configs--siem_cloud) is documented below.
 * `account_id` - (Optional/Number) Account ID.
 * `id` - (Number) The unqiue number of the configuration.
@@ -76,6 +77,7 @@ The `configs` block contains:
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
   * `FORTISASE`: FortiSASE
   * `FORTIEDR`: FortiEDR
+  * `FORTIREDON`: FortiRecon
   * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (String) The unique serial number of the FortiFlex Program this configuration belongs to.
 * `status` - (String) The status of this configuration. `ACTIVATE` or `DISABLED`.
@@ -378,6 +380,15 @@ The `configs.fortiedr` block contains:
 * `service_pkg` - (String) `"FEDRPDR"` (Discover/Protect/Respond).
 * `endpoints` - (Number) Number of endpoints. Read only.
 * `addons` - (List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).
+
+<a id="nestedobjatt--configs--fortirecon"></a>
+The `configs.fortirecon` block contains:
+
+* `service_pkg` - (String) `"FRNEASM"` (External Attack Surface Monitoring), `"FRNEASMBP"` (External Attack Surface Monitoring & Brand Protect), `"FRNEASMBPACI"` (External Attack Surface Monitoring & Brand Protect & Adversary Centric Intelligence)
+* `asset_num` - (Number) Number of Monitored Assets. Number between 200 and 1,000,000 (inclusive). Value should be divisible by 50.
+* `network_num` - (Number) Internal Attack Surface Monitoring. Number between 0 and 100 (inclusive)
+* `executive_num` - (Number) Executive Monitoring. Number between 0 and 1,000 (inclusive). This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
+* `vendor_num` - (Number) Vendor Monitoring. Number between 0 and 1,000 (inclusive) This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
 
 <a id="nestedobjatt--configs--siem_cloud"></a>
 The `configs.siem_cloud` block contains:

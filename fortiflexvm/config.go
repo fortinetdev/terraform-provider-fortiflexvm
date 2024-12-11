@@ -11,7 +11,7 @@ import (
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
 	"fpc_vm", "fad_vm", "fgt_hw", "fap_hw", "fsw_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud",
-	"fortisase", "fortiedr"}
+	"fortisase", "fortiedr", "fortirecon"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -61,6 +61,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 205
 	case "FORTIEDR":
 		return 206
+	case "FORTIRECON":
+		return 208
 	case "SIEM_CLOUD":
 		return 209
 	default:
@@ -102,6 +104,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTISASE"
 	case 206:
 		return "FORTIEDR"
+	case 208:
+		return "FORTIRECON"
 	case 209:
 		return "SIEM_CLOUD"
 	default:
@@ -219,6 +223,16 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "faz_vm", "addons", "list"
 	case 59:
 		return "fortisase", "additional_compute_region", "int"
+	case 61:
+		return "fortirecon", "service_pkg", "string"
+	case 62:
+		return "fortirecon", "asset_num", "int"
+	case 63:
+		return "fortirecon", "network_num", "int"
+	case 64:
+		return "fortirecon", "executive_num", "int"
+	case 65:
+		return "fortirecon", "vendor_num", "int"
 	case 66:
 		return "siem_cloud", "compute_units", "int"
 	case 67:
@@ -415,6 +429,21 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 47
 		case "addons":
 			return 52
+		default:
+			return 0
+		}
+	case "fortirecon":
+		switch c_name {
+		case "service_pkg":
+			return 61
+		case "asset_num":
+			return 62
+		case "network_num":
+			return 63
+		case "executive_num":
+			return 64
+		case "vendor_num":
+			return 65
 		default:
 			return 0
 		}

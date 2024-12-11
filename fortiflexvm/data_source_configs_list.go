@@ -406,6 +406,34 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fortirecon": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"asset_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"network_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"executive_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"vendor_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+								},
+							},
+						},
 						"siem_cloud": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,

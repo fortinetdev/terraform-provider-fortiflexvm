@@ -1,10 +1,18 @@
 ## 2.4.0 (Unreleased)
 
+
+## 2.3.4 (December 11, 2024)
+
+IMPROVEMENTS:
+
+* Supported 1 new configuration: `FortiRecon`.
+
+
 ## 2.3.3 (October 7, 2024)
 
 IMPROVEMENTS:
 
-* Supported 1 new configurations: `FortiSIEM Cloud` (`siem_cloud`)
+* Supported 1 new configuration: `FortiSIEM Cloud` (`siem_cloud`)
 * Added `additional_compute_region` to `fortisase` configuration.
 * Improved SDK logic.
 
