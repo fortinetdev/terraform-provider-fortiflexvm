@@ -11,6 +11,8 @@ Get next available (unused) token.
 
 Returns first available token by asset folder or Configuration id (or both can be specified in the request).
 
+~> For ephemeral fortiflexvm_groups_nexttoken, please check [here](https://github.com/fortinetdev/terraform-provider-fortiflexvm/blob/main/website/docs/ephemeral-resources/fortiflexvm_groups_nexttoken.html.markdown).
+
 ## Example Usage
 
 ```hcl

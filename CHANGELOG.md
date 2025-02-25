@@ -1,4 +1,10 @@
-## 2.4.1 (Unreleased)
+## 2.4.2 (Unreleased)
+
+## 2.4.1 (February 26, 2025)
+
+IMPROVEMENTS:
+
+* Improved documentation. No change in functionality.
 
 ## 2.4.0 (February 25, 2025)
 

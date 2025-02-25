@@ -37,8 +37,7 @@ resource "fortios_system_license_fortiflex" "test" {
 }
 ```
 
->[!NOTE]
-Write_only attribute supported on Terraform 1.11.0+. If you want to use resource `fortios_system_license_fortiflex`, make sure you have Terraform version  1.11.0+.
+~> Write_only attribute supported on Terraform 1.11.0+. If you want to use resource `fortios_system_license_fortiflex`, make sure you have Terraform version  1.11.0+.
 
 ## Argument Reference
 
