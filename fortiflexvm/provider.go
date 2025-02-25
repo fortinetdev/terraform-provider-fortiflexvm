@@ -17,22 +17,20 @@ func Provider() *schema.Provider {
 			"username": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "",
 				Description: "The API username.",
 			},
 
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "",
 				Description: "The API password.",
 			},
 
 			"import_options": &schema.Schema{
-				Type:        schema.TypeSet,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				// Computed:    true,
 				Description: "Used in terraform import. Check fortiflexvm_config document for usage.",
 			},
 		},

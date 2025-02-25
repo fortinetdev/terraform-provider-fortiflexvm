@@ -1,5 +1,10 @@
-## 2.4.0 (Unreleased)
+## 2.4.1 (Unreleased)
 
+## 2.4.0 (February 25, 2025)
+
+FEATURES:
+
+* **New Ephemeral Resource:** `fortiflexvm_groups_nexttoken`
 
 ## 2.3.4 (December 11, 2024)
 

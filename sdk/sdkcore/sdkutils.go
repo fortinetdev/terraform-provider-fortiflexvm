@@ -104,6 +104,5 @@ func sendRequest(client *FortiSDKClient, method string, path string, params *map
 		}
 		break
 	}
-	log.Printf("[INFO] Response '%s' | %s", path, string(body))
 	return result, string(body), err
 }
