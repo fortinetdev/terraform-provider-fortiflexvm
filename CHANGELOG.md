@@ -1,4 +1,10 @@
-## 2.4.2 (Unreleased)
+## 2.4.3 (Unreleased)
+
+## 2.4.2 (May 29, 2025)
+
+IMPROVEMENTS:
+
+* Supported 3 new configurations: `FORTISOAR_VM`, `FORTIMAIL_VM`, `FORTINDR_CLOUD`.
 
 ## 2.4.1 (February 26, 2025)
 

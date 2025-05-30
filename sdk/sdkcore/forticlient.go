@@ -249,6 +249,8 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "faz_vm", "addons", "list"
 	case 59:
 		return "fortisase", "additional_compute_region", "int"
+	case 60:
+		return "fortindr_cloud", "metered_usage", "int" // Read only
 	case 61:
 		return "fortirecon", "service_pkg", "string"
 	case 62:
@@ -265,6 +267,22 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "siem_cloud", "additional_online_storage", "int"
 	case 68:
 		return "siem_cloud", "archive_storage", "int"
+	case 69:
+		return "fortisoar_vm", "service_pkg", "string"
+	case 70:
+		return "fortisoar_vm", "additional_users_license", "int"
+	case 71:
+		return "fortisoar_vm", "addons", "list"
+	case 72:
+		return "fortisase", "locations", "int"
+	case 73:
+		return "fortimail_vm", "cpu_size", "string"
+	case 74:
+		return "fortimail_vm", "service_pkg", "string"
+	case 75:
+		return "fortimail_vm", "addons", "list"
+	case 76:
+		return "fortiedr", "repository_storage", "int"
 	default:
 		return "", "", ""
 	}

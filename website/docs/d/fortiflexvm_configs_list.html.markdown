@@ -55,7 +55,10 @@ The `configs` block contains:
 * `fwbc_public` - (List of Object) FortiWeb Cloud - Public. The structure of [`configs.fwbc_public` block](#nestedobjatt--configs--fwbc_public) is documented below.
 * `fortisase` - (List of Object) FortiSASE. The structure of [`configs.fortisase` block](#nestedobjatt--configs--fortisase) is documented below.
 * `fortiedr` - (List of Object) FortiEDR. The structure of [`configs.fortiedr` block](#nestedobjatt--configs--fortiedr) is documented below.
+* `fortimail_vm` - (List of Object) FortiMail Virtual Machine. The structure of [`configs.fortimail_vm` block](#nestedobjatt--configs--fortimail_vm) is documented below.
+* `fortindr_cloud` - (List of Object) FortiNDR Cloud. The structure of [`configs.fortindr_cloud` block](#nestedobjatt--configs--fortindr_cloud) is documented below.
 * `fortirecon` - (List of Object) FortiRecon. The structure of [`configs.fortirecon` block](#nestedobjatt--configs--fortirecon) is documented below.
+* `fortisoar_vm` - (List of Object) FortiSOAR Virtual Machine. The structure of [`configs.fortisoar_vm` block](#nestedobjatt--configs--fortisoar_vm) is documented below.
 * `siem_cloud` - (List of Object) FortiSIEM Cloud. The structure of [`configs.siem_cloud` block](#nestedobjatt--configs--siem_cloud) is documented below.
 * `account_id` - (Optional/Number) Account ID.
 * `id` - (Number) The unqiue number of the configuration.
@@ -76,8 +79,11 @@ The `configs` block contains:
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
   * `FORTISASE`: FortiSASE
-  * `FORTIEDR`: FortiEDR
-  * `FORTIREDON`: FortiRecon
+  * `FORTIEDR`: FortiEDR MSSP
+  * `FORTIMAIL_VM`: FortiMail Virtual Machine
+  * `FORTINDR_CLOUD`: FortiNDR Cloud
+  * `FORTIRECON`: FortiRecon
+  * `FORTISOAR_VM`: FortiSOAR Virtual Machine
   * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (String) The unique serial number of the FortiFlex Program this configuration belongs to.
 * `status` - (String) The status of this configuration. `ACTIVATE` or `DISABLED`.
@@ -93,7 +99,7 @@ The `configs.fad_vm` block contains:
 <a id="nestedobjatt--configs--fap_hw"></a>
 The `configs.fap_hw` block contains:
 
-* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values:
+* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5010/. Possible values:
   * `"FP23JF"`: FortiAP-23JF
   * `"FP221E"`: FortiAP-221E
   * `"FP223E"`: FortiAP-223E
@@ -118,6 +124,9 @@ The `configs.fap_hw` block contains:
   * `"PU431F"`: FortiAP-U431F
   * `"PU432F"`: FortiAP-U432F
   * `"PU433F"`: FortiAP-U433F
+  * `"FP222E"`: FortiAP-222E
+  * `"FP224E"`: FortiAP-224E
+  * `"FP231E"`: FortiAP-231E
 * `service_pkg` - (String) Possible values: `"FAPHWFC247"` (FortiCare Premium), `"FAPHWFCEL"` (FortiCare Elite).
 * `addons` - (List of String) Possible values:
   * `"FAPHWFSFG"`: FortiSASE Cloud Managed AP
@@ -126,11 +135,10 @@ The `configs.fap_hw` block contains:
 <a id="nestedobjatt--configs--faz_vm"></a>
 The `configs.faz_vm` block contains:
 
+* `addons` - (List of String) The default value is an empty list. Options: `"FAZISSS"` (OT Security Service), `"FAZFGSA"` (Attack Surface Security Service), `"FAZAISN"` (FortiAI Service).
 * `adom_num` - (Number) Number of ADOMs. A number between 0 and 1200 (inclusive).
 * `daily_storage` - (Number) Daily Storage (GB). A number between 5 and 8300 (inclusive).
 * `support_service` - (String) Support Service. Possible value: `"FAZFC247"` (FortiCare Premium).
-* `addons` - (List of String) The default value is an empty list. Options: `"FAZISSS"` (OT Security Service), `"FAZFGSA"` (Attack Surface Security Service).
-
 
 <a id="nestedobjatt--configs--fc_ems_cloud"></a>
 The `configs.fc_ems_cloud` block contains:
@@ -156,7 +164,7 @@ The `configs.fc_ems_op` block contains:
 <a id="nestedobjatt--configs--fgt_hw"></a>
 The `configs.fgt_hw` block contains:
 
-* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values: 
+* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5009/. Possible values: 
   * `"FGT40F"`: FortiGate 40F
   * `"FWF40F"`: FortiWifi 40F
   * `"FGT60E"`: FortiGate 60E
@@ -216,7 +224,13 @@ The `configs.fgt_hw` block contains:
   * `"FG3K7F"`: FortiGate 3700F
   * `"FG39E6"`: FortiGate 3960E
   * `"FG441F"`: FortiGate 4401F
-* `service_pkg` - (String) Possible values: `"FGHWFC247"` (FortiCare Premium), `"FGHWFCEL"` (FortiCare Elite), `"FGHWATP"` (ATP), `"FGHWUTP"` (UTP) or `"FGHWENT"` (Enterprise).
+* `service_pkg` - (String) Possible values:
+  * `"FGHWFC247"`: FortiCare Premium
+  * `"FGHWFCEL"`: FortiCare Elite
+  * `"FGHWATP"`: ATP
+  * `"FGHWUTP"`: UTP
+  * `"FGHWENT"`: Enterprise
+  * `"FGHWFCESN"`: FortiCare Essential
 * `addons` - (List of String) Possible values:
   * `"FGHWFCELU"`: FortiCare Elite Upgrade
   * `"FGHWFAMS"`: FortiGate Cloud Management
@@ -227,7 +241,13 @@ The `configs.fgt_hw` block contains:
   * `"FGHWSOCA"`: SOCaaS
   * `"FGHWMGAS"`: Managed FortiGate
   * `"FGHWSPAL"`: SD-WAN Connector for FortiSASE
-  * `"FGHWFCSS"`: FortiConverter Service
+  * `"FGHWISSS"`: FortiGuard OT Security Service
+  * `"FGHWSWOS"`: SD-WAN Overlay-as-a-Service
+  * `"FGHWAVDB"`: Advanced Malware Protection
+  * `"FGHWNIDS"`: Intrusion Prevention
+  * `"FGHWFGSA"`: Attack Surface Security Service
+  * `"FGHWFURL"`: Web, DNS & Video Filtering
+  * `"FGHWFSFG"`: FortiSASE Subscription
 
 
 <a id="nestedobjatt--configs--fgt_vm_bundle"></a>
@@ -247,7 +267,6 @@ The `configs.fgt_vm_bundle` block contains:
   * `"FGTISSS"`: FortiGuard OT Security Service
   * `"FGTDLDB"`: FortiGuard DLP
   * `"FGTFGSA"`: FortiGuard Attack Surface Security Service
-  * `"FGTFCSS"`: FortiConverter Service
 * `service_pkg` - (String) The value of this attribute is one of `"FC"` (FortiCare), `"UTP"` (UTP), `"ENT"` (Enterprise) or `"ATP"` (ATP).
 * `support_service` - (String) Support service. The default value is "NONE". Support values:
   * `"FGTFCELU"`: FC Elite Upgrade
@@ -262,12 +281,15 @@ The `configs.fgt_vm_lcs` block contains:
   * `"SWNM"`: SD-WAN Underlay
   * `"AFAC"`: FortiAnalyzer Cloud with SOCaaS
   * `"FAZC"`: FortiAnalyzer Cloud
+  * `"FSPA"`: SD-WAN Connector for FortiSASE SPA
+  * `"SWOS"`: Cloud-based Overlay-as-a-Service
 * `cpu_size` - (String) The number of CPUs. A number between 1 and 96 (inclusive).
 * `fortiguard_services` - (List of String) The FortiGuard services this FortiGate Virtual Machine supports. The combination of:
   * `"IPS"`: Intrusion Prevention
   * `"AVDB"`: Advanced Malware
   * `"FURLDNS"`: Web, DNS & Video Filtering
   * `"FGSA"`: Security Rating
+  * `"ISSS"`: OT Security Service
   * `"DLDB"`: DLP
   * `"FAIS"`: AI-Based InLine Sandbox
 * `support_service` - (String) `"FC247"` (FortiCare 24x7) or `"ASET"` (FortiCare Elite).
@@ -277,7 +299,7 @@ The `configs.fgt_vm_lcs` block contains:
 <a id="nestedobjatt--configs--fmg_vm"></a>
 The `configs.fmg_vm` block contains:
 
-* `adom_num` - (Number) Number of ADOMs. A number between 1 and 100000 (inclusive).
+* `adom_num` - (Number) Number of ADOMs. A number between 0 and 100000 (inclusive).
 * `managed_dev` - (Number) Number of managed devices. A number between 1 and 100000 (inclusive).
 
 <a id="nestedobjatt--configs--fpc_vm"></a>
@@ -288,7 +310,7 @@ The `configs.fpc_vm` block contains:
 <a id="nestedobjatt--configs--fsw_hw"></a>
 The `configs.fsw_hw` block contains:
 
-* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex. Possible values: 
+* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5011/. Possible values: 
 	* `"S108EN"`: FortiSwitch-108E
   * `"S108EF"`: FortiSwitch-108E-FPOE
   * `"S108EP"`: FortiSwitch-108E-POE
@@ -343,27 +365,30 @@ The `configs.fsw_hw` block contains:
   * `"ST1E24"`: FortiSwitch-T1024E
   * `"SR12DP"`: FortiSwitchRugged-112D-POE
   * `"SR24DN"`: FortiSwitchRugged-124D
+  * `"SM10GF"`: FortiSwitch-110G-FPOE
+  * `"SR16FP"`: FortiSwitchRugged-216F-POE
+  * `"SR24FP"`: FortiSwitchRugged 424F-POE
 * `service_pkg` - (String) Possible values: `"FSWHWFC247"` (FortiCare Premium), `"FSWHWFCEL"` (FortiCare Elite).
 
 <a id="nestedobjatt--configs--fwb_vm"></a>
 The `configs.fwb_vm` block contains:
 
 * `cpu_size` - (String) Number of CPUs. The value of this attribute is one of `"1"`, `"2"`, `"4"`, `"8"` or `"16"`.
-* `service_pkg` - (String) Service Package. `"FWBSTD"` (Standard) or `"FWBADV"` (Advanced).
+* `service_pkg` - (String) Service Package. `"FWBSTD"` (Standard), `"FWBADV"` (Advanced) or `"FWBENT"` (Advanced).
 
 
 <a id="nestedobjatt--configs--fwbc_private"></a>
 The `configs.fwbc_private` block contains:
 
 * `average_throughput` - (Number) Average Throughput (Mbps). Possible values: 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000.
-* `web_applications` - (Number) Number between 0 and 2000 (inclusive).
+* `web_applications` - (Number) Number between 1 and 5000 (inclusive).
 
 
 <a id="nestedobjatt--configs--fwbc_public"></a>
 The `configs.fwbc_public` block contains:
 
-* `average_throughput` - (Number) Average Throughput (Mbps). Possible values: 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000.
-* `web_applications` - (Number) Number between 0 and 2000 (inclusive).
+* `average_throughput` - (Number) Average Throughput (Mbps). Possible values: 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000.
+* `web_applications` - (Number) Number between 1 and 5000 (inclusive).
 
 <a id="nestedobjatt--configs--fortisase"></a>
 The `configs.fortisase` block contains:
@@ -372,7 +397,8 @@ The `configs.fortisase` block contains:
 * `service_pkg` - (String) `"FSASESTD"` (Standard) or `"FSASEADV"` (Advanced).
 * `bandwidth` - (Number) Mbps. Number between 25 and 10,000 (inclusive).
 * `dedicated_ips` - (Number) Number between 4 and 65,534 (inclusive).
-* `additional_compute_region` - (Number) The 'Additional Compute Region' can be scaled up in an increment of 1 but scaling down is NOT allowed.
+* `additional_compute_region` - (Number) Additional Compute Region. Number between 0 and 16 (inclusive). The 'Additional Compute Region' can be scaled up in an increment of 1 but scaling down is NOT allowed.
+* `locations` - (Number) SD-WAN On-Ramp Locations. Number between 0 and 8 (inclusive). The 'SD-WAN On-Ramp Locations' can be scaled up in an increment of 1 but scaling down is NOT allowed.
 
 <a id="nestedobjatt--configs--fortiedr"></a>
 The `configs.fortiedr` block contains:
@@ -380,6 +406,26 @@ The `configs.fortiedr` block contains:
 * `service_pkg` - (String) `"FEDRPDR"` (Discover/Protect/Respond).
 * `endpoints` - (Number) Number of endpoints. Read only.
 * `addons` - (List of String) The default value is an empty list. Options: `"FEDRXDR"` (XDR).
+* `repository_storage` - (Number) Number between 0 and 30720 (inclusive).
+
+
+<a id="nestedobjatt--configs--fortimail_vm"></a>
+The `configs.fortimail_vm` block contains:
+
+* `cpu_size` - (String) Number of CPUs. The value of this attribute is one of `"1"`, `"2"`, `"4"`, `"8"` or `"16"`.
+* `service_pkg` - (String) `"FMLBASE"` (Base Bundle) or `"FMLATP"` (ATP Bundle).
+* `addons` - (List of String) The default value is an empty list. Options: 
+  * `"FMLFEMS"`: Advanced Management
+  * `"FMLFCAS"`: Dynamic Content Analysis
+  * `"FMLFEOP"`: Cloud Email API Integration
+  * `"FMLFEEC"`: Email Continuity
+
+
+<a id="nestedobjatt--configs--fortindr_cloud"></a>
+The `configs.fortindr_cloud` block contains:
+
+* `metered_usage` - (Number) Metered Usage. Read only. Can't be set.
+
 
 <a id="nestedobjatt--configs--fortirecon"></a>
 The `configs.fortirecon` block contains:
@@ -389,6 +435,18 @@ The `configs.fortirecon` block contains:
 * `network_num` - (Number) Internal Attack Surface Monitoring. Number between 0 and 100 (inclusive)
 * `executive_num` - (Number) Executive Monitoring. Number between 0 and 1,000 (inclusive). This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
 * `vendor_num` - (Number) Vendor Monitoring. Number between 0 and 1,000 (inclusive) This value can only be set to 0 if `service_pkg` is `"FRNEASM"` or `"FRNEASMBP"`.
+
+<a id="nestedobjatt--configs--fortisoar_vm"></a>
+The `configs.fortisoar_vm` block contains:
+
+* `service_pkg` - (String) Service Package. Possible values are:
+  * `"FSRE"`: Enterprise Edition
+  * `"FSRM"`: Multi Tenant Edition - Manager
+  * `"FSRD"`: Multi Tenant Edition - Tenant Node - Single User
+  * `"FSRR"`: Multi Tenant Edition - Tenant Node - Multi User
+* `additional_users_license` - (Number) Additional Users License. Number between 0 and 1000 (inclusive)
+* `addons` - (List of String) The default value is an empty list. Options: 
+  * `"FSRTIMS"`: Threat Intelligence Management
 
 <a id="nestedobjatt--configs--siem_cloud"></a>
 The `configs.siem_cloud` block contains:

@@ -234,6 +234,48 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fortisoar_vm": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"additional_users_license": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
+						"fortimail_vm": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"cpu_size": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
 						"fgt_hw": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
@@ -382,6 +424,10 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeInt,
 										Computed: true,
 									},
+									"locations": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
 								},
 							},
 						},
@@ -402,6 +448,22 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeList,
 										Computed: true,
 										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+									"repository_storage": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"fortindr_cloud": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"metered_usage": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
 									},
 								},
 							},

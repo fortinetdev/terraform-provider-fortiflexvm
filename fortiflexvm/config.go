@@ -10,8 +10,8 @@ import (
 )
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
-	"fpc_vm", "fad_vm", "fgt_hw", "fap_hw", "fsw_hw", "fwbc_private", "fwbc_public", "fc_ems_cloud",
-	"fortisase", "fortiedr", "fortirecon"}
+	"fpc_vm", "fad_vm", "fortisoar_vm", "fortimail_vm", "fgt_hw", "fap_hw", "fsw_hw",
+	"fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr", "fortindr_cloud", "fortirecon", "siem_cloud"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -45,6 +45,10 @@ func convProductTypeName2Id(p_type string) int {
 		return 8
 	case "FAD_VM":
 		return 9
+	case "FORTISOAR_VM":
+		return 10
+	case "FORTIMAIL_VM":
+		return 11
 	case "FGT_HW":
 		return 101
 	case "FAP_HW":
@@ -61,6 +65,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 205
 	case "FORTIEDR":
 		return 206
+	case "FORTINDR_CLOUD":
+		return 207
 	case "FORTIRECON":
 		return 208
 	case "SIEM_CLOUD":
@@ -88,6 +94,10 @@ func convProductTypeId2Name(p_id int) string {
 		return "FPC_VM"
 	case 9:
 		return "FAD_VM"
+	case 10:
+		return "FORTISOAR_VM"
+	case 11:
+		return "FORTIMAIL_VM"
 	case 101:
 		return "FGT_HW"
 	case 102:
@@ -104,6 +114,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTISASE"
 	case 206:
 		return "FORTIEDR"
+	case 207:
+		return "FORTINDR_CLOUD"
 	case 208:
 		return "FORTIRECON"
 	case 209:
@@ -223,6 +235,8 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "faz_vm", "addons", "list"
 	case 59:
 		return "fortisase", "additional_compute_region", "int"
+	case 60:
+		return "fortindr_cloud", "metered_usage", "int" // Read only
 	case 61:
 		return "fortirecon", "service_pkg", "string"
 	case 62:
@@ -239,6 +253,22 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "siem_cloud", "additional_online_storage", "int"
 	case 68:
 		return "siem_cloud", "archive_storage", "int"
+	case 69:
+		return "fortisoar_vm", "service_pkg", "string"
+	case 70:
+		return "fortisoar_vm", "additional_users_license", "int"
+	case 71:
+		return "fortisoar_vm", "addons", "list"
+	case 72:
+		return "fortisase", "locations", "int"
+	case 73:
+		return "fortimail_vm", "cpu_size", "string"
+	case 74:
+		return "fortimail_vm", "service_pkg", "string"
+	case 75:
+		return "fortimail_vm", "addons", "list"
+	case 76:
+		return "fortiedr", "repository_storage", "int"
 	default:
 		return "", "", ""
 	}
@@ -340,6 +370,28 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 		default:
 			return 0
 		}
+	case "fortisoar_vm":
+		switch c_name {
+		case "service_pkg":
+			return 69
+		case "additional_users_license":
+			return 70
+		case "addons":
+			return 71
+		default:
+			return 0
+		}
+	case "fortimail_vm":
+		switch c_name {
+		case "cpu_size":
+			return 73
+		case "service_pkg":
+			return 74
+		case "addons":
+			return 75
+		default:
+			return 0
+		}
 	case "fgt_hw":
 		switch c_name {
 		case "device_model":
@@ -351,15 +403,6 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 		default:
 			return 0
 		}
-	case "fsw_hw":
-		switch c_name {
-		case "device_model":
-			return 53
-		case "service_pkg":
-			return 54
-		default:
-			return 0
-		}
 	case "fap_hw":
 		switch c_name {
 		case "device_model":
@@ -368,6 +411,15 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 56
 		case "addons":
 			return 57
+		default:
+			return 0
+		}
+	case "fsw_hw":
+		switch c_name {
+		case "device_model":
+			return 53
+		case "service_pkg":
+			return 54
 		default:
 			return 0
 		}
@@ -418,6 +470,8 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 51
 		case "additional_compute_region":
 			return 59
+		case "locations":
+			return 72
 		default:
 			return 0
 		}
@@ -429,6 +483,15 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 47
 		case "addons":
 			return 52
+		case "repository_storage":
+			return 76
+		default:
+			return 0
+		}
+	case "fortindr_cloud":
+		switch c_name {
+		case "metered_usage":
+			return 60
 		default:
 			return 0
 		}
