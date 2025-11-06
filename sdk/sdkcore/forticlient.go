@@ -283,6 +283,32 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fortimail_vm", "addons", "list"
 	case 76:
 		return "fortiedr", "repository_storage", "int"
+	case 77:
+		return "fortinac_vm", "service_pkg", "string"
+	case 78:
+		return "fortinac_vm", "endpoints", "int"
+	case 79:
+		return "fortinac_vm", "support_service", "string"
+	case 82:
+		return "fortiappsec", "service_type", "list"
+	case 83:
+		return "fortiappsec", "waf_service_pkg", "string"
+	case 84:
+		return "fortiappsec", "waf_addons", "list"
+	case 85:
+		return "fortiappsec", "throughput", "int" // Read only
+	case 86:
+		return "fortiappsec", "applications", "int" // Read only
+	case 87:
+		return "fortiappsec", "qps", "int" // Read only
+	case 88:
+		return "fortiappsec", "health_checks", "int" // Read only
+	case 90:
+		return "fortidlp", "service_pkg", "string"
+	case 91:
+		return "fortidlp", "endpoints", "int"
+	case 92:
+		return "fortidlp", "addons", "list"
 	default:
 		return "", "", ""
 	}

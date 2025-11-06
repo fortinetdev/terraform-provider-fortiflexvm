@@ -11,7 +11,7 @@ description: |-
 ```hcl
 resource "fortiflexvm_config" "example"{
   product_type = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS0000000601"
+  program_serial_number = "ELAVMS00000XXXXXX"
   name = "example_configuration"
   fgt_vm_bundle {
     cpu_size            = 8           # 1 ~ 96

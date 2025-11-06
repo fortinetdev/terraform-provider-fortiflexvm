@@ -276,6 +276,26 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fortinac_vm": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"endpoints": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"support_service": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
 						"fgt_hw": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
@@ -516,6 +536,65 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeInt,
 										Optional: true,
 										Computed: true,
+									},
+								},
+							},
+						},
+						"fortiappsec": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_types": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+									"waf_service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"waf_addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+									"throughput": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"applications": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"qps": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"health_checks": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"fortidlp": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"endpoints": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
 									},
 								},
 							},

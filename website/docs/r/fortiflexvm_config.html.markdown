@@ -62,6 +62,7 @@ resource "fortiflexvm_config" "import_and_update" {
 
 Examples of creating configurations.
 ```hcl
+# FortiGate Virtual Machine - Service Bundle
 resource "fortiflexvm_config" "FGT_VM_Bundle" {
   product_type          = "FGT_VM_Bundle"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -76,7 +77,7 @@ resource "fortiflexvm_config" "FGT_VM_Bundle" {
   }
 }
 
-
+# FortiManager Virtual Machine
 resource "fortiflexvm_config" "FMG_VM" {
   product_type          = "FMG_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -87,7 +88,7 @@ resource "fortiflexvm_config" "FMG_VM" {
   }
 }
 
-
+# FortiWeb Virtual Machine - Service Bundle
 resource "fortiflexvm_config" "FWB_VM" {
   product_type          = "FWB_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -98,7 +99,7 @@ resource "fortiflexvm_config" "FWB_VM" {
   }
 }
 
-
+# FortiGate Virtual Machine - A La Carte Services
 resource "fortiflexvm_config" "FGT_VM_LCS" {
   product_type          = "FGT_VM_LCS"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -112,7 +113,7 @@ resource "fortiflexvm_config" "FGT_VM_LCS" {
   }
 }
 
-
+# FortiClient EMS On-Prem
 resource "fortiflexvm_config" "FC_EMS_OP" {
   product_type          = "FC_EMS_OP"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -126,7 +127,7 @@ resource "fortiflexvm_config" "FC_EMS_OP" {
   }
 }
 
-
+# FortiAnalyzer Virtual Machine
 resource "fortiflexvm_config" "FAZ_VM" {
   product_type          = "FAZ_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -139,7 +140,7 @@ resource "fortiflexvm_config" "FAZ_VM" {
   }
 }
 
-
+# FortiPortal Virtual Machine
 resource "fortiflexvm_config" "FPC_VM" {
   product_type          = "FPC_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -149,7 +150,7 @@ resource "fortiflexvm_config" "FPC_VM" {
   }
 }
 
-
+# FortiADC Virtual Machine
 resource "fortiflexvm_config" "FAD_VM" {
   product_type          = "FAD_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -160,7 +161,7 @@ resource "fortiflexvm_config" "FAD_VM" {
   }
 }
 
-
+# FortiSOAR Virtual Machine
 resource "fortiflexvm_config" "FORTISOAR_VM" {
   product_type          = "FORTISOAR_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -172,7 +173,7 @@ resource "fortiflexvm_config" "FORTISOAR_VM" {
   }
 }
 
-
+# FortiMail Virtual Machine
 resource "fortiflexvm_config" "FORTIMAIL_VM" {
   product_type          = "FORTIMAIL_VM"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -184,7 +185,7 @@ resource "fortiflexvm_config" "FORTIMAIL_VM" {
   }
 }
 
-
+# FortiGate Hardware
 resource "fortiflexvm_config" "FGT_HW" {
   product_type          = "FGT_HW"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -200,7 +201,7 @@ resource "fortiflexvm_config" "FGT_HW" {
   }
 }
 
-
+# FortiAP Hardware
 resource "fortiflexvm_config" "FAP_HW" {
   product_type          = "FAP_HW"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -216,7 +217,7 @@ resource "fortiflexvm_config" "FAP_HW" {
   }
 }
 
-
+# FortiSwitch Hardware
 resource "fortiflexvm_config" "FSW_HW" {
   product_type          = "FSW_HW"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -234,7 +235,7 @@ resource "fortiflexvm_config" "FSW_HW" {
   }
 }
 
-
+# FortiWeb Cloud - Public
 resource "fortiflexvm_config" "FWBC_PUBLIC" {
   product_type          = "FWBC_PUBLIC"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -247,7 +248,7 @@ resource "fortiflexvm_config" "FWBC_PUBLIC" {
   }
 }
 
-
+# FortiClient EMS Cloud
 resource "fortiflexvm_config" "FC_EMS_CLOUD" {
   product_type          = "FC_EMS_CLOUD"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -262,7 +263,7 @@ resource "fortiflexvm_config" "FC_EMS_CLOUD" {
   }
 }
 
-
+# FortiSASE
 resource "fortiflexvm_config" "FORTISASE" {
   product_type          = "FORTISASE"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -277,7 +278,7 @@ resource "fortiflexvm_config" "FORTISASE" {
   }
 }
 
-
+# FortiEDR MSSP
 resource "fortiflexvm_config" "FORTIEDR" {
   product_type          = "FORTIEDR"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -289,7 +290,7 @@ resource "fortiflexvm_config" "FORTIEDR" {
   }
 }
 
-
+# FortiNDR Cloud
 resource "fortiflexvm_config" "FORTINDR_CLOUD" {
   product_type          = "FORTINDR_CLOUD"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -299,7 +300,7 @@ resource "fortiflexvm_config" "FORTINDR_CLOUD" {
   }
 }
 
-
+# FortiRecon
 resource "fortiflexvm_config" "FORTIRECON" {
   product_type          = "FORTIRECON"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -313,7 +314,7 @@ resource "fortiflexvm_config" "FORTIRECON" {
   }
 }
 
-
+# FortiSIEM Cloud
 resource "fortiflexvm_config" "SIEM_CLOUD" {
   product_type          = "SIEM_CLOUD"
   program_serial_number = "ELAVMS00000XXXXX"
@@ -324,6 +325,30 @@ resource "fortiflexvm_config" "SIEM_CLOUD" {
                                      # It can be scaled up in an increment of 500 but scaling down is NOT allowed.
     archive_storage = 0              # Number between 0 and 60,000 (inclusive). Value should be divisible by 500.
                                      # It can be scaled up in an increment of 500 but scaling down is NOT allowed.
+  }
+}
+
+# FortiAppSec
+resource "fortiflexvm_config" "FORTIAPPSEC" {
+  product_type          = "FORTIAPPSEC"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FORTIAPPSEC_example"
+  fortiappsec {
+    service_types   = ["UCWAF", "UCGSLB"] # Possible values: "UCWAF", "UCGSLB"
+    waf_service_pkg = "UCWAFSTD"          # "UCWAFSTD", "UCWAFADV", "UCWAFENT". The 'Cloud WAF Service Package' can be upgraded but downgrading is NOT allowed.
+    waf_addons      = []                  # Possible values:"UCSOCA"
+  }
+}
+
+# FortiDLP
+resource "fortiflexvm_config" "FORTIDLP" {
+  product_type          = "FORTIDLP"
+  program_serial_number = "ELAVMS00000XXXXX"
+  name                  = "FORTIDLP_example"
+  fortidlp {
+    service_pkg = "DLPSTD" # "DLPSTD", "DLPENT", "DLPENTP"
+    endpoints   = 25       # Number between 25 and 100000 (inclusive).
+    addons      = []       # Possible values:"BPS", BPS must be active for at least 90 straight days once enabled.
   }
 }
 ```
@@ -349,11 +374,14 @@ The following arguments are supported:
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
-  * `FORTISASE`: FortiSASE
+  * `FORTIAPPSEC`: FortiAppSec
+  * `FORTIDLP`: FortiDLP
   * `FORTIEDR`: FortiEDR MSSP
   * `FORTIMAIL_VM`: FortiMail Virtual Machine
+  * `FORTINAC_VM`: FortiNAC Virtual Machine
   * `FORTINDR_CLOUD`: FortiNDR Cloud
   * `FORTIRECON`: FortiRecon
+  * `FORTISASE`: FortiSASE
   * `FORTISOAR_VM`: FortiSOAR Virtual Machine
   * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (Required/String) The serial number of your FortiFlex Program. This serial number should start with `"ELAVMR"`.
@@ -373,6 +401,7 @@ The following arguments are supported:
 * `fpc_vm` - (Block List) You must fill in this block if your `product_type` is `"FPC_VM"`. The structure of [`fpc_vm` block](#nestedblock--fpc_vm) is documented below.
 * `fsw_hw` - (Block List) You must fill in this block if your `product_type` is `"FSW_HW"`. The structure of [`fsw_hw` block](#nestedblock--fsw_hw) is documented below.
 * `fwb_vm` - (Block List) You must fill in this block if your `product_type` is `"FWB_VM"`. The structure of [`fwb_vm` block](#nestedblock--fwb_vm) is documented below.
+* `fortinac_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTINAC_VM"`. The structure of [`fortinac_vm` block](#nestedblock--fortinac_vm) is documented below.
 * `fwbc_private` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PRIVATE"`. The structure of [`fwbc_private` block](#nestedblock--fwbc_private) is documented below.
 * `fwbc_public` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PUBLIC"`. The structure of [`fwbc_public` block](#nestedblock--fwbc_public) is documented below.
 * `fortisase` - (Block List) You must fill in this block if your `product_type` is `"FORTISASE"`. The structure of [`fortisase` block](#nestedblock--fortisase) is documented below.
@@ -382,6 +411,8 @@ The following arguments are supported:
 * `fortirecon` - (Block List) You must fill in this block if your `product_type` is `"FORTIRECON"`. The structure of [`fortirecon` block](#nestedblock--fortirecon) is documented below.
 * `fortisoar_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTISOAR_VM"`. The structure of [`fortisoar_vm` block](#nestedblock--fortisoar_vm) is documented below.
 * `siem_cloud` - (Block List) You must fill in this block if your `product_type` is `"SIEM_CLOUD"`. The structure of [`siem_cloud` block](#nestedblock--siem_cloud) is documented below.
+* `fortiappsec` - (Block List) You must fill in this block if your `product_type` is `"FORTIAPPSEC"`. The structure of [`fortiappsec` block](#nestedblock--fortiappsec) is documented below.
+* `fortidlp` - (Block List) You must fill in this block if your `product_type` is `"FORTIDLP"`. The structure of [`fortidlp` block](#nestedblock--fortidlp) is documented below.
 
 <a id="nestedblock--fad_vm"></a>
 The `fad_vm` block contains:
@@ -424,6 +455,13 @@ The `fap_hw` block contains:
 * `service_pkg` - (Required if `product_type = "FAP_HW"`/String) Possible values: `"FAPHWFC247"` (FortiCare Premium), `"FAPHWFCEL"` (FortiCare Elite).
 * `addons` - (Optional/List of String) The default value is an empty list. Possible values:
   * `"FAPHWFSFG"`: FortiSASE Cloud Managed AP
+
+<a id="nestedblock--fortinac_vm"></a>
+The `fortinac_vm` block contains:
+
+* `service_pkg` - (Required if `product_type = "FORTINAC_VM"`/String) Options: `"FNCPLUS"` (Plus), `"FNCPRO"` (Pro).
+* `endpoints` - (Required if `product_type = "FORTINAC_VM"`/Number) Number of endpoints. Number between 25 and 100000 (inclusive).
+* `support_service` - (Required if `product_type = "FORTINAC_VM"`/String) Support Service. Option: `"FCTFC247"` (FortiCare Premium).
 
 <a id="nestedblock--faz_vm"></a>
 The `faz_vm` block contains:
@@ -746,6 +784,24 @@ The `siem_cloud` block contains:
 * `compute_units` - (Required if `product_type = "SIEM_CLOUD"`/Number) Number of Compute Units. Number between 10 and 600 (inclusive). Value should be divisible by 10.
 * `additional_online_storage` - (Required if `product_type = "SIEM_CLOUD"`/Number) Additional Online Storage. Number between 500 and 60,000 (inclusive). Value should be divisible by 500. The 'Additional Online Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
 * `archive_storage` - (Optional/Number) Archive storage. Number between 0 and 60,000 (inclusive). Value should be divisible by 500. The 'Archive Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
+
+<a id="nestedblock--fortiappsec"></a>
+The `fortiappsec` block contains:
+
+* `service_types` - (Optional/List of String) Service Types. The default value is an empty list. Possible values: `"UCWAF"` (Cloud WAF), `"UCGSLB"` (Cloud GSLB).
+* `waf_service_pkg` - (Required if `service_types` contains `"UCWAF"`/String) Cloud WAF Service Package. `"UCWAFSTD"` (Standard), `"UCWAFADV"` (Advanced) or `"UCWAFENT"` (Enterprise). The 'Cloud WAF Service Package' can be upgraded but downgrading is NOT allowed.
+* `waf_addons` - (Optional/List of String) The default value is an empty list. Options: `"UCSOCA"` (SOCaaS).
+* `throughput` - (Read only/Number) Throughput. Read only. Can't be set.
+* `applications` - (Read only/Number) Number of applications. Read only. Can't be set.
+* `qps` - (Read only/Number) QPS. Read only. Can't be set.
+* `health_checks` - (Read only/Number) Health checks. Read only. Can't be set.
+
+<a id="nestedblock--fortidlp"></a>
+The `fortidlp` block contains:
+
+* `service_pkg` - (Required if `product_type = "FORTIDLP"`/String) `"DLPSTD"` (Standard), `"DLPENT"` (Enterprise), `"DLPENTP"` (Enterprise Premium).
+* `endpoints` - (Required if `product_type = "FORTIDLP"`/Number) Number of endpoints. Number between 25 and 100000 (inclusive).
+* `addons` - (Optional/List of String) The default value is an empty list. Options: `"BPS"` (Best Practice Service). Best Practice Service must be active for at least 90 straight days once enabled.
 
 ## Attribute Reference
 

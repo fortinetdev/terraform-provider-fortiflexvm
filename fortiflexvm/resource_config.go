@@ -61,6 +61,7 @@ func resourceConfig() *schema.Resource {
 				FAD_VM: FortiADC Virtual Machine;
 				FORTISOAR_VM: FortiSOAR Virtual Machine;
 				FORTIMAIL_VM: FortiMail Virtual Machine;
+				FORTINAC_VM: FortiNAC Virtual Machine;
 				FGT_HW: FortiGate Hardware;
 				FAP_HW: FortiAP Hardware;
 				FSW_HW: FortiSwitch Hardware;
@@ -71,11 +72,13 @@ func resourceConfig() *schema.Resource {
 				FORTIEDR: FortiEDR MSSP;
 				FORTINDR_CLOUD: FortiNDR Cloud;
 				FORTIRECON: FortiRecon;
-				SIEM_CLOUD: FortiSIEM Cloud.`,
+				SIEM_CLOUD: FortiSIEM Cloud;				
+				FORTIAPPSEC: FortiAppSec;
+				FORTIDLP: FortiDLP;`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
-					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FORTISOAR_VM", "FORTIMAIL_VM",
+					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FORTISOAR_VM", "FORTIMAIL_VM", "FORTINAC_VM",
 					"FGT_HW", "FAP_HW", "FSW_HW", "FWBC_PRIVATE", "FWBC_PUBLIC", "FC_EMS_CLOUD", "FORTISASE",
-					"FORTIEDR", "FORTINDR_CLOUD", "FORTIRECON", "SIEM_CLOUD"}),
+					"FORTIEDR", "FORTINDR_CLOUD", "FORTIRECON", "SIEM_CLOUD", "FORTIAPPSEC", "FORTIDLP"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -345,6 +348,30 @@ func resourceConfig() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
+			"fortinac_vm": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"endpoints": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"support_service": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -631,6 +658,73 @@ func resourceConfig() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
+						},
+					},
+				},
+			},
+			"fortiappsec": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_types": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"waf_service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"waf_addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"throughput": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"applications": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"qps": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"health_checks": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"fortidlp": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"endpoints": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
 						},
 					},
 				},
@@ -1010,9 +1104,10 @@ func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) 
 	typeId := convProductTypeName2Id(v.(string))
 	if typeId == 0 {
 		err := fmt.Errorf("product_type invalid: %v, should be one of [%v]", v.(string),
-			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, "+
+			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FORTINAC_VM, "+
 				"FORTISOAR_VM, FORTIMAIL_VM, FGT_HW, FAP_HW, FSW_HW, FWBC_PRIVATE, FWBC_PUBLIC, "+
-				"FC_EMS_CLOUD, FORTISASE, FORTIEDR, FORTINDR_CLOUD, FORTIRECON, SIEM_CLOUD")
+				"FC_EMS_CLOUD, FORTISASE, FORTIEDR, FORTINDR_CLOUD, FORTIRECON, SIEM_CLOUD, "+
+				"FORTIAPPSEC, FORTIDLP")
 		return typeId, err
 	}
 	return typeId, nil
@@ -1036,7 +1131,7 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 			log.Printf("[ERROR] %v", err)
 			return result, err
 		}
-		if ckId == 47 || ckId == 60 { // This arugment is read only
+		if ckId == 47 || ckId == 60 || ckId == 85 || ckId == 86 || ckId == 87 || ckId == 88 { // This argument is read only
 			continue
 		}
 		if cvList, ok := cv.([]interface{}); ok {

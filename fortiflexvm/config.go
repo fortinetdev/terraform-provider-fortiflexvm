@@ -11,7 +11,8 @@ import (
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
 	"fpc_vm", "fad_vm", "fortisoar_vm", "fortimail_vm", "fgt_hw", "fap_hw", "fsw_hw",
-	"fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr", "fortindr_cloud", "fortirecon", "siem_cloud"}
+	"fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr", "fortindr_cloud",
+	"fortirecon", "siem_cloud", "fortinac_vm", "fortiappsec", "fortidlp"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -49,6 +50,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 10
 	case "FORTIMAIL_VM":
 		return 11
+	case "FORTINAC_VM":
+		return 12
 	case "FGT_HW":
 		return 101
 	case "FAP_HW":
@@ -71,6 +74,10 @@ func convProductTypeName2Id(p_type string) int {
 		return 208
 	case "SIEM_CLOUD":
 		return 209
+	case "FORTIAPPSEC":
+		return 211
+	case "FORTIDLP":
+		return 212
 	default:
 		return 0
 	}
@@ -98,6 +105,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTISOAR_VM"
 	case 11:
 		return "FORTIMAIL_VM"
+	case 12:
+		return "FORTINAC_VM"
 	case 101:
 		return "FGT_HW"
 	case 102:
@@ -120,6 +129,10 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTIRECON"
 	case 209:
 		return "SIEM_CLOUD"
+	case 211:
+		return "FORTIAPPSEC"
+	case 212:
+		return "FORTIDLP"
 	default:
 		return ""
 	}
@@ -269,6 +282,32 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fortimail_vm", "addons", "list"
 	case 76:
 		return "fortiedr", "repository_storage", "int"
+	case 77:
+		return "fortinac_vm", "service_pkg", "string"
+	case 78:
+		return "fortinac_vm", "endpoints", "int"
+	case 79:
+		return "fortinac_vm", "support_service", "string"
+	case 82:
+		return "fortiappsec", "service_types", "list"
+	case 83:
+		return "fortiappsec", "waf_service_pkg", "string"
+	case 84:
+		return "fortiappsec", "waf_addons", "list"
+	case 85:
+		return "fortiappsec", "throughput", "int" // Read only
+	case 86:
+		return "fortiappsec", "applications", "int" // Read only
+	case 87:
+		return "fortiappsec", "qps", "int" // Read only
+	case 88:
+		return "fortiappsec", "health_checks", "int" // Read only
+	case 90:
+		return "fortidlp", "service_pkg", "string"
+	case 91:
+		return "fortidlp", "endpoints", "int"
+	case 92:
+		return "fortidlp", "addons", "list"
 	default:
 		return "", "", ""
 	}
@@ -389,6 +428,17 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 74
 		case "addons":
 			return 75
+		default:
+			return 0
+		}
+	case "fortinac_vm":
+		switch c_name {
+		case "service_pkg":
+			return 77
+		case "endpoints":
+			return 78
+		case "support_service":
+			return 79
 		default:
 			return 0
 		}
@@ -518,6 +568,36 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 67
 		case "archive_storage":
 			return 68
+		default:
+			return 0
+		}
+	case "fortiappsec":
+		switch c_name {
+		case "service_types":
+			return 82
+		case "waf_service_pkg":
+			return 83
+		case "waf_addons":
+			return 84
+		case "throughput":
+			return 85
+		case "applications":
+			return 86
+		case "qps":
+			return 87
+		case "health_checks":
+			return 88
+		default:
+			return 0
+		}
+	case "fortidlp":
+		switch c_name {
+		case "service_pkg":
+			return 90
+		case "endpoints":
+			return 91
+		case "addons":
+			return 92
 		default:
 			return 0
 		}

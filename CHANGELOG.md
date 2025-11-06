@@ -1,4 +1,10 @@
-## 2.4.3 (Unreleased)
+## 2.4.4 (Unreleased)
+
+## 2.4.3 (November 6, 2025)
+
+IMPROVEMENTS:
+
+* Supported 3 new configurations: `FORTINAC_VM`, `FORTIAPPSEC`, `FORTIDLP`.
 
 ## 2.4.2 (May 29, 2025)
 

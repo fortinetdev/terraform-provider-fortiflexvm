@@ -51,6 +51,7 @@ The `configs` block contains:
 * `fpc_vm` - (List of Object) FortiPortal Virtual Machine. The structure of [`configs.fpc_vm` block](#nestedobjatt--configs--fpc_vm) is documented below.
 * `fsw_hw` - (List of Object) FortiSwitch Hardware. The structure of [`configs.fsw_hw` block](#nestedobjatt--configs--fsw_hw) is documented below.
 * `fwb_vm` - (List of Object) FortiWeb Virtual Machine. The structure of [`configs.fwb_vm` block](#nestedobjatt--configs--fwb_vm) is documented below.
+* `fortinac_vm` - (List of Object) FortiNAC Virtual Machine. The structure of [`configs.fortinac_vm` block](#nestedobjatt--configs--fortinac_vm) is documented below.
 * `fwbc_private` - (List of Object) FortiWeb Cloud - Private. The structure of [`configs.fwbc_private` block](#nestedobjatt--configs--fwbc_private) is documented below.
 * `fwbc_public` - (List of Object) FortiWeb Cloud - Public. The structure of [`configs.fwbc_public` block](#nestedobjatt--configs--fwbc_public) is documented below.
 * `fortisase` - (List of Object) FortiSASE. The structure of [`configs.fortisase` block](#nestedobjatt--configs--fortisase) is documented below.
@@ -60,6 +61,8 @@ The `configs` block contains:
 * `fortirecon` - (List of Object) FortiRecon. The structure of [`configs.fortirecon` block](#nestedobjatt--configs--fortirecon) is documented below.
 * `fortisoar_vm` - (List of Object) FortiSOAR Virtual Machine. The structure of [`configs.fortisoar_vm` block](#nestedobjatt--configs--fortisoar_vm) is documented below.
 * `siem_cloud` - (List of Object) FortiSIEM Cloud. The structure of [`configs.siem_cloud` block](#nestedobjatt--configs--siem_cloud) is documented below.
+* `fortiappsec` - (List of Object) FortiAppSec. The structure of [`configs.fortiappsec` block](#nestedobjatt--configs--fortiappsec) is documented below.
+* `fortidlp` - (List of Object) FortiDLP. The structure of [`configs.fortidlp` block](#nestedobjatt--configs--fortidlp) is documented below.
 * `account_id` - (Optional/Number) Account ID.
 * `id` - (Number) The unqiue number of the configuration.
 * `name` - (String) Configuration name.
@@ -78,11 +81,14 @@ The `configs` block contains:
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
   * `FWBC_PRIVATE`: FortiWeb Cloud - Private
   * `FWBC_PUBLIC`: FortiWeb Cloud - Public
-  * `FORTISASE`: FortiSASE
+  * `FORTIAPPSEC`: FortiAppSec
+  * `FORTIDLP`: FortiDLP
   * `FORTIEDR`: FortiEDR MSSP
   * `FORTIMAIL_VM`: FortiMail Virtual Machine
+  * `FORTINAC_VM`: FortiNAC Virtual Machine
   * `FORTINDR_CLOUD`: FortiNDR Cloud
   * `FORTIRECON`: FortiRecon
+  * `FORTISASE`: FortiSASE
   * `FORTISOAR_VM`: FortiSOAR Virtual Machine
   * `SIEM_CLOUD`: FortiSIEM Cloud
 * `program_serial_number` - (String) The unique serial number of the FortiFlex Program this configuration belongs to.
@@ -376,6 +382,12 @@ The `configs.fwb_vm` block contains:
 * `cpu_size` - (String) Number of CPUs. The value of this attribute is one of `"1"`, `"2"`, `"4"`, `"8"` or `"16"`.
 * `service_pkg` - (String) Service Package. `"FWBSTD"` (Standard), `"FWBADV"` (Advanced) or `"FWBENT"` (Advanced).
 
+<a id="nestedobjatt--configs--fortinac_vm"></a>
+The `configs.fortinac_vm` block contains:
+
+* `service_pkg` - (String) Possible values: `"FNCPLUS"` (Plus), `"FNCPRO"` (Pro).
+* `endpoints` - (Number) Number of endpoints. Number between 25 and 100000 (inclusive).
+* `support_service` - (String) Support service. Option: `"FCTFC247"` (FortiCare Premium).
 
 <a id="nestedobjatt--configs--fwbc_private"></a>
 The `configs.fwbc_private` block contains:
@@ -454,3 +466,21 @@ The `configs.siem_cloud` block contains:
 * `compute_units` - (Number) Number of Compute Units. Number between 10 and 600 (inclusive). Value should be divisible by 10.
 * `additional_online_storage` - (Number) Additional Online Storage. Number between 500 and 60,000 (inclusive). Value should be divisible by 500. The 'Additional Online Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
 * `archive_storage` - (Number) Additional Online Storage. Number between 0 and 60,000 (inclusive). Value should be divisible by 500. The 'Archive Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
+
+<a id="nestedobjatt--configs--fortiappsec"></a>
+The `configs.fortiappsec` block contains:
+
+* `service_types` - (List of String) Service Types. The default value is an empty list. Options: `"UCWAF"` (Cloud WAF), `"UCGSLB"` (Cloud GSLB).
+* `waf_service_pkg` - (String) `"UCWAFSTD"` (Standard), `"UCWAFADV"` (Advanced) or `"UCWAFENT"` (Enterprise).
+* `waf_addons` - (List of String) The default value is an empty list. Options: `"UCSOCA"` (SOCaaS).
+* `throughput` - (Number) Throughput. Read only.
+* `applications` - (Number) Number of applications. Read only.
+* `qps` - (Number) QPS. Read only.
+* `health_checks` - (Number) Health checks. Read only.
+
+<a id="nestedobjatt--configs--fortidlp"></a>
+The `configs.fortidlp` block contains:
+
+* `service_pkg` - (String) `"DLPSTD"` (Standard), `"DLPENT"` (Enterprise), `"DLPENTP"` (Enterprise Premium).
+* `endpoints` - (Number) Number of endpoints. Number between 25 and 100000 (inclusive).
+* `addons` - (List of String) The default value is an empty list. Options: `"BPS"` (Best Practice Service).

@@ -17,7 +17,7 @@ The FortiFlexVM provider is used to interact with the resources supported by For
 terraform {
   required_providers {
     fortiflexvm = {
-      version = "2.4.2"
+      version = "2.4.3"
       source  = "fortinetdev/fortiflexvm"
     }
   }
