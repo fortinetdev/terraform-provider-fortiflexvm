@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -37,11 +37,22 @@ func NewClient(username string, password string) (*FortiSDKClient, error) {
 			Timeout:   time.Second * 250,
 		},
 	}
-	err = client.generateToken()
-	if err != nil {
-		return nil, fmt.Errorf("Fail to generate Token: %v", err)
+	const (
+		maxRetry = 5
+		retryGap = 1 * time.Second
+	)
+	var lastErr error
+	for i := 1; i <= maxRetry; i++ {
+		if err = client.generateToken(); err == nil {
+			return client, nil
+		}
+		lastErr = err
+		if i < maxRetry {
+			time.Sleep(retryGap)
+		}
 	}
-	return client, nil
+
+	return nil, fmt.Errorf("fail to generate token after %d attempts: %w", maxRetry, lastErr)
 }
 
 // generateToken() generate token from the Device
@@ -71,13 +82,19 @@ func (client *FortiSDKClient) generateToken() error {
 	}
 
 	rsp, err := req.HTTPCon.Do(req.HTTPRequest)
-	body, err := ioutil.ReadAll(rsp.Body)
-	rsp.Body.Close()
-	log.Printf("[INFO] FortiFlex login response: %s", string(body))
-	if err != nil || body == nil {
-		err = fmt.Errorf("cannot get response body %v", err)
-		return err
+	if err != nil {
+		return fmt.Errorf("Couldn't log in. Either the server is unstable or you've lost the network connection. Please try again. HTTP request failed: %v", err)
 	}
+	defer rsp.Body.Close()
+
+	body, err := io.ReadAll(rsp.Body)
+	if err != nil {
+		return fmt.Errorf("cannot read response body: %v", err)
+	}
+	if body == nil {
+		return fmt.Errorf("response body is nil")
+	}
+	log.Printf("[INFO] FortiFlex login response: %s", string(body))
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(string(body)), &result)

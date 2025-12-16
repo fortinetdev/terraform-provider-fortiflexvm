@@ -1,4 +1,10 @@
-## 2.4.4 (Unreleased)
+## 2.4.5 (Unreleased)
+
+## 2.4.4 (December 15, 2025)
+
+IMPROVEMENTS:
+
+* Fixed an issue where Terraform FortiFlexVM could crash when a login attempt failed.
 
 ## 2.4.3 (November 6, 2025)
 
