@@ -34,7 +34,7 @@ The following arguments are supported:
 
 **Either account_id or config_id is required.**
 
-* `account_id` - (Optional/Number) The account ID.
+* `account_id` - (Optional/Number) The account ID. If omitted, the provider-level `account_id` is used when configured.
 * `config_id` (Optional/Number) The ID of a configuration.
 * `folder_path` (Optional/String) Folder path.
 * `status` (Optional/List of String) The status of the entitlement.
@@ -58,6 +58,5 @@ The `entitlements` block contains:
 * `status` - (String) Entitlement status. Possible values: `PENDING`, `ACTIVE`, `STOPPED` or `EXPIRED`.
 * `token` - (String) Entitlement token. Empty for hardware entitlements.
 * `token_status` - (String) The status of the Entitlement token. Possible values: `NOTUSED` or `USED`. Empty for hardware entitlements.
-
 
 

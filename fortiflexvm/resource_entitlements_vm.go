@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -21,6 +22,9 @@ func resourceEntitlementsVM() *schema.Resource {
 		ReadContext:   resourceEntitlementsVMRead,
 		UpdateContext: resourceEntitlementsVMUpdate,
 		DeleteContext: resourceEntitlementsVMDelete,
+		CustomizeDiff: customdiff.ComputedIf("end_date", func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) bool {
+			return d.HasChange("status") && !isConfigured(d, "end_date")
+		}),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -112,7 +116,7 @@ func resourceEntitlementsVMCreate(ctx context.Context, d *schema.ResourceData, m
 		if v, ok := d.GetOk("skip_pending"); ok {
 			obj["skipPending"] = v
 		}
-		if v, ok := d.GetOk("end_date"); ok {
+		if v, ok := getConfiguredString(d, "end_date"); ok {
 			obj["endDate"] = v
 		}
 		var err error
@@ -227,10 +231,10 @@ func resourceEntitlementsVMUpdate(ctx context.Context, d *schema.ResourceData, m
 	if v, ok := d.GetOk("description"); ok {
 		obj["description"] = v
 	}
-	if v, ok := d.GetOk("end_date"); ok {
+	if v, ok := getConfiguredString(d, "end_date"); ok {
 		now := time.Now()
 		current_end_date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-		user_end_date, err := tryParseISO8601(v.(string))
+		user_end_date, err := tryParseISO8601(v)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Warning,

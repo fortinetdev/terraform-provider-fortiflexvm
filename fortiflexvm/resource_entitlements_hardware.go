@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -21,6 +22,9 @@ func resourceEntitlementsHW() *schema.Resource {
 		ReadContext:   resourceEntitlementsHWRead,
 		UpdateContext: resourceEntitlementsHWUpdate,
 		DeleteContext: resourceEntitlementsHWDelete,
+		CustomizeDiff: customdiff.ComputedIf("end_date", func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) bool {
+			return d.HasChange("status") && !isConfigured(d, "end_date")
+		}),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -71,7 +75,7 @@ func resourceEntitlementsHWCreate(ctx context.Context, d *schema.ResourceData, m
 	serial_number := d.Get("serial_number").(string)
 	serial_number_list := []string{serial_number}
 	obj["serialNumbers"] = serial_number_list
-	if v, ok := d.GetOk("end_date"); ok {
+	if v, ok := getConfiguredString(d, "end_date"); ok {
 		obj["endDate"] = v
 	}
 	target_entitlement, err := c.CreateEntitlementsHW(&obj)
@@ -152,23 +156,25 @@ func resourceEntitlementsHWUpdate(ctx context.Context, d *schema.ResourceData, m
 	if v, ok := d.GetOk("description"); ok {
 		obj["description"] = v
 	}
-	if v, ok := d.GetOk("end_date"); ok {
-		err_flag := false
-		current_end_date, err := time.Parse(time.RFC3339, target_entitlement["endDate"].(string))
-		if err != nil {
-			err_flag = true
-		}
-		user_end_date, err := time.Parse(time.RFC3339, v.(string))
+	if v, ok := getConfiguredString(d, "end_date"); ok {
+		now := time.Now()
+		current_end_date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+		user_end_date, err := tryParseISO8601(v)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Warning,
 				Summary:  "Unable to parsing end_date, ignoring update end_date",
 				Detail:   fmt.Sprintf("Unable to parsing %v, please check the format.", v),
 			})
-			return diags
 		}
-		if !err_flag && current_end_date.Before(user_end_date) {
+		if current_end_date.Before(user_end_date) {
 			obj["endDate"] = v
+		} else {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "end_date can not be before today's date, ignoring update end_date",
+				Detail:   fmt.Sprintf("today's date: %v, end_date: %v.", current_end_date, user_end_date),
+			})
 		}
 	}
 	target_entitlement, err = c.UpdateVmUpdate(&obj)

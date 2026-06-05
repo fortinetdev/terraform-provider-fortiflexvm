@@ -45,7 +45,7 @@ The following arguments are supported:
 
 **Either account_id or config_id is required.**
 
-* `account_id` - (Optional/Number) The account ID.
+* `account_id` - (Optional/Number) The account ID. If omitted, the provider-level `account_id` is used when configured.
 * `config_id` (Optional/Number) The ID of a configuration.
 * `folder_path` (Optional/String) Folder path.
 * `status` (Optional/List of String) The status of the entitlement.

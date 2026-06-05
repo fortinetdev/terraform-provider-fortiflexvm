@@ -41,10 +41,19 @@ func (f *fwprovider) Schema(ctx context.Context, request provider.SchemaRequest,
 				Optional:    true,
 				Description: "The API password.",
 			},
-			"import_options": schema.SetAttribute{
-				ElementType: types.StringType,
+			"account_id": schema.Int64Attribute{
 				Optional:    true,
-				Description: "Used in terraform import. Check fortiflexvm_config document for usage.",
+				Description: "The default account ID.",
+			},
+			"program_serial_number": schema.StringAttribute{
+				Optional:    true,
+				Description: "The default FortiFlex Program serial number.",
+			},
+			"import_options": schema.SetAttribute{
+				ElementType:        types.StringType,
+				Optional:           true,
+				DeprecationMessage: "import_options is deprecated. Specify program_serial_number directly instead.",
+				Description:        "Used in terraform import. Check fortiflexvm_config document for usage.",
 			},
 		},
 	}

@@ -26,9 +26,9 @@ output "my_groups_list" {
 
 ## Argument Reference
 
-The following argument is required:
+The following arguments are supported:
 
-* `account_id` - (Optional/Number) The account ID.
+* `account_id` - (Optional/Number) The account ID. If omitted, the provider-level `account_id` is used when configured.
 
 ## Attribute Reference
 
@@ -44,5 +44,3 @@ The `groups` block contains:
 * `available_tokens` - (Number) The number of available tokens in the group.
 * `folder_path` - (String) The folder path of the group.
 * `used_tokens` - (Number) The number of tokens used in the group.
-
-

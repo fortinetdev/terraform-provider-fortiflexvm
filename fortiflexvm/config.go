@@ -10,9 +10,9 @@ import (
 )
 
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
-	"fpc_vm", "fad_vm", "fortisoar_vm", "fortimail_vm", "fgt_hw", "fap_hw", "fsw_hw",
+	"fpc_vm", "fad_vm", "fortisoar_vm", "fortimail_vm", "fgt_hw", "fap_hw", "fsw_hw", "fext_hw",
 	"fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr", "fortindr_cloud",
-	"fortirecon", "siem_cloud", "fortinac_vm", "fortiappsec", "fortidlp"}
+	"fortirecon", "siem_cloud", "fortinac_vm", "fdc_cloud", "fortiappsec", "fortidlp", "fmg_cloud"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -58,6 +58,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 102
 	case "FSW_HW":
 		return 103
+	case "FEXT_HW":
+		return 104
 	case "FWBC_PRIVATE":
 		return 202
 	case "FWBC_PUBLIC":
@@ -74,10 +76,14 @@ func convProductTypeName2Id(p_type string) int {
 		return 208
 	case "SIEM_CLOUD":
 		return 209
+	case "FDC_CLOUD":
+		return 210
 	case "FORTIAPPSEC":
 		return 211
 	case "FORTIDLP":
 		return 212
+	case "FMG_CLOUD":
+		return 213
 	default:
 		return 0
 	}
@@ -113,6 +119,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FAP_HW"
 	case 103:
 		return "FSW_HW"
+	case 104:
+		return "FEXT_HW"
 	case 202:
 		return "FWBC_PRIVATE"
 	case 203:
@@ -129,10 +137,14 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTIRECON"
 	case 209:
 		return "SIEM_CLOUD"
+	case 210:
+		return "FDC_CLOUD"
 	case 211:
 		return "FORTIAPPSEC"
 	case 212:
 		return "FORTIDLP"
+	case 213:
+		return "FMG_CLOUD"
 	default:
 		return ""
 	}
@@ -228,7 +240,7 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fortisase", "users", "int"
 	case 49:
 		return "fortisase", "service_pkg", "string"
-	case 50:
+	case 50: // deprecated
 		return "fortisase", "bandwidth", "int"
 	case 51:
 		return "fortisase", "dedicated_ips", "int"
@@ -246,7 +258,7 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fap_hw", "addons", "list"
 	case 58:
 		return "faz_vm", "addons", "list"
-	case 59:
+	case 59: // deprecated
 		return "fortisase", "additional_compute_region", "int"
 	case 60:
 		return "fortindr_cloud", "metered_usage", "int" // Read only
@@ -272,7 +284,7 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fortisoar_vm", "additional_users_license", "int"
 	case 71:
 		return "fortisoar_vm", "addons", "list"
-	case 72:
+	case 72: // deprecated
 		return "fortisase", "locations", "int"
 	case 73:
 		return "fortimail_vm", "cpu_size", "string"
@@ -308,6 +320,38 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fortidlp", "endpoints", "int"
 	case 92:
 		return "fortidlp", "addons", "list"
+	case 97:
+		return "fmg_cloud", "device_num", "int"
+	case 98:
+		return "fmg_cloud", "addons", "list"
+	case 99:
+		return "siem_cloud", "region", "string"
+	case 100:
+		return "fortisase", "data_transfer", "int"
+	case 101:
+		return "fortisase", "branch_on_ramp_locations_fortinet_cloud", "int"
+	case 102:
+		return "fortisase", "branch_on_ramp_locations_public_cloud", "int"
+	case 103:
+		return "fortisase", "global_region", "string"
+	case 104:
+		return "fortisase", "additional_compute_region_fortinet_cloud", "int"
+	case 105:
+		return "fortisase", "additional_compute_region_public_cloud", "int"
+	case 106:
+		return "fdc_cloud", "service_pkg", "string"
+	case 107:
+		return "fdc_cloud", "vlan_num", "int"
+	case 108:
+		return "fmg_vm", "service_pkg", "string"
+	case 109:
+		return "fmg_vm", "addons", "list"
+	case 110:
+		return "fmg_vm", "fortiai_tokens", "int"
+	case 111:
+		return "fext_hw", "device_model", "string"
+	case 112:
+		return "fext_hw", "service_pkg", "string"
 	default:
 		return "", "", ""
 	}
@@ -338,6 +382,12 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 30
 		case "adom_num":
 			return 9
+		case "service_pkg":
+			return 108
+		case "addons":
+			return 109
+		case "fortiai_tokens":
+			return 110
 		default:
 			return 0
 		}
@@ -473,6 +523,15 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 		default:
 			return 0
 		}
+	case "fext_hw":
+		switch c_name {
+		case "device_model":
+			return 111
+		case "service_pkg":
+			return 112
+		default:
+			return 0
+		}
 	case "fwbc_private":
 		switch c_name {
 		case "average_throughput":
@@ -514,14 +573,26 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 48
 		case "service_pkg":
 			return 49
-		case "bandwidth":
+		case "bandwidth": // deprecated
 			return 50
 		case "dedicated_ips":
 			return 51
-		case "additional_compute_region":
+		case "additional_compute_region": // deprecated
 			return 59
-		case "locations":
+		case "locations": // deprecated
 			return 72
+		case "data_transfer":
+			return 100
+		case "branch_on_ramp_locations_fortinet_cloud":
+			return 101
+		case "branch_on_ramp_locations_public_cloud":
+			return 102
+		case "global_region":
+			return 103
+		case "additional_compute_region_fortinet_cloud":
+			return 104
+		case "additional_compute_region_public_cloud":
+			return 105
 		default:
 			return 0
 		}
@@ -568,6 +639,17 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 67
 		case "archive_storage":
 			return 68
+		case "region":
+			return 99
+		default:
+			return 0
+		}
+	case "fdc_cloud":
+		switch c_name {
+		case "service_pkg":
+			return 106
+		case "vlan_num":
+			return 107
 		default:
 			return 0
 		}
@@ -598,6 +680,15 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 91
 		case "addons":
 			return 92
+		default:
+			return 0
+		}
+	case "fmg_cloud":
+		switch c_name {
+		case "device_num":
+			return 97
+		case "addons":
+			return 98
 		default:
 			return 0
 		}
@@ -722,6 +813,9 @@ func getEntitlementFromId(resource_id string, m interface{}) (map[string]interfa
 	obj := make(map[string]interface{})
 	obj["configId"] = config_id
 	obj["serialNumber"] = serial_number
+	if client, ok := m.(*FortiClient); ok && client.AccountID != 0 {
+		obj["accountId"] = client.AccountID
+	}
 	return_data, err := c.ReadEntitlementsList(&obj)
 	if err != nil {
 		return nil, diag.FromErr(err)

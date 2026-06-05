@@ -9,11 +9,18 @@ package fortiflexvm
 import (
 	"fmt"
 	"log"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+var readOnlyConfigParameterIDs = []int{47, 50, 59, 60, 72, 85, 86, 87, 88}
+
+func isReadOnlyConfigParameter(paramID int) bool {
+	return slices.Contains(readOnlyConfigParameterIDs, paramID)
+}
 
 func resourceConfig() *schema.Resource {
 	return &schema.Resource{
@@ -39,7 +46,8 @@ func resourceConfig() *schema.Resource {
 			},
 			"program_serial_number": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 				ForceNew: true,
 			},
 			"name": &schema.Schema{
@@ -65,6 +73,7 @@ func resourceConfig() *schema.Resource {
 				FGT_HW: FortiGate Hardware;
 				FAP_HW: FortiAP Hardware;
 				FSW_HW: FortiSwitch Hardware;
+				FEXT_HW: FortiExtender Hardware;
 				FWBC_PRIVATE: FortiWeb Cloud - Private;
 				FWBC_PUBLIC: FortiWeb Cloud - Public;
 				FC_EMS_CLOUD: FortiClient EMS Cloud;
@@ -72,13 +81,15 @@ func resourceConfig() *schema.Resource {
 				FORTIEDR: FortiEDR MSSP;
 				FORTINDR_CLOUD: FortiNDR Cloud;
 				FORTIRECON: FortiRecon;
-				SIEM_CLOUD: FortiSIEM Cloud;				
+				SIEM_CLOUD: FortiSIEM Cloud;
+				FDC_CLOUD: FortiDLP Cloud;
 				FORTIAPPSEC: FortiAppSec;
-				FORTIDLP: FortiDLP;`,
+				FORTIDLP: FortiDLP;
+				FMG_CLOUD: FortiManager Cloud;`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
 					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FORTISOAR_VM", "FORTIMAIL_VM", "FORTINAC_VM",
-					"FGT_HW", "FAP_HW", "FSW_HW", "FWBC_PRIVATE", "FWBC_PUBLIC", "FC_EMS_CLOUD", "FORTISASE",
-					"FORTIEDR", "FORTINDR_CLOUD", "FORTIRECON", "SIEM_CLOUD", "FORTIAPPSEC", "FORTIDLP"}),
+					"FGT_HW", "FAP_HW", "FSW_HW", "FEXT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC", "FC_EMS_CLOUD", "FORTISASE",
+					"FORTIEDR", "FORTINDR_CLOUD", "FORTIRECON", "SIEM_CLOUD", "FDC_CLOUD", "FORTIAPPSEC", "FORTIDLP", "FMG_CLOUD"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -142,6 +153,22 @@ func resourceConfig() *schema.Resource {
 							Computed: true,
 						},
 						"adom_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+						"fortiai_tokens": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
@@ -445,6 +472,25 @@ func resourceConfig() *schema.Resource {
 					},
 				},
 			},
+			"fext_hw": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"device_model": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"fwbc_private": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -541,7 +587,6 @@ func resourceConfig() *schema.Resource {
 						},
 						"bandwidth": &schema.Schema{
 							Type:     schema.TypeInt,
-							Optional: true,
 							Computed: true,
 						},
 						"dedicated_ips": &schema.Schema{
@@ -551,10 +596,38 @@ func resourceConfig() *schema.Resource {
 						},
 						"additional_compute_region": &schema.Schema{
 							Type:     schema.TypeInt,
-							Optional: true,
 							Computed: true,
 						},
 						"locations": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"data_transfer": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"branch_on_ramp_locations_fortinet_cloud": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"branch_on_ramp_locations_public_cloud": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"global_region": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"additional_compute_region_fortinet_cloud": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"additional_compute_region_public_cloud": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
@@ -659,6 +732,30 @@ func resourceConfig() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"region": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"fdc_cloud": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"vlan_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -729,6 +826,26 @@ func resourceConfig() *schema.Resource {
 					},
 				},
 			},
+			"fmg_cloud": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"device_num": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -739,9 +856,12 @@ func importExistingConfig(d *schema.ResourceData, m interface{}) error {
 	var response_data map[string]interface{}
 	config_id := d.Get("config_id").(int)
 	request_obj := make(map[string]interface{})
-	program_serial_number := d.Get("program_serial_number").(string)
+	program_serial_number, ok := getProgramSerialNumber(d, m)
+	if !ok {
+		return fmt.Errorf("program_serial_number should be provided either in the resource or provider configuration")
+	}
 	request_obj["programSerialNumber"] = program_serial_number
-	if v, ok := d.GetOk("account_id"); ok {
+	if v, ok := getAccountID(d, m); ok {
 		request_obj["accountId"] = v
 	}
 	config_list, err := c.ReadConfigsList(&request_obj)
@@ -761,7 +881,7 @@ func importExistingConfig(d *schema.ResourceData, m interface{}) error {
 	// Update status if needed
 	if current_status, ok := response_data["status"].(string); ok {
 		if set_status, ok := d.GetOk("status"); ok && current_status != set_status.(string) {
-			obj, err := getObjectConfig(d, "id")
+			obj, err := getObjectConfig(d, m, "id")
 			if err != nil {
 				return fmt.Errorf("error creating Config resource while getting object: %v", err)
 			}
@@ -799,7 +919,7 @@ func createNewConfig(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 	var err error
 	var response_data map[string]interface{}
-	obj, err := getObjectConfig(d, "create")
+	obj, err := getObjectConfig(d, m, "create")
 	if err != nil {
 		return fmt.Errorf("error creating Config resource while getting object: %v", err)
 	}
@@ -818,7 +938,7 @@ func createNewConfig(d *schema.ResourceData, m interface{}) error {
 	// Update status if needed
 	if current_status, ok := response_data["status"].(string); ok {
 		if set_status, ok := d.GetOk("status"); ok && current_status != set_status.(string) {
-			obj, err := getObjectConfig(d, "id")
+			obj, err := getObjectConfig(d, m, "id")
 			if err != nil {
 				return fmt.Errorf("error creating Config resource while getting object: %v", err)
 			}
@@ -872,7 +992,7 @@ func resourceConfigRead(d *schema.ResourceData, m interface{}) error {
 			return fmt.Errorf("error set params program_serial_number: %v", err)
 		}
 	}
-	obj, err := getObjectConfig(d, "read")
+	obj, err := getObjectConfig(d, m, "read")
 	if err != nil {
 		return fmt.Errorf("error reading Config while getting required parameters: %v", err)
 	}
@@ -898,7 +1018,7 @@ func resourceConfigRead(d *schema.ResourceData, m interface{}) error {
 func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 
-	obj, err := getObjectConfig(d, "update")
+	obj, err := getObjectConfig(d, m, "update")
 	if err != nil {
 		return fmt.Errorf("error updating Config resource while getting object: %v", err)
 	}
@@ -916,7 +1036,7 @@ func resourceConfigUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if st, ok := o["status"].(string); ok {
 		if statusV, ok := d.GetOk("status"); ok && st != statusV.(string) {
-			obj, err = getObjectConfig(d, "id")
+			obj, err = getObjectConfig(d, m, "id")
 			if err != nil {
 				return fmt.Errorf("error creating Config resource while getting object: %v", err)
 			}
@@ -954,7 +1074,7 @@ func resourceConfigDelete(d *schema.ResourceData, m interface{}) error {
 	c := m.(*FortiClient).Client
 
 	if d.Get("status").(string) != "DISABLED" {
-		obj, err := getObjectConfig(d, "id")
+		obj, err := getObjectConfig(d, m, "id")
 		if err != nil {
 			return fmt.Errorf("error creating Config resource while getting object: %v", err)
 		}
@@ -1105,9 +1225,9 @@ func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) 
 	if typeId == 0 {
 		err := fmt.Errorf("product_type invalid: %v, should be one of [%v]", v.(string),
 			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FORTINAC_VM, "+
-				"FORTISOAR_VM, FORTIMAIL_VM, FGT_HW, FAP_HW, FSW_HW, FWBC_PRIVATE, FWBC_PUBLIC, "+
+				"FORTISOAR_VM, FORTIMAIL_VM, FGT_HW, FAP_HW, FSW_HW, FEXT_HW, FWBC_PRIVATE, FWBC_PUBLIC, "+
 				"FC_EMS_CLOUD, FORTISASE, FORTIEDR, FORTINDR_CLOUD, FORTIRECON, SIEM_CLOUD, "+
-				"FORTIAPPSEC, FORTIDLP")
+				"FDC_CLOUD, FORTIAPPSEC, FORTIDLP, FMG_CLOUD")
 		return typeId, err
 	}
 	return typeId, nil
@@ -1131,7 +1251,7 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 			log.Printf("[ERROR] %v", err)
 			return result, err
 		}
-		if ckId == 47 || ckId == 60 || ckId == 85 || ckId == 86 || ckId == 87 || ckId == 88 { // This argument is read only
+		if isReadOnlyConfigParameter(ckId) {
 			continue
 		}
 		if cvList, ok := cv.([]interface{}); ok {
@@ -1163,7 +1283,7 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 	return result, nil
 }
 
-func getObjectConfig(d *schema.ResourceData, rType string) (*map[string]interface{}, error) {
+func getObjectConfig(d *schema.ResourceData, m interface{}, rType string) (*map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if rType == "update" || rType == "id" {
@@ -1171,10 +1291,10 @@ func getObjectConfig(d *schema.ResourceData, rType string) (*map[string]interfac
 	}
 
 	if rType == "create" || rType == "read" {
-		if value, ok := d.GetOk("program_serial_number"); ok {
+		if value, ok := getProgramSerialNumber(d, m); ok {
 			obj["programSerialNumber"] = value
 		}
-		if value, ok := d.GetOk("account_id"); ok {
+		if value, ok := getAccountID(d, m); ok {
 			obj["accountId"] = value
 		}
 	}

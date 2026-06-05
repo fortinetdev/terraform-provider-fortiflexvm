@@ -3,22 +3,20 @@ subcategory: "Entitlements"
 layout: "fortiflexvm"
 page_title: "FortiFlexVM: fortiflexvm_entitlements_cloud"
 description: |-
-  Create and update one cloud entitlement based on a configuration.
+  Create or update a cloud entitlement based on a configuration.
 ---
 
 # fortiflexvm_entitlements_cloud
 
-Create and update one cloud entitlement based on a configuration.
+Create or update a cloud entitlement based on a configuration.
 
 ~> Each account can create at most one entitlement for each cloud product.
 
-## Example Usage
-
+## Example Usage: Create one cloud configuration and entitlement.
 ```hcl
-# Create one cloud configuration and entitlement.
 resource "fortiflexvm_config" "example" {
   product_type          = "FC_EMS_CLOUD"
-  program_serial_number = "ELAVMS0000xxxxxx"
+  program_serial_number = "ELAVMR0000XXXXXX"
   name                  = "FC_EMS_OP_template"
   fc_ems_cloud {
     ztna_num         = 225     # Value should be divisible by 25. Number between 0 and 25000 (inclusive)
@@ -28,28 +26,29 @@ resource "fortiflexvm_config" "example" {
     chromebook       = 100     # Value should be divisible by 25. Number between 0 and 25000 (inclusive) 
     addons           = ["BPS"] # [] or ["BPS"]
   }
-  status = "ACTIVE"
 }
 # Each account can create at most one entitlement for each cloud product.
 resource "fortiflexvm_entitlements_cloud" "example" {
   config_id   = fortiflexvm_config.example.id
-  description = "Use v2 terraform"    # Optional.
-  end_date    = "2024-12-12T00:00:00" # Optional. If not set or empty "", it will use the program's end date automatically.
-  folder_path = "My Assets/v2"        # Optional. If not set, new VM will be in "My Assets"
-  # status    = "ACTIVE" # Optional, It has many restrictions. Not recommended to set it manually.
+  description = "Created by Terraform"   # Optional.
+  # end_date    = "2024-12-12T00:00:00"  # Optional. If not set or empty "", it will use the program's end date automatically.
+  # folder_path = "My Assets/sub_folder" # Optional. If not set, new VM will be in "My Assets"
 }
 output "new_entitlement" {
   value = fortiflexvm_entitlements_cloud.example
 }
+```
 
-# Import & update existing entitlement
+## Example Usage: Import & update existing entitlement
+```hcl
 # If specify both serial_number and config_id, it will import the existing entitlement.
 resource "fortiflexvm_entitlements_cloud" "example" {
-  config_id     = fortiflexvm_config.example.id # new config_id value or unchanged
+  config_id     = fortiflexvm_config.example.id
   serial_number = "FWBXXXXX00000000"
-  # description = "Your description"    # Optional.
-  # end_date    = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
-  # status      = "ACTIVE"              # "ACTIVE" or "STOPPED". Optional.
+  # description = "Your description"     # Optional.
+  # end_date    = "2024-11-12T00:00:00"  # Optional. If not set, it will use the program end date automatically.
+  # folder_path = "My Assets/sub_folder" # Optional.
+  # status      = "ACTIVE"               # "ACTIVE" or "STOPPED". Optional.
 }
 # You can also import by using: terraform import fortiflexvm_entitlements_cloud.labelname <serial_number>.<config_id>
 ```

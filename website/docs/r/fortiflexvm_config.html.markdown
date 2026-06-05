@@ -12,16 +12,15 @@ Create a new configuration under a FortiFlex Program.
 
 ~> By using this resource, you can change the data in the FortiFlex Platform immediately. Yet it may take several hours for the VMs to update their licenses automatically. To update the licenses in the VMs immediately, please reboot your VMs.
 
-## Example Usage
+## Example Usage: Create or import configuration
 
 -> You need to specify what type of product you want to create in `product_type` and then fill in the correspond block.
 
-Create or import configuration
 ```hcl
 // Create a new configuration
 resource "fortiflexvm_config" "create_example" {
   product_type          = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FGT_VM_Bundle_example"
   fgt_vm_bundle {
     cpu_size            = 2           # 1 ~ 96
@@ -37,7 +36,7 @@ resource "fortiflexvm_config" "create_example" {
 resource "fortiflexvm_config" "import_example" {
   config_id             = 12345
   product_type          = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
 }
 
 // Import an existing configuration and update it
@@ -47,7 +46,7 @@ resource "fortiflexvm_config" "import_and_update" {
   status                = "ACTIVE"
   config_id             = 12345
   product_type          = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FGT_VM_Bundle_example"
   fgt_vm_bundle {
     cpu_size            = 2           # 1 ~ 96
@@ -60,12 +59,12 @@ resource "fortiflexvm_config" "import_and_update" {
 }
 ```
 
-Examples of creating configurations.
+## Example Usage: Supported configuration types
 ```hcl
 # FortiGate Virtual Machine - Service Bundle
 resource "fortiflexvm_config" "FGT_VM_Bundle" {
   product_type          = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FGT_VM_Bundle_example"
   fgt_vm_bundle {
     cpu_size            = "2"         # 1 ~ 96
@@ -80,18 +79,21 @@ resource "fortiflexvm_config" "FGT_VM_Bundle" {
 # FortiManager Virtual Machine
 resource "fortiflexvm_config" "FMG_VM" {
   product_type          = "FMG_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FMG_VM_example"
   fmg_vm {
-    managed_dev = 1 # 1 ~ 100000
-    adom_num    = 0 # 0 ~ 100000
+    managed_dev    = 10         # 1 ~ 100000
+    adom_num       = 10         # 0 ~ 100000
+    service_pkg    = "FMGFC247" # "FMGFC247", "FMGFCEL"
+    addons         = []         # "FMGAISN"
+    fortiai_tokens = 0         # 0 ~ 500000000
   }
 }
 
 # FortiWeb Virtual Machine - Service Bundle
 resource "fortiflexvm_config" "FWB_VM" {
   product_type          = "FWB_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FWB_VM_example"
   fwb_vm {
     cpu_size    = "2"      # "1", "2", "4", "8", "16"
@@ -102,7 +104,7 @@ resource "fortiflexvm_config" "FWB_VM" {
 # FortiGate Virtual Machine - A La Carte Services
 resource "fortiflexvm_config" "FGT_VM_LCS" {
   product_type          = "FGT_VM_LCS"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FGT_VM_LCS_example"
   fgt_vm_lcs {
     cpu_size            = 4               # 1 ~ 96
@@ -116,7 +118,7 @@ resource "fortiflexvm_config" "FGT_VM_LCS" {
 # FortiClient EMS On-Prem
 resource "fortiflexvm_config" "FC_EMS_OP" {
   product_type          = "FC_EMS_OP"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FC_EMS_OP_example"
   fc_ems_op {
     ztna_num        = 225        # Number between 0 and 25,000 (inclusive)
@@ -130,7 +132,7 @@ resource "fortiflexvm_config" "FC_EMS_OP" {
 # FortiAnalyzer Virtual Machine
 resource "fortiflexvm_config" "FAZ_VM" {
   product_type          = "FAZ_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FAZ_VM_example"
   faz_vm {
     daily_storage   = 20         # 5 ~ 8300
@@ -143,7 +145,7 @@ resource "fortiflexvm_config" "FAZ_VM" {
 # FortiPortal Virtual Machine
 resource "fortiflexvm_config" "FPC_VM" {
   product_type          = "FPC_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FPC_VM_example"
   fpc_vm {
     managed_dev = 1 # 0 ~ 100000
@@ -153,7 +155,7 @@ resource "fortiflexvm_config" "FPC_VM" {
 # FortiADC Virtual Machine
 resource "fortiflexvm_config" "FAD_VM" {
   product_type          = "FAD_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FAD_VM_example"
   fad_vm {
     cpu_size    = "1"        # "1", "2", "4", "8", "16", "32"
@@ -164,7 +166,7 @@ resource "fortiflexvm_config" "FAD_VM" {
 # FortiSOAR Virtual Machine
 resource "fortiflexvm_config" "FORTISOAR_VM" {
   product_type          = "FORTISOAR_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTISOAR_VM_example"
   fortisoar_vm {
     service_pkg              = "FSRE" # "FSRE", "FSRM", "FSRD", "FSRR"
@@ -176,7 +178,7 @@ resource "fortiflexvm_config" "FORTISOAR_VM" {
 # FortiMail Virtual Machine
 resource "fortiflexvm_config" "FORTIMAIL_VM" {
   product_type          = "FORTIMAIL_VM"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTIMAIL_VM_example"
   fortimail_vm {
     cpu_size    = "2"       # "1", "2", "4", "8", "16", "32"
@@ -188,7 +190,7 @@ resource "fortiflexvm_config" "FORTIMAIL_VM" {
 # FortiGate Hardware
 resource "fortiflexvm_config" "FGT_HW" {
   product_type          = "FGT_HW"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FGT_HW_example"
   fgt_hw {
     device_model = "FGT60F"    # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5009/
@@ -204,7 +206,7 @@ resource "fortiflexvm_config" "FGT_HW" {
 # FortiAP Hardware
 resource "fortiflexvm_config" "FAP_HW" {
   product_type          = "FAP_HW"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FAP_HW_example"
   fap_hw {
     device_model = "FP23JF"     # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5010/
@@ -220,7 +222,7 @@ resource "fortiflexvm_config" "FAP_HW" {
 # FortiSwitch Hardware
 resource "fortiflexvm_config" "FSW_HW" {
   product_type          = "FSW_HW"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FSW_HW_example"
   fsw_hw {
     device_model = "S108EN"     # For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5011/
@@ -235,10 +237,23 @@ resource "fortiflexvm_config" "FSW_HW" {
   }
 }
 
+# FortiExtender Hardware
+resource "fortiflexvm_config" "FEXT_HW" {
+  product_type          = "FEXT_HW"
+  program_serial_number = "ELAVMR00000XXXXX"
+  name                  = "FEXT_HW_example"
+  fext_hw {
+    device_model = "FXE11G"     # "BS10FW", "BS20GN", "BS20GW", "FXE11G", "FX200F", "FXE21F", "FXA22F",
+                                # "FX211G", "FX311F", "FX511F", "FXN51G", "FXW51G", "FXR51G", "FVG21F",
+                                # "FVA21F", "FVG22F", "FVA22F", "FVG51G"
+    service_pkg = "FEXHWFC247"  # "FEXHWFC247", "FEXHWFSSB"
+  }
+}
+
 # FortiWeb Cloud - Public
 resource "fortiflexvm_config" "FWBC_PUBLIC" {
   product_type          = "FWBC_PUBLIC"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FWBC_PUBLIC_example"
   fwbc_public {
     average_throughput = 150 # 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600
@@ -251,7 +266,7 @@ resource "fortiflexvm_config" "FWBC_PUBLIC" {
 # FortiClient EMS Cloud
 resource "fortiflexvm_config" "FC_EMS_CLOUD" {
   product_type          = "FC_EMS_CLOUD"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FC_EMS_CLOUD_example"
   fc_ems_cloud {
     ztna_num         = 225     # Value should be 0 or between 25 and 25000 (inclusive)
@@ -266,22 +281,25 @@ resource "fortiflexvm_config" "FC_EMS_CLOUD" {
 # FortiSASE
 resource "fortiflexvm_config" "FORTISASE" {
   product_type          = "FORTISASE"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTISASE_example"
   fortisase {
-    users                     = 50         # Number between 50 and 50,000 (inclusive)
-    service_pkg               = "FSASESTD" # "FSASESTD" (Standard), "FSASEADV" (Advanced) or "FSASECOM" (Comprehensive)
-    bandwidth                 = 1000       # Number between 25 and 10,000 (inclusive)
-    dedicated_ips             = 4          # Number between 4 and 65,534 (inclusive)
-    additional_compute_region = 0          # Number between 0 and 16 (inclusive)
-    locations                 = 0          # Number between 0 and 8 (inclusive)
+    users                                      = 50         # Number between 50 and 50,000 (inclusive)
+    service_pkg                                = "FSASESTD" # "FSASESTD" (Standard), "FSASEADV" (Advanced) or "FSASECOM" (Comprehensive)
+    dedicated_ips                              = 4          # Number between 4 and 65,534 (inclusive)
+    data_transfer                              = 0          # Number between 0 and 2,500,000 (inclusive)
+    branch_on_ramp_locations_fortinet_cloud    = 0          # Number between 0 and 20 (inclusive)
+    branch_on_ramp_locations_public_cloud      = 0          # Number between 0 and 20 (inclusive)
+    global_region                              = "ENABLED"  # "ENABLED"
+    additional_compute_region_fortinet_cloud   = 0          # 0 or number between 2 and 16 (inclusive)
+    additional_compute_region_public_cloud     = 0          # 0 or number between 2 and 16 (inclusive)
   }
 }
 
 # FortiEDR MSSP
 resource "fortiflexvm_config" "FORTIEDR" {
   product_type          = "FORTIEDR"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTIEDR_example"
   fortiedr {
     service_pkg        = "FEDRPDR"   # Only support "FEDRPDR" (Discover/Protect/Respond) now
@@ -293,7 +311,7 @@ resource "fortiflexvm_config" "FORTIEDR" {
 # FortiNDR Cloud
 resource "fortiflexvm_config" "FORTINDR_CLOUD" {
   product_type          = "FORTINDR_CLOUD"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTINDR_example"
   # fortindr_cloud doesn't have any required parameters
   fortindr_cloud {
@@ -303,7 +321,7 @@ resource "fortiflexvm_config" "FORTINDR_CLOUD" {
 # FortiRecon
 resource "fortiflexvm_config" "FORTIRECON" {
   product_type          = "FORTIRECON"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTIRECON_example"
   fortirecon {
     service_pkg   = "FRNEASM" # "FRNEASM", "FRNEASMBP" or "FRNEASMBPACI"
@@ -317,7 +335,7 @@ resource "fortiflexvm_config" "FORTIRECON" {
 # FortiSIEM Cloud
 resource "fortiflexvm_config" "SIEM_CLOUD" {
   product_type          = "SIEM_CLOUD"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "SIEM_CLOUD_example"
   siem_cloud {
     compute_units = 10               # Number between 10 and 600 (inclusive). Value should be divisible by 10.
@@ -325,13 +343,36 @@ resource "fortiflexvm_config" "SIEM_CLOUD" {
                                      # It can be scaled up in an increment of 500 but scaling down is NOT allowed.
     archive_storage = 0              # Number between 0 and 60,000 (inclusive). Value should be divisible by 500.
                                      # It can be scaled up in an increment of 500 but scaling down is NOT allowed.
+    region          = "RegionA"      # "RegionA", "RegionB"
+  }
+}
+
+# FortiDeceptor Cloud
+resource "fortiflexvm_config" "FDC_CLOUD" {
+  product_type          = "FDC_CLOUD"
+  program_serial_number = "ELAVMR00000XXXXX"
+  name                  = "FDC_CLOUD_example"
+  fdc_cloud {
+    service_pkg = "FDCPREM" # "FDCPREM" (Premium Bundle)
+    vlan_num    = 2         # Number between 2 and 1024 (inclusive)
+  }
+}
+
+# FortiManager Cloud
+resource "fortiflexvm_config" "FMG_CLOUD" {
+  product_type          = "FMG_CLOUD"
+  program_serial_number = "ELAVMR00000XXXXX"
+  name                  = "FMG_CLOUD_example"
+  fmg_cloud {
+    device_num = 3               # Number between 3 and 100,000 (inclusive)
+    addons     = ["FMGCLDAISN"]  # [] or ["FMGCLDAISN"]
   }
 }
 
 # FortiAppSec
 resource "fortiflexvm_config" "FORTIAPPSEC" {
   product_type          = "FORTIAPPSEC"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTIAPPSEC_example"
   fortiappsec {
     service_types   = ["UCWAF", "UCGSLB"] # Possible values: "UCWAF", "UCGSLB"
@@ -343,7 +384,7 @@ resource "fortiflexvm_config" "FORTIAPPSEC" {
 # FortiDLP
 resource "fortiflexvm_config" "FORTIDLP" {
   product_type          = "FORTIDLP"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name                  = "FORTIDLP_example"
   fortidlp {
     service_pkg = "DLPSTD" # "DLPSTD", "DLPENT", "DLPENTP"
@@ -357,7 +398,7 @@ resource "fortiflexvm_config" "FORTIDLP" {
 
 The following arguments are supported:
 
-* `account_id` - (Optional/Number) Account ID. Once the fortiflexvm_config is created, you can't change the account ID of this configuration by changing `account_id`.
+* `account_id` - (Optional/Number) Account ID. If omitted, the provider-level `account_id` is used when configured. Once the fortiflexvm_config is created, you can't change the account ID of this configuration by changing `account_id`.
 * `config_id` - (Optional/Number) Configuration ID. If you specify this argument, this resource will import this configuration rather than create a new one.
 * `product_type` - (Required/String) Product type, must be one of the following options:
   * `FAD_VM`: FortiADC Virtual Machine
@@ -365,15 +406,13 @@ The following arguments are supported:
   * `FAZ_VM`: FortiAnalyzer Virtual Machine
   * `FC_EMS_CLOUD`: FortiClient EMS Cloud
   * `FC_EMS_OP`: FortiClient EMS On-Prem
+  * `FDC_CLOUD`: FortiDeceptor Cloud
+  * `FEXT_HW`: FortiExtender Hardware
   * `FGT_HW`: FortiGate Hardware
   * `FGT_VM_Bundle`: FortiGate Virtual Machine - Service Bundle
   * `FGT_VM_LCS`: FortiGate Virtual Machine - A La Carte Services
   * `FMG_VM`: FortiManager Virtual Machine
-  * `FPC_VM`: FortiPortal Virtual Machine
-  * `FSW_HW`: FortiSwitch Hardware
-  * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
-  * `FWBC_PRIVATE`: FortiWeb Cloud - Private
-  * `FWBC_PUBLIC`: FortiWeb Cloud - Public
+  * `FMG_CLOUD`: FortiManager Cloud
   * `FORTIAPPSEC`: FortiAppSec
   * `FORTIDLP`: FortiDLP
   * `FORTIEDR`: FortiEDR MSSP
@@ -383,8 +422,13 @@ The following arguments are supported:
   * `FORTIRECON`: FortiRecon
   * `FORTISASE`: FortiSASE
   * `FORTISOAR_VM`: FortiSOAR Virtual Machine
+  * `FPC_VM`: FortiPortal Virtual Machine
+  * `FSW_HW`: FortiSwitch Hardware
+  * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
+  * `FWBC_PRIVATE`: FortiWeb Cloud - Private
+  * `FWBC_PUBLIC`: FortiWeb Cloud - Public
   * `SIEM_CLOUD`: FortiSIEM Cloud
-* `program_serial_number` - (Required/String) The serial number of your FortiFlex Program. This serial number should start with `"ELAVMR"`.
+* `program_serial_number` - (Optional/String) The serial number of your FortiFlex Program. If omitted, the provider-level `program_serial_number` is used when configured. This serial number should start with `"ELAVMR"`.
 * `name` - (Required unless you only update the status/String) The name of your configuration.
 * `status` - (Optional/String) Configuration status. If you don't specify, the configuration status keeps unchanged. The default status is `ACTIVE` once you create a configuration. It must be one of the following options:
 	* `ACTIVE`: Enable a configuration
@@ -394,25 +438,28 @@ The following arguments are supported:
 * `faz_vm` - (Block List) You must fill in this block if your `product_type` is `"FAZ_VM"`. The structure of [`faz_vm` block](#nestedblock--faz_vm) is documented below.
 * `fc_ems_cloud` - (Block List) You must fill in this block if your `product_type` is `"FC_EMS_CLOUD"`. The structure of [`fc_ems_cloud` block](#nestedblock--fc_ems_cloud) is documented below.
 * `fc_ems_op` - (Block List) You must fill in this block if your `product_type` is `"FC_EMS_OP"`. The structure of [`fc_ems_op` block](#nestedblock--fc_ems_op) is documented below.
+* `fdc_cloud` - (Block List) You must fill in this block if your `product_type` is `"FDC_CLOUD"`. The structure of [`fdc_cloud` block](#nestedblock--fdc_cloud) is documented below.
+* `fext_hw` - (Block List) You must fill in this block if your `product_type` is `"FEXT_HW"`. The structure of [`fext_hw` block](#nestedblock--fext_hw) is documented below.
 * `fgt_hw` - (Block List) You must fill in this block if your `product_type` is `"FGT_HW"`. The structure of [`fgt_hw` block](#nestedblock--fgt_hw) is documented below.
 * `fgt_vm_bundle` - (Block List) You must fill in this block if your `product_type` is `"FGT_VM_Bundle"`. The structure of [`fgt_vm_bundle` block](#nestedblock--fgt_vm_bundle) is documented below.
 * `fgt_vm_lcs` - (Block List) You must fill in this block if your `product_type` is `"FGT_VM_LCS"`. The structure of [`fgt_vm_lcs` block](#nestedblock--fgt_vm_lcs) is documented below.
+* `fmg_cloud` - (Block List) You must fill in this block if your `product_type` is `"FMG_CLOUD"`. The structure of [`fmg_cloud` block](#nestedblock--fmg_cloud) is documented below.
 * `fmg_vm` - (Block List) You must fill in this block if your `product_type` is `"FMG_VM"`. The structure of [`fmg_vm` block](#nestedblock--fmg_vm) is documented below.
+* `fortiappsec` - (Block List) You must fill in this block if your `product_type` is `"FORTIAPPSEC"`. The structure of [`fortiappsec` block](#nestedblock--fortiappsec) is documented below.
+* `fortidlp` - (Block List) You must fill in this block if your `product_type` is `"FORTIDLP"`. The structure of [`fortidlp` block](#nestedblock--fortidlp) is documented below.
+* `fortiedr` - (Block List) You must fill in this block if your `product_type` is `"FORTIEDR"`. The structure of [`fortiedr` block](#nestedblock--fortiedr) is documented below.
+* `fortimail_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTIMAIL_VM"`. The structure of [`fortimail_vm` block](#nestedblock--fortimail_vm) is documented below.
+* `fortinac_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTINAC_VM"`. The structure of [`fortinac_vm` block](#nestedblock--fortinac_vm) is documented below.
+* `fortindr_cloud` - (Block List) You must fill in this block if your `product_type` is `"FORTINDR_CLOUD"`. The structure of [`fortindr_cloud` block](#nestedblock--fortindr_cloud) is documented below.
+* `fortirecon` - (Block List) You must fill in this block if your `product_type` is `"FORTIRECON"`. The structure of [`fortirecon` block](#nestedblock--fortirecon) is documented below.
+* `fortisase` - (Block List) You must fill in this block if your `product_type` is `"FORTISASE"`. The structure of [`fortisase` block](#nestedblock--fortisase) is documented below.
+* `fortisoar_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTISOAR_VM"`. The structure of [`fortisoar_vm` block](#nestedblock--fortisoar_vm) is documented below.
 * `fpc_vm` - (Block List) You must fill in this block if your `product_type` is `"FPC_VM"`. The structure of [`fpc_vm` block](#nestedblock--fpc_vm) is documented below.
 * `fsw_hw` - (Block List) You must fill in this block if your `product_type` is `"FSW_HW"`. The structure of [`fsw_hw` block](#nestedblock--fsw_hw) is documented below.
 * `fwb_vm` - (Block List) You must fill in this block if your `product_type` is `"FWB_VM"`. The structure of [`fwb_vm` block](#nestedblock--fwb_vm) is documented below.
-* `fortinac_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTINAC_VM"`. The structure of [`fortinac_vm` block](#nestedblock--fortinac_vm) is documented below.
 * `fwbc_private` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PRIVATE"`. The structure of [`fwbc_private` block](#nestedblock--fwbc_private) is documented below.
 * `fwbc_public` - (Block List) You must fill in this block if your `product_type` is `"FWBC_PUBLIC"`. The structure of [`fwbc_public` block](#nestedblock--fwbc_public) is documented below.
-* `fortisase` - (Block List) You must fill in this block if your `product_type` is `"FORTISASE"`. The structure of [`fortisase` block](#nestedblock--fortisase) is documented below.
-* `fortiedr` - (Block List) You must fill in this block if your `product_type` is `"FORTIEDR"`. The structure of [`fortiedr` block](#nestedblock--fortiedr) is documented below.
-* `fortimail_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTIMAIL_VM"`. The structure of [`fortimail_vm` block](#nestedblock--fortimail_vm) is documented below.
-* `fortindr_cloud` - (Block List) You must fill in this block if your `product_type` is `"FORTINDR_CLOUD"`. The structure of [`fortindr_cloud` block](#nestedblock--fortindr_cloud) is documented below.
-* `fortirecon` - (Block List) You must fill in this block if your `product_type` is `"FORTIRECON"`. The structure of [`fortirecon` block](#nestedblock--fortirecon) is documented below.
-* `fortisoar_vm` - (Block List) You must fill in this block if your `product_type` is `"FORTISOAR_VM"`. The structure of [`fortisoar_vm` block](#nestedblock--fortisoar_vm) is documented below.
 * `siem_cloud` - (Block List) You must fill in this block if your `product_type` is `"SIEM_CLOUD"`. The structure of [`siem_cloud` block](#nestedblock--siem_cloud) is documented below.
-* `fortiappsec` - (Block List) You must fill in this block if your `product_type` is `"FORTIAPPSEC"`. The structure of [`fortiappsec` block](#nestedblock--fortiappsec) is documented below.
-* `fortidlp` - (Block List) You must fill in this block if your `product_type` is `"FORTIDLP"`. The structure of [`fortidlp` block](#nestedblock--fortidlp) is documented below.
 
 <a id="nestedblock--fad_vm"></a>
 The `fad_vm` block contains:
@@ -456,6 +503,12 @@ The `fap_hw` block contains:
 * `addons` - (Optional/List of String) The default value is an empty list. Possible values:
   * `"FAPHWFSFG"`: FortiSASE Cloud Managed AP
 
+<a id="nestedblock--fdc_cloud"></a>
+The `fdc_cloud` block contains:
+
+* `service_pkg` - (Required if `product_type = "FDC_CLOUD"`/String) Option: `"FDCPREM"` (Premium Bundle).
+* `vlan_num` - (Required if `product_type = "FDC_CLOUD"`/Number) Number of VLANs. Number between 2 and 1024 (inclusive).
+
 <a id="nestedblock--fortinac_vm"></a>
 The `fortinac_vm` block contains:
 
@@ -490,6 +543,32 @@ The `fc_ems_op` block contains:
 * `chromebook` - (Required if `product_type = "FC_EMS_OP"`/Number) Chromebook (number of endpoints). Value should be 0 or between 25 and 25000 (inclusive).
 * `support_service` - (Required if `product_type = "FC_EMS_OP"`/String) Option: `"FCTFC247"` (FortiCare Premium).
 * `addons` - (Optional/List of String) The default value is an empty list. Options: `"BPS"` (FortiCare Best Practice).
+
+<a id="nestedblock--fext_hw"></a>
+The `fext_hw` block contains:
+
+* `device_model` - (Required if `product_type = "FEXT_HW"`/String) Device Model. Options:
+  * `"BS10FW"`: FortiBranchSASE-10F-WiFi
+  * `"BS20GN"`: FortiBranchSASE-20G
+  * `"BS20GW"`: FortiBranchSASE-20G-WiFi
+  * `"FXE11G"`: FortiExtender-101G
+  * `"FX200F"`: FortiExtender-200F
+  * `"FXE21F"`: FortiExtender-201F-EA
+  * `"FXA22F"`: FortiExtender-202F-AM
+  * `"FX211G"`: FortiExtender-211G
+  * `"FX311F"`: FortiExtender-311F
+  * `"FX511F"`: FortiExtender-511F
+  * `"FXN51G"`: FortiExtender-511G
+  * `"FXW51G"`: FortiExtender-511G-WiFi
+  * `"FXR51G"`: FortiExtenderRugged-511G
+  * `"FVG21F"`: FortiExtenderVehicle-211F
+  * `"FVA21F"`: FortiExtenderVehicle-211F-AM
+  * `"FVG22F"`: FortiExtenderVehicle-212F
+  * `"FVA22F"`: FortiExtenderVehicle-212F-AM
+  * `"FVG51G"`: FortiExtenderVehicle-511G
+* `service_pkg` - (Required if `product_type = "FEXT_HW"`/String) Options:
+  * `"FEXHWFC247"`: FortiCare Premium
+  * `"FEXHWFSSB"`: SASE Protection Bundle
 
 <a id="nestedblock--fgt_hw"></a>
 The `fgt_hw` block contains:
@@ -628,8 +707,20 @@ The `fgt_vm_lcs` block contains:
 The `fmg_vm` block contains:
 
 * `adom_num` - (Optional/Number) Number of ADOMs. A number between 0 and 100000 (inclusive). The default value is 0.
+* `addons` - (Optional/List of String) The default value is an empty list. Options:
+  * `"FMGAISN"`: FortiAI Service
+* `fortiai_tokens` - (Optional/Number) FortiAI Additional Tokens. Number between 1 and 500,000,000 (inclusive).
 * `managed_dev` - (Optional/Number) Number of managed devices. A number between 1 and 100000 (inclusive). The default value is 1.
+* `service_pkg` - (Optional/String) Options:
+  * `"FMGFC247"`: FortiCare Premium
+  * `"FMGFCEL"`: FortiCare Elite
 
+<a id="nestedblock--fmg_cloud"></a>
+The `fmg_cloud` block contains:
+
+* `addons` - (Optional/List of String) The default value is an empty list. Options:
+  * `"FMGCLDAISN"`: FortiAI Service
+* `device_num` - (Required if `product_type = "FMG_CLOUD"`/Number) Number of Devices. Number between 3 and 100,000 (inclusive).
 
 <a id="nestedblock--fpc_vm"></a>
 The `fpc_vm` block contains:
@@ -725,10 +816,16 @@ The `fortisase` block contains:
 
 * `users` - (Required if `product_type = "FORTISASE"`/Number) Number between 50 and 50,000 (inclusive).
 * `service_pkg` - (Required if `product_type = "FORTISASE"`/String) `"FSASESTD"` (Standard), `"FSASEADV"` (Advanced) or `"FSASECOM"` (Comprehensive)
-* `bandwidth` - (Required if `product_type = "FORTISASE"`/Number) Mbps. Number between 25 and 10,000 (inclusive).
+* `bandwidth` - (Read-Only/Number) Deprecated. Use `data_transfer` instead. Mbps. Number between 25 and 10,000 (inclusive).
 * `dedicated_ips` - (Required if `product_type = "FORTISASE"`/Number) Number between 4 and 65,534 (inclusive).
-* `additional_compute_region` - (Optional/Number) Additional Compute Region. Number between 0 and 16 (inclusive). The 'Additional Compute Region' can be scaled up in an increment of 1 but scaling down is NOT allowed.
-* `locations` - (Optional/Number) SD-WAN On-Ramp Locations. Number between 0 and 8 (inclusive). The 'SD-WAN On-Ramp Locations' can be scaled up in an increment of 1 but scaling down is NOT allowed.
+* `additional_compute_region` - (Read-Only/Number) Deprecated. Use `additional_compute_region_fortinet_cloud` and/or `additional_compute_region_public_cloud` instead. Number between 0 and 16 (inclusive). The 'Additional Compute Region' can be scaled up in an increment of 1 but scaling down is NOT allowed.
+* `locations` - (Read-Only/Number) Deprecated. Use `branch_on_ramp_locations_fortinet_cloud` and/or `branch_on_ramp_locations_public_cloud` instead. SD-WAN On-Ramp Locations. Number between 0 and 8 (inclusive). The 'SD-WAN On-Ramp Locations' can be scaled up in an increment of 1 but scaling down is NOT allowed.
+* `data_transfer` - (Optional/Number) Data Transfer. Number between 0 and 2,500,000 (inclusive).
+* `branch_on_ramp_locations_fortinet_cloud` - (Optional/Number) Branch On-Ramp Locations - Fortinet Cloud. Number between 0 (disabled) and 20 (inclusive).
+* `branch_on_ramp_locations_public_cloud` - (Optional/Number) Branch On-Ramp Locations - Public Cloud. Number between 0 (disabled) and 20 (inclusive).
+* `global_region` - (Optional/String) Global Region. Possible value: `"ENABLED"`.
+* `additional_compute_region_fortinet_cloud` - (Optional/Number) Additional Compute Region - Fortinet Cloud. Value should be 0 (disabled) or between 2 and 16 (inclusive).
+* `additional_compute_region_public_cloud` - (Optional/Number) Additional Compute Region - Public Cloud. Value should be 0 (disabled) or between 2 and 16 (inclusive).
 
 <a id="nestedblock--fortiedr"></a>
 The `fortiedr` block contains:
@@ -784,6 +881,7 @@ The `siem_cloud` block contains:
 * `compute_units` - (Required if `product_type = "SIEM_CLOUD"`/Number) Number of Compute Units. Number between 10 and 600 (inclusive). Value should be divisible by 10.
 * `additional_online_storage` - (Required if `product_type = "SIEM_CLOUD"`/Number) Additional Online Storage. Number between 500 and 60,000 (inclusive). Value should be divisible by 500. The 'Additional Online Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
 * `archive_storage` - (Optional/Number) Archive storage. Number between 0 and 60,000 (inclusive). Value should be divisible by 500. The 'Archive Storage' can be scaled up in an increment of 500 but scaling down is NOT allowed.
+* `region` - (Optional/String) Region. Possible values: `"RegionA"`, `"RegionB"`.
 
 <a id="nestedblock--fortiappsec"></a>
 The `fortiappsec` block contains:
@@ -818,7 +916,7 @@ Method 1: Specify `config_id`
 resource "fortiflexvm_config" "import_example" {
   config_id             = 12345
   product_type          = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
 }
 ```
 
@@ -829,7 +927,7 @@ First, specify the `program_serial_number` when you configure the provider.
 provider "fortiflexvm" {
   username = "ABCDEFG"
   password = "HIJKLMN"
-  import_options= toset(["program_serial_number=ELAVMS000000XXXX"])
+  program_serial_number = "ELAVMR000000XXXX"
 }
 ```
 

@@ -3,12 +3,14 @@ subcategory: "Entitlements"
 layout: "fortiflexvm"
 page_title: "FortiFlexVM: fortiflexvm_entitlements_vm_token"
 description: |-
-  Regenerate token for a VM.
+  Regenerate a token for a VM entitlement.
 ---
 
 # fortiflexvm_entitlements_vm_token
 
-Regenerate token for a VM.
+Regenerate a token for a VM entitlement.
+
+When `regenerate_token` is set to `true`, `fortiflexvm_entitlements_vm_token` refreshes the token every time you run `terraform apply`.
 
 ## Example Usage
 

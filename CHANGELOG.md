@@ -1,4 +1,26 @@
-## 2.4.5 (Unreleased)
+## 2.4.6 (Unreleased)
+
+
+## 2.4.5 (June 4, 2026)
+
+IMPROVEMENTS:
+
+* Supported 3 new configuration: `FEXT_HW`, `FDC_CLOUD`, `FMG_CLOUD`.
+* Added `FMG_VM` configuration arguments: `service_pkg`, `addons`, and `fortiai_tokens`.
+* Added `SIEM_CLOUD` configuration arguments: `region`.
+* Added `FORTISASE` configuration arguments: `data_transfer`, `branch_on_ramp_locations_fortinet_cloud`, `branch_on_ramp_locations_public_cloud`, `global_region`, `additional_compute_region_fortinet_cloud`, and `additional_compute_region_public_cloud`.
+* Improved provider documentation with clearer getting-started guidance.
+* Added provider-level arguments `account_id` and `program_serial_number`.
+
+BUG FIXES:
+
+* Fixed entitlement resources so `end_date` is sent to the API only when the user explicitly configures it. Also fixed stale `end_date` state after changing entitlement status.
+
+DEPRECATIONS:
+
+* Deprecated provider-level `import_options`. Specify `program_serial_number` directly instead.
+* Marked deprecated `FORTISASE` configuration arguments `bandwidth`, `additional_compute_region`, and `locations` as read-only.
+
 
 ## 2.4.4 (December 15, 2025)
 

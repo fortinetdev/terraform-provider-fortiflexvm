@@ -25,7 +25,7 @@ func dataSourceConfigsList() *schema.Resource {
 			},
 			"program_serial_number": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"configs": &schema.Schema{
 				Type:     schema.TypeList,
@@ -100,6 +100,19 @@ func dataSourceConfigsList() *schema.Resource {
 										Computed: true,
 									},
 									"adom_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+									"fortiai_tokens": &schema.Schema{
 										Type:     schema.TypeInt,
 										Computed: true,
 									},
@@ -354,6 +367,22 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fext_hw": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"device_model": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
 						"fwbc_private": &schema.Schema{
 							Type:     schema.TypeList,
 							Computed: true,
@@ -448,6 +477,30 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeInt,
 										Computed: true,
 									},
+									"data_transfer": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"branch_on_ramp_locations_fortinet_cloud": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"branch_on_ramp_locations_public_cloud": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"global_region": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"additional_compute_region_fortinet_cloud": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"additional_compute_region_public_cloud": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
 								},
 							},
 						},
@@ -537,6 +590,26 @@ func dataSourceConfigsList() *schema.Resource {
 										Optional: true,
 										Computed: true,
 									},
+									"region": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"fdc_cloud": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"vlan_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
 								},
 							},
 						},
@@ -599,6 +672,23 @@ func dataSourceConfigsList() *schema.Resource {
 								},
 							},
 						},
+						"fmg_cloud": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"device_num": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -611,9 +701,12 @@ func dataSourceConfigsListRead(d *schema.ResourceData, m interface{}) error {
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
-	program_serial_number := d.Get("program_serial_number").(string)
+	program_serial_number, ok := getProgramSerialNumber(d, m)
+	if !ok {
+		return fmt.Errorf("program_serial_number should be provided either in the data source or provider configuration")
+	}
 	request_obj["programSerialNumber"] = program_serial_number
-	if v, ok := d.GetOk("account_id"); ok {
+	if v, ok := getAccountID(d, m); ok {
 		request_obj["accountId"] = v
 	}
 

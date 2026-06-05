@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"strings"
 	"time"
 
 	auth "github.com/terraform-providers/terraform-provider-fortiflexvm/sdk/auth"
@@ -49,7 +51,11 @@ func NewRequest(author *auth.Auth, httpcon *http.Client, method string, path str
 // Send request data to FortiFlex.
 // If errors are encountered, it returns the error.
 func (r *Request) Send(retries int) error {
-	u := "https://support.fortinet.com" + r.Path
+	baseURL := os.Getenv("FORTIFLEX_API_URL")
+	if baseURL == "" {
+		baseURL = "https://support.fortinet.com/ES/api/"
+	}
+	u := strings.TrimRight(baseURL, "/") + "/" + strings.TrimLeft(r.Path, "/")
 
 	var err error
 	if r.Auth.Token == "" {

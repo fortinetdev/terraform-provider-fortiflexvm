@@ -19,17 +19,26 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Description: "The API username.",
 			},
-
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "The API password.",
 			},
-
+			"account_id": &schema.Schema{
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "The default account ID.",
+			},
+			"program_serial_number": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The default FortiFlex Program serial number.",
+			},
 			"import_options": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
+				Type:       schema.TypeSet,
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Optional:   true,
+				Deprecated: "import_options is deprecated. Specify program_serial_number directly instead.",
 				// Computed:    true,
 				Description: "Used in terraform import. Check fortiflexvm_config document for usage.",
 			},

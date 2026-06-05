@@ -27,15 +27,15 @@ FortiFlexVM Provider requires an API token to be authenticated.
 
 * Step 2: Create an API User in IAM with permission to access FortiFlex.
 
-  In the [IAM Website](https://support.fortinet.com/iam/), click `Users` in the left navigation bar. On the new page, click `Add New > API User` to create an API User.
+  In the [IAM Website](https://support.fortinet.com/iam/), click `Users` in the left navigation bar. Click `Add New > API User` to create an API User.
 
-  In the `Select a Permission Profile`, select the user you created in Step 1. (If you skipped Step 1, you could select `SysAdmin`, in this case, you will create an admin user who has full access to Asset Management, IAM and FortiCare, which is not recommended).
+  In `Select a Permission Profile`, select the permission profile you created in Step 1. If you skipped Step 1, you can select `SysAdmin`, but this creates an admin user with full access to Asset Management, IAM, and FortiCare, which is not recommended.
   
   Click `Next > Confirm` to create an API user. The system will randomly assign a user name (API User ID).
 
 * Step 3: Download your username and password.
 
-  Go to the [IAM User Page](https://support.fortinet.com/iam/#/all-users). Click the user you created in Step 2.
+  Go to the [IAM User Page](https://support.fortinet.com/iam/#/users). Click the user you created in Step 2.
 
   In the `API User Information` page, click the `Download Credentials` button in the bottom right to download your user name and password. 
 

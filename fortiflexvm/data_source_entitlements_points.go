@@ -8,6 +8,7 @@ package fortiflexvm
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -22,7 +23,11 @@ func dataSourceEntitlementsPoints() *schema.Resource {
 			},
 			"config_id": &schema.Schema{
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
+			},
+			"program_serial_number": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"start_date": &schema.Schema{
 				Type:     schema.TypeString,
@@ -62,14 +67,31 @@ func dataSourceEntitlementsPointRead(d *schema.ResourceData, m interface{}) erro
 	// Prepare data
 	request_obj := make(map[string]interface{})
 	config_id := d.Get("config_id").(int)
+	account_id, has_account_id := getAccountID(d, m)
+	program_serial_number, has_program_serial_number := getProgramSerialNumber(d, m)
 	start_date := d.Get("start_date").(string)
 	end_date := d.Get("end_date").(string)
+	resource_id := ""
 
-	request_obj["configId"] = config_id
+	if config_id == 0 && (!has_account_id || !has_program_serial_number) {
+		return fmt.Errorf("either config_id or (account_id + program_serial_number) should be provided in request payload")
+	}
+	if config_id != 0 {
+		resource_id = strconv.Itoa(config_id)
+	} else {
+		resource_id = fmt.Sprintf("%v.%v", account_id, program_serial_number)
+	}
+
 	request_obj["startDate"] = start_date
 	request_obj["endDate"] = end_date
-	if v, ok := d.GetOk("account_id"); ok {
+	if v, ok := getAccountID(d, m); ok {
 		request_obj["accountId"] = v
+	}
+	if v, ok := d.GetOk("config_id"); ok {
+		request_obj["configId"] = v
+	}
+	if has_program_serial_number {
+		request_obj["programSerialNumber"] = program_serial_number
 	}
 
 	// Send request
@@ -89,8 +111,7 @@ func dataSourceEntitlementsPointRead(d *schema.ResourceData, m interface{}) erro
 		return fmt.Errorf("error describing EntitlementsPoint from API: %v", err)
 	}
 
-	resource_id := fmt.Sprintf("%v.%v.%v", config_id, start_date, end_date)
-	d.SetId(resource_id)
+	d.SetId(fmt.Sprintf("%v.%v.%v", resource_id, start_date, end_date))
 
 	return nil
 }

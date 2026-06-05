@@ -34,14 +34,14 @@ output "my_entitlements_list" {
 
 ## Argument Reference
 
-The following argument is required:
+The following arguments are supported:
 
-Either config_id or (account_id + serial_number) should be provided.
+Either `config_id` or (`account_id` + `program_serial_number`) should be provided.
 
-* `account_id` - (Optional/Number) Account ID.
+* `account_id` - (Optional/Number) Account ID. If omitted, the provider-level `account_id` is used when configured.
 * `config_id` - (Optional/Number) The ID of the configuration.
 * `description` - (Optional/String) Filter option. The retrieved entitlments must have the same description.
-* `program_serial_number` - (Optional/String) The unique serial number of the Program.
+* `program_serial_number` - (Optional/String) The unique serial number of the Program. If omitted, the provider-level `program_serial_number` is used when configured.
 * `serial_number` - (Optional/String) The retrieved entitlments must have the same serial_number.
 * `status` - (Optional/String) Filter option. The retrieved entitlments must have the same status. `ACTIVE`, `STOPPED`, `PENDING` or `EXPIRED`.
 * `token_status` - (Optional/String) Filter option. The retrieved entitlments must have the same token_status. `USED` or `NOTUSED`

@@ -100,7 +100,7 @@ func dataSourceGroupsNexttokenRead(d *schema.ResourceData, m interface{}) error 
 		folder_path = v.(string)
 		request_obj["folderPath"] = v
 	}
-	if v, ok := d.GetOk("account_id"); ok {
+	if v, ok := getAccountID(d, m); ok {
 		request_obj["accountId"] = v
 	}
 	if v, ok := d.GetOk("status"); ok {

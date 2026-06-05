@@ -3,7 +3,7 @@ subcategory: "Special"
 layout: "fortiflexvm"
 page_title: "FortiFlexVM: fortiflexvm_retrieve_vm_group"
 description: |-
-  Retrieve a group of STOPPED VM entitlements and change them to ACTIVE.
+  Retrieve existing `STOPPED` VM entitlements, or both `STOPPED` and `PENDING` VM entitlements, with empty descriptions and change them to `ACTIVE`.
 ---
 
 # fortiflexvm_retrieve_vm_group

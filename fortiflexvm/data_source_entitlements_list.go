@@ -99,10 +99,10 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 	// Prepare data
 	request_obj := make(map[string]interface{})
 	config_id := d.Get("config_id").(int)
-	account_id := d.Get("account_id").(int)
-	program_serial_number := d.Get("program_serial_number").(string)
+	account_id, has_account_id := getAccountID(d, m)
+	program_serial_number, has_program_serial_number := getProgramSerialNumber(d, m)
 	recource_id := ""
-	if config_id == 0 && (account_id == 0 || program_serial_number == "") {
+	if config_id == 0 && (!has_account_id || !has_program_serial_number) {
 		return fmt.Errorf("either config_id or (account_id + program_serial_number) should be provided in request payload")
 	}
 	if config_id != 0 {
@@ -111,7 +111,7 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 		recource_id = fmt.Sprintf("%v.%v", account_id, program_serial_number)
 	}
 
-	if v, ok := d.GetOk("account_id"); ok {
+	if v, ok := getAccountID(d, m); ok {
 		request_obj["accountId"] = v
 	}
 	if v, ok := d.GetOk("config_id"); ok {
@@ -120,8 +120,8 @@ func dataSourceEntitlementsListRead(d *schema.ResourceData, m interface{}) error
 	if v, ok := d.GetOk("description"); ok {
 		request_obj["description"] = v
 	}
-	if v, ok := d.GetOk("program_serial_number"); ok {
-		request_obj["programSerialNumber"] = v
+	if has_program_serial_number {
+		request_obj["programSerialNumber"] = program_serial_number
 	}
 	if v, ok := d.GetOk("serial_number"); ok {
 		request_obj["serialNumber"] = v

@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"time"
@@ -74,7 +75,10 @@ func (client *FortiSDKClient) generateToken() error {
 	}
 
 	req := request.NewRequest(client.Auth, client.HTTPCon, "POST", "", nil, bytes.NewBuffer(dataJson))
-	u := "https://customerapiauth.fortinet.com/api/v1/oauth/token/"
+	u := os.Getenv("FORTIFLEX_AUTH_URL")
+	if u == "" {
+		u = "https://customerapiauth.fortinet.com/api/v1/oauth/token/"
+	}
 	req.HTTPRequest.URL, err = url.Parse(u)
 	if err != nil {
 		err = fmt.Errorf("Could not parse URL: %s", err)
@@ -94,7 +98,7 @@ func (client *FortiSDKClient) generateToken() error {
 	if body == nil {
 		return fmt.Errorf("response body is nil")
 	}
-	log.Printf("[INFO] FortiFlex login response: %s", string(body))
+	log.Printf("[DEBUG] FortiFlex login response: %s", string(body))
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(string(body)), &result)
@@ -246,7 +250,7 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fortisase", "users", "int"
 	case 49:
 		return "fortisase", "service_pkg", "string"
-	case 50:
+	case 50: // deprecated
 		return "fortisase", "bandwidth", "int"
 	case 51:
 		return "fortisase", "dedicated_ips", "int"
@@ -264,7 +268,7 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fap_hw", "addons", "list"
 	case 58:
 		return "faz_vm", "addons", "list"
-	case 59:
+	case 59: // deprecated
 		return "fortisase", "additional_compute_region", "int"
 	case 60:
 		return "fortindr_cloud", "metered_usage", "int" // Read only
@@ -290,7 +294,7 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fortisoar_vm", "additional_users_license", "int"
 	case 71:
 		return "fortisoar_vm", "addons", "list"
-	case 72:
+	case 72: // deprecated
 		return "fortisase", "locations", "int"
 	case 73:
 		return "fortimail_vm", "cpu_size", "string"
@@ -307,7 +311,7 @@ func paramID2Name(p_id int) (string, string, string) {
 	case 79:
 		return "fortinac_vm", "support_service", "string"
 	case 82:
-		return "fortiappsec", "service_type", "list"
+		return "fortiappsec", "service_types", "list"
 	case 83:
 		return "fortiappsec", "waf_service_pkg", "string"
 	case 84:
@@ -326,6 +330,38 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fortidlp", "endpoints", "int"
 	case 92:
 		return "fortidlp", "addons", "list"
+	case 97:
+		return "fmg_cloud", "device_num", "int"
+	case 98:
+		return "fmg_cloud", "addons", "list"
+	case 99:
+		return "siem_cloud", "region", "string"
+	case 100:
+		return "fortisase", "data_transfer", "int"
+	case 101:
+		return "fortisase", "branch_on_ramp_locations_fortinet_cloud", "int"
+	case 102:
+		return "fortisase", "branch_on_ramp_locations_public_cloud", "int"
+	case 103:
+		return "fortisase", "global_region", "string"
+	case 104:
+		return "fortisase", "additional_compute_region_fortinet_cloud", "int"
+	case 105:
+		return "fortisase", "additional_compute_region_public_cloud", "int"
+	case 106:
+		return "fdc_cloud", "service_pkg", "string"
+	case 107:
+		return "fdc_cloud", "vlan_num", "int"
+	case 108:
+		return "fmg_vm", "service_pkg", "string"
+	case 109:
+		return "fmg_vm", "addons", "list"
+	case 110:
+		return "fmg_vm", "fortiai_tokens", "int"
+	case 111:
+		return "fext_hw", "device_model", "string"
+	case 112:
+		return "fext_hw", "service_pkg", "string"
 	default:
 		return "", "", ""
 	}

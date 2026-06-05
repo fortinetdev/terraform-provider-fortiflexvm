@@ -14,7 +14,7 @@ import (
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadProgramsList(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/programs/list"
+	path := "fortiflex/v2/programs/list"
 	rspKey := "programs"
 	mapTmp, err = read(c, "POST", path, rspKey, params)
 	return
@@ -24,7 +24,7 @@ func (c *FortiSDKClient) ReadProgramsList(params *map[string]interface{}) (mapTm
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadConfigsList(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/configs/list"
+	path := "fortiflex/v2/configs/list"
 	rspKey := "configs"
 	mapTmp, err = read(c, "POST", path, rspKey, params)
 	return
@@ -34,7 +34,7 @@ func (c *FortiSDKClient) ReadConfigsList(params *map[string]interface{}) (mapTmp
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) CreateConfig(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/configs/create"
+	path := "fortiflex/v2/configs/create"
 	rspKey := "configs"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -44,7 +44,7 @@ func (c *FortiSDKClient) CreateConfig(params *map[string]interface{}) (mapTmp ma
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) UpdateConfig(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/configs/update"
+	path := "fortiflex/v2/configs/update"
 	rspKey := "configs"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -54,7 +54,7 @@ func (c *FortiSDKClient) UpdateConfig(params *map[string]interface{}) (mapTmp ma
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) UpdateConfigStatus(params *map[string]interface{}, op string) (mapTmp map[string]interface{}, err error) {
-	path := fmt.Sprintf("/ES/api/fortiflex/v2/configs/%v", op)
+	path := fmt.Sprintf("fortiflex/v2/configs/%v", op)
 	rspKey := "configs"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -64,7 +64,7 @@ func (c *FortiSDKClient) UpdateConfigStatus(params *map[string]interface{}, op s
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadEntitlementsList(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/list"
+	path := "fortiflex/v2/entitlements/list"
 	rspKey := "entitlements"
 	mapTmp, err = read(c, "POST", path, rspKey, params)
 	return
@@ -74,7 +74,7 @@ func (c *FortiSDKClient) ReadEntitlementsList(params *map[string]interface{}) (m
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) CreateEntitlementsVM(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/vm/create"
+	path := "fortiflex/v2/entitlements/vm/create"
 	rspKey := "entitlements"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -84,7 +84,7 @@ func (c *FortiSDKClient) CreateEntitlementsVM(params *map[string]interface{}) (m
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) CreateEntitlementsHW(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/hardware/create"
+	path := "fortiflex/v2/entitlements/hardware/create"
 	rspKey := "entitlements"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -94,7 +94,7 @@ func (c *FortiSDKClient) CreateEntitlementsHW(params *map[string]interface{}) (m
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) CreateEntitlementsCloud(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/cloud/create"
+	path := "fortiflex/v2/entitlements/cloud/create"
 	rspKey := "entitlements"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -104,7 +104,7 @@ func (c *FortiSDKClient) CreateEntitlementsCloud(params *map[string]interface{})
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadEntitlementsPoint(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/points"
+	path := "fortiflex/v2/entitlements/points"
 	rspKey := "entitlements"
 	mapTmp, err = read(c, "POST", path, rspKey, params)
 	return
@@ -114,7 +114,7 @@ func (c *FortiSDKClient) ReadEntitlementsPoint(params *map[string]interface{}) (
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) UpdateVmUpdate(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/update"
+	path := "fortiflex/v2/entitlements/update"
 	rspKey := "entitlements"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -124,7 +124,7 @@ func (c *FortiSDKClient) UpdateVmUpdate(params *map[string]interface{}) (mapTmp 
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) UpdateVmUpdateStatus(params *map[string]interface{}, op string) (mapTmp map[string]interface{}, err error) {
-	path := fmt.Sprintf("/ES/api/fortiflex/v2/entitlements/%v", op)
+	path := fmt.Sprintf("fortiflex/v2/entitlements/%v", op)
 	rspKey := "entitlements"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -134,7 +134,7 @@ func (c *FortiSDKClient) UpdateVmUpdateStatus(params *map[string]interface{}, op
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) UpdateVmUpdateRegenerateToken(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/entitlements/vm/token"
+	path := "fortiflex/v2/entitlements/vm/token"
 	rspKey := "entitlements"
 	mapTmp, err = createUpdate(c, "POST", path, rspKey, params)
 	return
@@ -144,11 +144,11 @@ func (c *FortiSDKClient) UpdateVmUpdateRegenerateToken(params *map[string]interf
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadGroupsList(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/flexvm/v1/groups/list"
+	path := "flexvm/v1/groups/list"
 	rspKey := "groups"
 	if value, ok := (*params)["accountId"]; ok {
 		if value != 0 {
-			path = "/ES/api/fortiflex/v2/groups/list"
+			path = "fortiflex/v2/groups/list"
 		}
 	}
 	mapTmp, err = read(c, "POST", path, rspKey, params)
@@ -159,7 +159,7 @@ func (c *FortiSDKClient) ReadGroupsList(params *map[string]interface{}) (mapTmp 
 // Returns the requested value when the request executes successfully.
 // Returns error for service API and SDK errors.
 func (c *FortiSDKClient) ReadGroupsNexttoken(params *map[string]interface{}) (mapTmp map[string]interface{}, err error) {
-	path := "/ES/api/fortiflex/v2/groups/nexttoken"
+	path := "fortiflex/v2/groups/nexttoken"
 	rspKey := "entitlements"
 	mapTmp, err = read(c, "POST", path, rspKey, params)
 	return

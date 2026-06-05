@@ -77,7 +77,7 @@ func sendRequest(client *FortiSDKClient, method string, path string, params *map
 		if locJSON != nil {
 			bytePara = bytes.NewBuffer(locJSON)
 		}
-		log.Printf("[INFO] Request '%s' | %s", path, string(locJSON))
+		log.Printf("[DEBUG] Request '%s' | %s", path, string(locJSON))
 		req := request.NewRequest(client.Auth, client.HTTPCon, method, path, nil, bytePara)
 		err = req.Send(5) // If the connection fails, retry up to 5 times
 		if err != nil || req.HTTPResponse == nil {
@@ -93,6 +93,7 @@ func sendRequest(client *FortiSDKClient, method string, path string, params *map
 		}
 
 		json.Unmarshal([]byte(string(body)), &result)
+		log.Printf("[DEBUG] Response '%s' | %s", path, string(body))
 		if result["status"] != nil { // Retry for FortiFlex API error
 			rtStatus := fmt.Sprintf("%v", result["status"])
 			if rtStatus != "0" {

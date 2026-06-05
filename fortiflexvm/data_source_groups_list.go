@@ -53,7 +53,7 @@ func dataSourceGroupsListRead(d *schema.ResourceData, m interface{}) error {
 
 	// Prepare data
 	request_obj := make(map[string]interface{})
-	if v, ok := d.GetOk("account_id"); ok {
+	if v, ok := getAccountID(d, m); ok {
 		request_obj["accountId"] = v
 	}
 

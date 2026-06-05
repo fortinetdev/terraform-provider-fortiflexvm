@@ -3,12 +3,12 @@ subcategory: "Entitlements"
 layout: "fortiflexvm"
 page_title: "FortiFlexVM: fortiflexvm_entitlements_hardware"
 description: |-
-  Create and update one hardware entitlement based on a configuration.
+  Create or update a hardware entitlement based on a configuration.
 ---
 
 # fortiflexvm_entitlements_hardware
 
-Create and update one hardware entitlement based on a configuration.
+Create or update a hardware entitlement based on a configuration.
 
 
 ## Example Usage
@@ -19,8 +19,7 @@ Create and update one hardware entitlement based on a configuration.
 resource "fortiflexvm_entitlements_hardware" "example" {
   serial_number = "FGT60FTK00000000"
   config_id     = 5010
-  end_date      = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
-  # status      = "ACTIVE" # "ACTIVE" or "STOPPED". Optional. It has many restrictions. Not recommended to set it manually.
+  # end_date      = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
 }
 output "new_entitlement_hw" {
   value = fortiflexvm_entitlements_hardware.example
@@ -31,9 +30,9 @@ output "new_entitlement_hw" {
 # After you create or import a fortiflexvm_entitlements_hardware resource, you can update it:
 resource "fortiflexvm_entitlements_hardware" "example" {
   serial_number = "FGT60FTK00000000"
-  config_id     = 5010                  # new config_id value or unchanged>
+  config_id     = 5010
   description   = "Your description"    # Optional.
-  end_date      = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
+  # end_date      = "2024-11-12T00:00:00" # Optional. If not set, it will use the program end date automatically.
 }
 
 # Stop or reactivate a hardware

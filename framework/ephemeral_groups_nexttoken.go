@@ -88,6 +88,8 @@ func (e *ephemeralGroupsNexttoken) Open(ctx context.Context, request ephemeral.O
 	}
 	if v := model.AccountID.ValueInt64(); v != 0 {
 		request_obj["accountId"] = v
+	} else if e.fortiClient.AccountID != 0 {
+		request_obj["accountId"] = e.fortiClient.AccountID
 	}
 	if v := model.Status.Elements(); len(v) > 0 {
 		status_list := make([]string, 0)

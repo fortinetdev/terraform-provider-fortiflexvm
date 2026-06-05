@@ -3,31 +3,27 @@ subcategory: "Entitlements"
 layout: "fortiflexvm"
 page_title: "FortiFlexVM: fortiflexvm_entitlements_vm"
 description: |-
-  Create and update one VM entitlement based on a configuration.
+  Create or update a VM entitlement based on a configuration.
 ---
 
 # fortiflexvm_entitlements_vm
 
-Create and update one VM entitlement based on a configuration.
+Create and update a VM entitlement based on a configuration.
 
-!> Due to the properties of Fortiflex, after you apply `terraform destroy` the status of the entitlement will change to `STOPPED` and stop being charged, rather than being destroyed. To reuse one STOPPED entitlement, please specify `serial_number` in `fortiflexvm_entitlements_vm`. To reuse a group of STOPPED entitlements, please use `fortiflexvm_retrieve_vm_group`.
+!> Due to how FortiFlex works, after you run `terraform destroy`, the entitlement is not deleted. Instead, its status changes to `STOPPED` and billing stops. To reuse a single `STOPPED` entitlement, specify `serial_number` in `fortiflexvm_entitlements_vm` and set `status` to `"ACTIVE"`. To reuse a group of `STOPPED` entitlements, use `fortiflexvm_retrieve_vm_group`.
 
 ~> The status of newly created VMs is `PENDING`. After you [use VM token to activate a virtual machine](https://docs.fortinet.com/document/flex-vm/latest/administration-guide/256339/injecting-the-flex-vm-license), its status will be changed to "ACTIVE".
 
 
-## Example Usage
-
-Create one VM entitlement
+## Example Usage: Create one VM entitlement
 ```hcl
-# If you don't specify serial_number, it will create a new entitlement.
 resource "fortiflexvm_entitlements_vm" "example" {
   config_id     = 42
   description   = "Your description"      # Optional.
   # end_date    = "2024-11-12T00:00:00"   # Optional. If not set, it will use the program end date automatically.
   # folder_path = "My Assets"             # Optional. If not set, new VM will be in "My Assets"
   # skip_pending = false
-  # status      = "ACTIVE"                # "ACTIVE" or "STOPPED". Optional.
-  # refresh_token_when_destroy = True     # Optional. Refresh the token when you destroy this resource
+  # refresh_token_when_destroy = True     # Optional. Refresh the token when destroying this resource, so the new token can be used directly when reactivating this entitlement.
 }
 output "new_entitlement" {
   value = fortiflexvm_entitlements_vm.example
@@ -37,7 +33,7 @@ output "new_entitlement_token" {
 }
 ```
 
-Import & update existing entitlement
+## Example Usage: Import & update existing entitlement
 ```hcl
 # If specify both serial_number and config_id, it will import the existing entitlement.
 resource "fortiflexvm_entitlements_vm" "example" {

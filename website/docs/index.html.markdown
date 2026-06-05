@@ -8,16 +8,33 @@ description: |-
 
 # FortiFlexVM Provider
 
-The FortiFlexVM provider is used to interact with the resources supported by FortiFlex. We need to configure the provider with the proper credentials before it can be used. Please use the navigation on the left to read more details about the available resources. (The terms `FortiFlexVM`, `FortiFlex` and `FlexVM` refer to the same product. Due to historical reasons, the provider name is defined as `FortiFlexVM`.)
+The FortiFlexVM provider manages resources supported by FortiFlex.
+Before using the provider, please configure it with valid credentials. Use the navigation on the left to learn more about the available resources. The terms `FortiFlexVM`, `FortiFlex`, and `FlexVM` refer to the same product. For historical reasons, the provider name remains `FortiFlexVM`.
+
+## How to use this provider
+To use this provider, [generate an API token for FortiFlexVM](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/guides/fortiflexvm_token) and review the [use cases](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/guides/usecase).
+
+### Key concepts
+**Configuration**: A configuration defines the parameters used to create entitlements and calculate charges.
+- [fortiflexvm_config](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/resources/fortiflexvm_config): Create a new configuration or update an existing configuration.
+
+**Entitlements**: Entitlements are licenses created from a configuration. Charges apply when an entitlement is `ACTIVE`; no charges apply when its status is `PENDING` or `STOPPED`.
+- [fortiflexvm_entitlements_vm](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/resources/fortiflexvm_entitlements_vm): Create or update a VM entitlement based on a configuration.
+- [fortiflexvm_entitlements_hardware](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/resources/fortiflexvm_entitlements_hardware): Create or update a hardware entitlement based on a configuration.
+- [fortiflexvm_entitlements_cloud](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/resources/fortiflexvm_entitlements_cloud): Create or update a cloud entitlement based on a configuration.
+- [fortiflexvm_entitlements_vm_token](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/resources/fortiflexvm_entitlements_vm_token): Regenerate the token for an entitlement.
+- [fortiflexvm_retrieve_vm_group](https://registry.terraform.io/providers/fortinetdev/fortiflexvm/latest/docs/resources/fortiflexvm_retrieve_vm_group): Retrieve existing `STOPPED` VM entitlements, or both `STOPPED` and `PENDING` VM entitlements, with empty descriptions and change them to `ACTIVE`.
+
+~> Due to the design of FortiFlex, configuration and entitlement records cannot be fully deleted. After you run `terraform destroy`, you will no longer be charged for the resources you created, but the configuration created by `fortiflexvm_config` and the entitlement created by `fortiflexvm_entitlements_vm` remain visible in the GUI. Their status changes to `STOPPED`. We recommend creating a `fortiflexvm_config` once and reusing it instead of creating a separate configuration for each entitlement.
 
 
-## Example Usage
+## Example Usage：Create one configuration and one entitlement
 
 ```hcl
 terraform {
   required_providers {
     fortiflexvm = {
-      version = "2.4.3"
+      version = "~> 2.0"
       source  = "fortinetdev/fortiflexvm"
     }
   }
@@ -28,34 +45,35 @@ provider "fortiflexvm" {
   username = "ABCDEFG"
   password = "HIJKLMN"
 
-  # If you want to import resource_config, please specify your program_serial_number here
-  import_options = ["program_serial_number=ELAVMS00000XXXXX"]
+  # Optional.
+  # account_id = 12345
+  # program_serial_number = "ELAVMR00000XXXXX"
 }
 
 # Create one congifuration
-# If import, please add `import_options = ["program_serial_number=ELAVMS00000XXXXX"]` in `provider "fortiflexvm"`
-# Then use: terraform import fortiflexvm_config.labelname <your config_id>
+# If import exisiting one, please specify `config_id`
 resource "fortiflexvm_config" "example"{
   product_type = "FGT_VM_Bundle"
-  program_serial_number = "ELAVMS00000XXXXX"
+  program_serial_number = "ELAVMR00000XXXXX"
   name = "example_name"
   fgt_vm_bundle {
-    cpu_size =  "2"     # "1", "2", "4", "8", "16", "32", "2147483647"
-    service_pkg = "ATP" # "FC", "UTM", "ENT", "ATP"
-    vdom_num = 10       # 0 ~ 500
+    cpu_size            = 4      # 1 ~ 96
+    service_pkg         = "FC"   # "FC", "UTP", "ENT", "ATP"
+    vdom_num            = 10     # 0 ~ 500
+    fortiguard_services = []     # "FGTAVDB", "FGTFAIS", "FGTISSS", "FGTDLDB", "FGTFGSA"
+    cloud_services      = []     # "FGTFAMS", "FGTSWNM", "FGTSOCA", "FGTFAZC", "FGTSWOS", "FGTFSPA"
+    support_service     = "NONE" # "NONE", "FGTFCELU"
   }
 }
 
 
 # Create one VM entitlement
-# If import, use: terraform import fortiflexvm_entitlements_vm.labelname <serial_number>.<config_id>
-# For example: terraform import fortiflexvm_entitlements_vm.example FGVMMLTM23001273.3196
+# If import existing one, please specify `serial_number`
 resource "fortiflexvm_entitlements_vm" "example"{ 
   config_id = fortiflexvm_config.example.id
   description = "Your description" # Optional.
-  end_date = "2023-11-12T00:00:00" # Optional. If not set or empty "", it will use the program's end date automatically.
+  # end_date = "2023-11-12T00:00:00" # Optional. If not set or empty "", it will use the program's end date automatically.
   # folder_path = "My Assets" # Optional. If not set, new VM will be in "My Assets"
-  # status = "ACTIVE" # "ACTIVE" or "STOPPED". Optional. It has many restrictions. Not recommended to set it manually.
 }
 output "new_entitlement"{
     value = fortiflexvm_entitlements_vm.example
@@ -116,13 +134,6 @@ The following arguments are supported:
 
 - `username` - (Optional/String) Your username. It must be provided, but it can also be sourced from the `FORTIFLEX_ACCESS_USERNAME` environment variable.
 - `password` - (Optional/String) Your password. It must be provided, but it can also be sourced from the `FORTIFLEX_ACCESS_PASSWORD` environment variable.
-- `import_options` - (Optional/List of Object)  This parameter is only used for import in some special cases. When the resource to be imported includes pkg parameter, you need to assign a value to the parameter here, for example:
-
-    ```hcl
-    provider "fortiflexvm" {
-      username = "ABCDEFG"
-      password = "HIJKLMN"
-
-      import_options = ["pkg=default"]
-    }
-    ```
+- `account_id` - (Optional/Number) The default account ID. Resource or data source arguments take precedence when specified.
+- `program_serial_number` - (Optional/String) The default FortiFlex Program serial number. Resource or data source arguments take precedence when specified.
+- `import_options` - (Deprecated/Optional/List of Object) Deprecated. Specify `program_serial_number` directly instead.
