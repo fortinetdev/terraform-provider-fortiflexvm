@@ -12,7 +12,7 @@ import (
 var PRODUCT_TYPES = []string{"fgt_vm_bundle", "fmg_vm", "fwb_vm", "fgt_vm_lcs", "fc_ems_op", "faz_vm",
 	"fpc_vm", "fad_vm", "fortisoar_vm", "fortimail_vm", "fgt_hw", "fap_hw", "fsw_hw", "fext_hw",
 	"fwbc_private", "fwbc_public", "fc_ems_cloud", "fortisase", "fortiedr", "fortindr_cloud",
-	"fortirecon", "siem_cloud", "fortinac_vm", "fdc_cloud", "fortiappsec", "fortidlp", "fmg_cloud"}
+	"fortirecon", "siem_cloud", "fortinac_vm", "fdc_cloud", "fortiappsec", "fortidlp", "fmg_cloud", "socaas"}
 
 func fortiAPIPatch(t interface{}) bool {
 	if t == nil {
@@ -84,6 +84,8 @@ func convProductTypeName2Id(p_type string) int {
 		return 212
 	case "FMG_CLOUD":
 		return 213
+	case "SOCAAS":
+		return 214
 	default:
 		return 0
 	}
@@ -145,6 +147,8 @@ func convProductTypeId2Name(p_id int) string {
 		return "FORTIDLP"
 	case 213:
 		return "FMG_CLOUD"
+	case 214:
+		return "SOCAAS"
 	default:
 		return ""
 	}
@@ -163,7 +167,7 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 	case 5:
 		return "fwb_vm", "service_pkg", "string"
 	case 6:
-		return "fgt_vm_lcs", "cpu_size", "String"
+		return "fgt_vm_lcs", "cpu_size", "string"
 	case 7:
 		return "fgt_vm_lcs", "fortiguard_services", "list"
 	case 8:
@@ -352,6 +356,18 @@ func convConfParsId2NameList(p_id int) (string, string, string) {
 		return "fext_hw", "device_model", "string"
 	case 112:
 		return "fext_hw", "service_pkg", "string"
+	case 113:
+		return "fortindr_cloud", "playbooks", "int"
+	case 114:
+		return "fortindr_cloud", "addons", "list"
+	case 115:
+		return "fortindr_cloud", "eps", "int"
+	case 116:
+		return "socaas", "service_pkg", "string"
+	case 117:
+		return "socaas", "daily_storage", "int"
+	case 118:
+		return "fgt_hw", "prma_service", "string"
 	default:
 		return "", "", ""
 	}
@@ -500,6 +516,8 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 28
 		case "addons":
 			return 29
+		case "prma_service":
+			return 118
 		default:
 			return 0
 		}
@@ -613,6 +631,12 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 		switch c_name {
 		case "metered_usage":
 			return 60
+		case "playbooks":
+			return 113
+		case "addons":
+			return 114
+		case "eps":
+			return 115
 		default:
 			return 0
 		}
@@ -689,6 +713,15 @@ func convConfParsNameList2Id(p_type, c_name string) int {
 			return 97
 		case "addons":
 			return 98
+		default:
+			return 0
+		}
+	case "socaas":
+		switch c_name {
+		case "service_pkg":
+			return 116
+		case "daily_storage":
+			return 117
 		default:
 			return 0
 		}

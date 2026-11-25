@@ -183,6 +183,7 @@ func resourceEntitlementsCloudUpdate(ctx context.Context, d *schema.ResourceData
 		}
 		if current_end_date.Before(user_end_date) {
 			obj["endDate"] = v
+			obj["followProgram"] = false
 		} else {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Warning,

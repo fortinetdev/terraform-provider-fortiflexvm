@@ -314,6 +314,10 @@ func dataSourceConfigsList() *schema.Resource {
 							Computed: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"prma_service": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
 									"device_model": &schema.Schema{
 										Type:     schema.TypeString,
 										Computed: true,
@@ -534,6 +538,19 @@ func dataSourceConfigsList() *schema.Resource {
 							Computed: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"playbooks": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"eps": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"addons": &schema.Schema{
+										Type:     schema.TypeList,
+										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
 									"metered_usage": &schema.Schema{
 										Type:     schema.TypeInt,
 										Computed: true,
@@ -668,6 +685,22 @@ func dataSourceConfigsList() *schema.Resource {
 										Type:     schema.TypeList,
 										Computed: true,
 										Elem:     &schema.Schema{Type: schema.TypeString},
+									},
+								},
+							},
+						},
+						"socaas": &schema.Schema{
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"service_pkg": &schema.Schema{
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"daily_storage": &schema.Schema{
+										Type:     schema.TypeInt,
+										Computed: true,
 									},
 								},
 							},

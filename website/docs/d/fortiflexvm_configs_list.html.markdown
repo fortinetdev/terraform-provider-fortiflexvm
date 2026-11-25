@@ -50,6 +50,7 @@ The `configs` block contains:
 * `fgt_vm_bundle` - (List of Object) FortiGate Virtual Machine. The structure of [`configs.fgt_vm_bundle` block](#nestedobjatt--configs--fgt_vm_bundle) is documented below.
 * `fgt_vm_lcs` - (List of Object) FortiGate Virtual Machine (A La Carte Services). The structure of [`configs.fgt_vm_lcs` block](#nestedobjatt--configs--fgt_vm_lcs) is documented below.
 * `fmg_vm` - (List of Object) FortiManager Virtual Machine. The structure of [`configs.fmg_vm` block](#nestedobjatt--configs--fmg_vm) is documented below.
+* `socaas` - (List of Object) SOCaaS. The structure of [`configs.socaas` block](#nestedobjatt--configs--socaas) is documented below.
 * `fmg_cloud` - (List of Object) FortiManager Cloud. The structure of [`configs.fmg_cloud` block](#nestedobjatt--configs--fmg_cloud) is documented below.
 * `fpc_vm` - (List of Object) FortiPortal Virtual Machine. The structure of [`configs.fpc_vm` block](#nestedobjatt--configs--fpc_vm) is documented below.
 * `fsw_hw` - (List of Object) FortiSwitch Hardware. The structure of [`configs.fsw_hw` block](#nestedobjatt--configs--fsw_hw) is documented below.
@@ -82,6 +83,7 @@ The `configs` block contains:
   * `FGT_VM_LCS`: FortiGate Virtual Machine - A La Carte Services
   * `FMG_VM`: FortiManager Virtual Machine
   * `FMG_CLOUD`: FortiManager Cloud
+  * `SOCAAS`: SOCaaS
   * `FPC_VM`: FortiPortal Virtual Machine
   * `FSW_HW`: FortiSwitch Hardware
   * `FWB_VM`: FortiWeb Virtual Machine - Service Bundle
@@ -208,66 +210,190 @@ The `configs.fext_hw` block contains:
 <a id="nestedobjatt--configs--fgt_hw"></a>
 The `configs.fgt_hw` block contains:
 
-* `device_model` - (String) Device Model. For all possible values, please check https://fndn.fortinet.net/index.php?/fortiapi/954-fortiflex/5009/. Possible values: 
-  * `"FGT40F"`: FortiGate 40F
-  * `"FWF40F"`: FortiWifi 40F
-  * `"FGT60E"`: FortiGate 60E
-  * `"FGT60F"`: FortiGate 60F
-  * `"FWF60F"`: FortiWifi 60F
-  * `"FGR60F"`: FortiGateRugged 60F
-  * `"FGT61F"`: FortiGate 61F
-  * `"FGT70F"`: FortiGate 70F
-  * `"FR70FB"`: FortiGateRugged 70F
-  * `"FGT80F"`: FortiGate 80F
-  * `"FGT81F"`: FortiGate 81F
-  * `"FG100E"`: FortiGate 100E
-  * `"FG100F"`: FortiGate 100F
-  * `"FG101E"`: FortiGate 101E
-  * `"FG101F"`: FortiGate 101F
-  * `"FG200E"`: FortiGate 200E
-  * `"FG200F"`: FortiGate 200F
-  * `"FG201F"`: FortiGate 201F
-  * `"FG4H0F"`: FortiGate 400F
-  * `"FG4H1F"`: FortiGate 401F
-  * `"FG6H0F"`: FortiGate 600F
-  * `"FG1K0F"`: FortiGate 1000F
-  * `"FG180F"`: FortiGate 1800F
-  * `"F2K60F"`: FortiGate 2600F
-  * `"FG3K0F"`: FortiGate 3000F
-  * `"FG3K1F"`: FortiGate 3001F
-  * `"FG3K2F"`: FortiGate 3200F
-  * `"FG40FI"`: FortiGate 40F-3G4G
-  * `"FW40FI"`: FortiWifi 40F-3G4G
-  * `"FWF61F"`: FortiWifi 61F
-  * `"FR60FI"`: FortiGateRugged 60F 3G4G
-  * `"FGT71F"`: FortiGate 71F
-  * `"FG80FP"`: FortiGate 80F-PoE
-  * `"FG80FB"`: FortiGate 80F-Bypass
-  * `"FG80FD"`: FortiGate 80F DSL
-  * `"FWF80F"`: FortiWiFi 80F-2R
-  * `"FW80FS"`: FortiWiFi 80F-2R-3G4G-DSL
-  * `"FWF81F"`: FortiWiFi 81F 2R
-  * `"FW81FS"`: FortiWiFi 81F-2R-3G4G-DSL
-  * `"FW81FD"`: FortiWiFi 81F-2R-3G4G-PoE
-  * `"FW81FP"`: FortiWiFi 81F 2R POE
-  * `"FG81FP"`: FortiGate 81F-PoE
-  * `"FGT90G"`: FortiGate 90G
-  * `"FGT91G"`: FortiGate 91G
-  * `"FG201E"`: FortiGate 201E
-  * `"FG4H0E"`: FortiGate 400E
-  * `"FG4HBE"`: FortiGate 400E BYPASS
-  * `"FG4H1E"`: FortiGate 401E
-  * `"FD4H1E"`: FortiGate 401E DC
-  * `"FG6H0E"`: FortiGate 600E
-  * `"FG6H1E"`: FortiGate 601E
-  * `"FG6H1F"`: FortiGate 601F
-  * `"FG9H0G"`: FortiGate 900G
-  * `"FG9H1G"`: FortiGate 901G
-  * `"FG1K1F"`: FortiGate 1001F
-  * `"FG181F"`: FortiGate 1801F
-  * `"FG3K7F"`: FortiGate 3700F
-  * `"FG39E6"`: FortiGate 3960E
-  * `"FG441F"`: FortiGate 4401F
+* `device_model` - (String) Device Model. Options:
+
+  * `"FG1K0F"`: FortiGate-1000F
+  * `"FG1K1F"`: FortiGate-1001F
+  * `"FG100E"`: FortiGate-100E
+  * `"FG1HEF"`: FortiGate-100EF
+  * `"FG100F"`: FortiGate-100F
+  * `"FG101E"`: FortiGate-101E
+  * `"FG101F"`: FortiGate-101F
+  * `"FG10E0"`: FortiGate-1100E
+  * `"FD10E0"`: FortiGate-1100E-DC
+  * `"FG10E1"`: FortiGate-1101E
+  * `"FG120G"`: FortiGate-120G
+  * `"FG121G"`: FortiGate-121G
+  * `"F140EP"`: FortiGate-140E-POE
+  * `"FG180F"`: FortiGate-1800F
+  * `"FD180F"`: FortiGate-1800F-DC
+  * `"FG181F"`: FortiGate-1801F
+  * `"FD181F"`: FortiGate-1801F-DC
+  * `"FGT2KE"`: FortiGate-2000E
+  * `"FG200E"`: FortiGate-200E
+  * `"FG200F"`: FortiGate-200F
+  * `"FG2H0G"`: FortiGate-200G
+  * `"FG201E"`: FortiGate-201E
+  * `"FG201F"`: FortiGate-201F
+  * `"FG2H1G"`: FortiGate-201G
+  * `"FG2K2E"`: FortiGate-2200E
+  * `"FG22E1"`: FortiGate-2201E
+  * `"FG2K5E"`: FortiGate-2500E
+  * `"F2K60F"`: FortiGate-2600F
+  * `"FD260F"`: FortiGate-2600F-DC
+  * `"F2K61F"`: FortiGate-2601F
+  * `"FD261F"`: FortiGate-2601F-DC
+  * `"FG3K0F"`: FortiGate-3000F
+  * `"FD3K0F"`: FortiGate-3000F-DC
+  * `"FG3K0G"`: FortiGate-3000G
+  * `"FG3K1F"`: FortiGate-3001F
+  * `"FD3K1F"`: FortiGate-3001F-DC
+  * `"FG3K1G"`: FortiGate-3001G
+  * `"FG3H0E"`: FortiGate-300E
+  * `"FG3H1E"`: FortiGate-301E
+  * `"FGT30E"`: FortiGate-30E
+  * `"FG30EG"`: FortiGate-30E-3G4G-GBL
+  * `"FGT30G"`: FortiGate-30G
+  * `"FGT31G"`: FortiGate-31G
+  * `"FG3K2F"`: FortiGate-3200F
+  * `"FG32F1"`: FortiGate-3201F
+  * `"FG3K3E"`: FortiGate-3300E
+  * `"FG33E1"`: FortiGate-3301E
+  * `"FG3K4E"`: FortiGate-3400E
+  * `"FD3K4E"`: FortiGate-3400E-DC
+  * `"FG34E1"`: FortiGate-3401E
+  * `"FD34E1"`: FortiGate-3401E-DC
+  * `"FG3K5F"`: FortiGate-3500F
+  * `"FG3K5G"`: FortiGate-3500G
+  * `"FG35F1"`: FortiGate-3501F
+  * `"FG35G1"`: FortiGate-3501G
+  * `"FG3K6E"`: FortiGate-3600E
+  * `"FD3K6E"`: FortiGate-3600E-DC
+  * `"FG36E1"`: FortiGate-3601E
+  * `"FG3K7F"`: FortiGate-3700F
+  * `"FG37F1"`: FortiGate-3701F
+  * `"F3K80G"`: FortiGate-3800G
+  * `"FD380G"`: FortiGate-3800G-DC
+  * `"F3K81G"`: FortiGate-3801G
+  * `"FD381G"`: FortiGate-3801G-DC
+  * `"FG39E6"`: FortiGate-3960E
+  * `"FGD396"`: FortiGate-3960E-DC
+  * `"FG39E8"`: FortiGate-3980E
+  * `"FGD398"`: FortiGate-3980E-DC
+  * `"FG4H0E"`: FortiGate-400E
+  * `"FG4HBE"`: FortiGate-400E-BYPASS
+  * `"FG4H0F"`: FortiGate-400F
+  * `"FG4H0G"`: FortiGate-400G
+  * `"FG4H1E"`: FortiGate-401E
+  * `"FD4H1E"`: FortiGate-401E-DC
+  * `"FG4H1F"`: FortiGate-401F
+  * `"FG4H1G"`: FortiGate-401G
+  * `"FGT40F"`: FortiGate-40F
+  * `"FG40FI"`: FortiGate-40F-3G4G
+  * `"FG420F"`: FortiGate-4200F
+  * `"FD420F"`: FortiGate-4200F-DC
+  * `"FG421F"`: FortiGate-4201F
+  * `"FD421F"`: FortiGate-4201F-DC
+  * `"FG440F"`: FortiGate-4400F
+  * `"FD440F"`: FortiGate-4400F-DC
+  * `"FG441F"`: FortiGate-4401F
+  * `"FD441F"`: FortiGate-4401F-DC
+  * `"FG480F"`: FortiGate-4800F
+  * `"FD480F"`: FortiGate-4800F-DC
+  * `"FG481F"`: FortiGate-4801F
+  * `"FD481F"`: FortiGate-4801F-DC
+  * `"ND481F"`: FortiGate-4801F-DC-NEBS
+  * `"NG481F"`: FortiGate-4801F-NEBS
+  * `"FG5H0E"`: FortiGate-500E
+  * `"FG5H1E"`: FortiGate-501E
+  * `"FGT50E"`: FortiGate-50E
+  * `"FGT50G"`: FortiGate-50G
+  * `"FG50G5"`: FortiGate-50G-5G
+  * `"FG50GD"`: FortiGate-50G-DSL
+  * `"FG50GS"`: FortiGate-50G-SFP
+  * `"FG50GP"`: FortiGate-50G-SFP-PoE
+  * `"FGT51E"`: FortiGate-51E
+  * `"FGT51G"`: FortiGate-51G
+  * `"FG51G5"`: FortiGate-51G-5G
+  * `"FG51GP"`: FortiGate-51G-SFP-PoE
+  * `"F6KF01"`: FortiGate-6001F
+  * `"FG6H0E"`: FortiGate-600E
+  * `"FG6H0F"`: FortiGate-600F
+  * `"FG6H1E"`: FortiGate-601E
+  * `"FG6H1F"`: FortiGate-601F
+  * `"FGT60E"`: FortiGate-60E
+  * `"FG60EV"`: FortiGate-60E-DSL
+  * `"FG60EJ"`: FortiGate-60E-DSLJ
+  * `"FG60EP"`: FortiGate-60E-POE
+  * `"FGT60F"`: FortiGate-60F
+  * `"FGT61E"`: FortiGate-61E
+  * `"FGT61F"`: FortiGate-61F
+  * `"FG7H0G"`: FortiGate-700G
+  * `"FG7H1G"`: FortiGate-701G
+  * `"FGT70F"`: FortiGate-70F
+  * `"FGT70G"`: FortiGate-70G
+  * `"FG70GP"`: FortiGate-70G-PoE
+  * `"FGT71F"`: FortiGate-71F
+  * `"FGT71G"`: FortiGate-71G
+  * `"FG71GP"`: FortiGate-71G-PoE
+  * `"FGT80E"`: FortiGate-80E
+  * `"FG80EP"`: FortiGate-80E-POE
+  * `"FGT80F"`: FortiGate-80F
+  * `"FG80FB"`: FortiGate-80F-Bypass
+  * `"FG80FD"`: FortiGate-80F-DSL
+  * `"FG80FP"`: FortiGate-80F-PoE
+  * `"FGT81E"`: FortiGate-81E
+  * `"FG81EP"`: FortiGate-81E-POE
+  * `"FGT81F"`: FortiGate-81F
+  * `"FG81FP"`: FortiGate-81F-PoE
+  * `"FG9H0G"`: FortiGate-900G
+  * `"FD9H0G"`: FortiGate-900G-DC
+  * `"FG9H1G"`: FortiGate-901G
+  * `"FD9H1G"`: FortiGate-901G-DC
+  * `"FGT90E"`: FortiGate-90E
+  * `"FGT90G"`: FortiGate-90G
+  * `"FGT91E"`: FortiGate-91E
+  * `"FGT91G"`: FortiGate-91G
+  * `"FGR35D"`: FortiGateRugged-35D
+  * `"FR50G5"`: FortiGateRugged-50G-5G
+  * `"FGR60F"`: FortiGateRugged-60F
+  * `"FR60FI"`: FortiGateRugged-60F-3G4G
+  * `"FGR60G"`: FortiGateRugged-60G
+  * `"FR60G5"`: FortiGateRugged-60G-5G
+  * `"FR6G5M"`: FortiGateRugged-60G-5G-M12
+  * `"FR60GM"`: FortiGateRugged-60G-M12
+  * `"FR70FB"`: FortiGateRugged-70F
+  * `"FR70FM"`: FortiGateRugged-70F-3G4G
+  * `"FGR70G"`: FortiGateRugged-70G
+  * `"FR70GM"`: FortiGateRugged-70G-5G
+  * `"FR70G5"`: FortiGateRugged-70G-5G-DUAL
+  * `"FWF30E"`: FortiWiFi-30E
+  * `"FWF30G"`: FortiWiFi-30G
+  * `"FWF31G"`: FortiWiFi-31G
+  * `"FWF40F"`: FortiWiFi-40F
+  * `"FW40FI"`: FortiWiFi-40F-3G4G
+  * `"FWF50E"`: FortiWiFi-50E
+  * `"FW502R"`: FortiWiFi-50E-2R
+  * `"FWF50G"`: FortiWiFi-50G
+  * `"FW50GD"`: FortiWiFi-50G-DSL
+  * `"FW50GS"`: FortiWiFi-50G-SFP
+  * `"FWF51E"`: FortiWiFi-51E
+  * `"FWF51G"`: FortiWiFi-51G
+  * `"FWF60E"`: FortiWiFi-60E
+  * `"FW60EV"`: FortiWiFi-60E-DSL
+  * `"FW60EJ"`: FortiWiFi-60E-DSLJ
+  * `"FWF60F"`: FortiWiFi-60F
+  * `"FWF61E"`: FortiWiFi-61E
+  * `"FWF61F"`: FortiWiFi-61F
+  * `"FWF70G"`: FortiWiFi-70G
+  * `"FW70GP"`: FortiWiFi-70G-PoE
+  * `"FWF71G"`: FortiWiFi-71G
+  * `"FWF80F"`: FortiWiFi-80F-2R
+  * `"FW80FS"`: FortiWiFi-80F-2R-3G4G-DSL
+  * `"FWF81F"`: FortiWiFi-81F-2R
+  * `"FW81FS"`: FortiWiFi-81F-2R-3G4G-DSL
+  * `"FW81FD"`: FortiWiFi-81F-2R-3G4G-PoE
+  * `"FW81FP"`: FortiWiFi-81F-2R-POE
 * `service_pkg` - (String) Possible values:
   * `"FGHWFC247"`: FortiCare Premium
   * `"FGHWFCEL"`: FortiCare Elite
@@ -276,8 +402,9 @@ The `configs.fgt_hw` block contains:
   * `"FGHWENT"`: Enterprise
   * `"FGHWFCESN"`: FortiCare Essential
 * `addons` - (List of String) Possible values:
+  * `"NONE"`: NONE
   * `"FGHWFCELU"`: FortiCare Elite Upgrade
-  * `"FGHWFAMS"`: FortiGate Cloud Management
+  * `"FGHWFAMS"`: FortiManagement Cloud (FortiGate Cloud)
   * `"FGHWFAIS"`: AI-Based In-line Sandbox
   * `"FGHWSWNM"`: SD-WAN Underlay
   * `"FGHWDLDB"`: FortiGuard DLP
@@ -285,14 +412,20 @@ The `configs.fgt_hw` block contains:
   * `"FGHWSOCA"`: SOCaaS
   * `"FGHWMGAS"`: Managed FortiGate
   * `"FGHWSPAL"`: SD-WAN Connector for FortiSASE
+  * `"FGHWFCSS"`: FortiConverter Service
   * `"FGHWISSS"`: FortiGuard OT Security Service
   * `"FGHWSWOS"`: SD-WAN Overlay-as-a-Service
   * `"FGHWAVDB"`: Advanced Malware Protection
   * `"FGHWNIDS"`: Intrusion Prevention
   * `"FGHWFGSA"`: Attack Surface Security Service
-  * `"FGHWFURL"`: Web, DNS & Video Filtering
+  * `"FGHWFURL"`: Web,DNS & Video Filtering
   * `"FGHWFSFG"`: FortiSASE Subscription
-
+  * `"FGHWSWSB"`: SD-WAN Service Bundle
+* `prma_service` - (String) PRMA Service. An omitted service is sent as `"NONE"`. Options:
+  * `"NONE"`: None
+  * `"FGHWPRMAND"`: Next Calendar Day Delivery
+  * `"FGHWPRMA4H"`: 4-Hour Hardware Delivery
+  * `"FGHWPRMA4HE"`: 4-Hour Hardware and Onsite Engineer
 
 <a id="nestedobjatt--configs--fgt_vm_bundle"></a>
 The `configs.fgt_vm_bundle` block contains:
@@ -494,6 +627,9 @@ The `configs.fortimail_vm` block contains:
 The `configs.fortindr_cloud` block contains:
 
 * `metered_usage` - (Number) Metered Usage. Read only. Can't be set.
+* `playbooks` - (Number) Quantity of Playbooks. Read only. Can't be set.
+* `eps` - (Number) Quantity of EPS. Read only. Can't be set.
+* `addons` - (List of String) Options: `"FNDTLI"` (3rd-Party Log Intake).
 
 
 <a id="nestedobjatt--configs--fortirecon"></a>
@@ -542,3 +678,9 @@ The `configs.fortidlp` block contains:
 * `service_pkg` - (String) `"DLPSTD"` (Standard), `"DLPENT"` (Enterprise), `"DLPENTP"` (Enterprise Premium).
 * `endpoints` - (Number) Number of endpoints. Number between 25 and 100000 (inclusive).
 * `addons` - (List of String) The default value is an empty list. Options: `"BPS"` (Best Practice Service).
+
+<a id="nestedobjatt--configs--socaas"></a>
+The `configs.socaas` block contains:
+
+* `service_pkg` - (String) Options: `"SOCMVM"` (Multi-Vendor Monitoring).
+* `daily_storage` - (Number) Daily Storage (GB). Number between 1 and 100,000 (inclusive).

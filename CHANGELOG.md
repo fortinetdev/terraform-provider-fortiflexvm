@@ -1,5 +1,18 @@
-## 2.4.6 (Unreleased)
+## 2.4.7 (Unreleased)
 
+## 2.4.6 (November 24, 2026)
+
+IMPROVEMENTS:
+
+* Added `SOCAAS` configuration support with `service_pkg` and `daily_storage`.
+* Added `FGT_HW` configuration argument `prma_service` and synchronized hardware model and addon documentation.
+* Added `FORTINDR_CLOUD` configuration argument `addons` and read-only attributes `playbooks` and `eps`.
+* Corrected the `FMG_VM` FortiAI additional token example to use the schema minimum of 1.
+* `resource_config` imports configurations specified by `config_id` and apply explicit changes in a single apply.
+
+BUG FIXES:
+
+* Adopt VM, hardware, and cloud entitlement API changes.
 
 ## 2.4.5 (June 4, 2026)
 

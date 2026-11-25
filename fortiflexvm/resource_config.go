@@ -13,10 +13,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hashicorp/go-cty/cty"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var readOnlyConfigParameterIDs = []int{47, 50, 59, 60, 72, 85, 86, 87, 88}
+var readOnlyConfigParameterIDs = []int{47, 50, 59, 60, 72, 85, 86, 87, 88, 113, 115}
 
 func isReadOnlyConfigParameter(paramID int) bool {
 	return slices.Contains(readOnlyConfigParameterIDs, paramID)
@@ -53,6 +55,7 @@ func resourceConfig() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"product_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -85,11 +88,12 @@ func resourceConfig() *schema.Resource {
 				FDC_CLOUD: FortiDLP Cloud;
 				FORTIAPPSEC: FortiAppSec;
 				FORTIDLP: FortiDLP;
-				FMG_CLOUD: FortiManager Cloud;`,
+				FMG_CLOUD: FortiManager Cloud;
+				SOCAAS: SOCaaS;`,
 				ValidateDiagFunc: checkInputValidString("product_type", []string{"FGT_VM_Bundle", "FMG_VM", "FWB_VM", "FGT_VM_LCS",
 					"FC_EMS_OP", "FC_EMS_CLOUD", "FAZ_VM", "FPC_VM", "FAD_VM", "FORTISOAR_VM", "FORTIMAIL_VM", "FORTINAC_VM",
 					"FGT_HW", "FAP_HW", "FSW_HW", "FEXT_HW", "FWBC_PRIVATE", "FWBC_PUBLIC", "FC_EMS_CLOUD", "FORTISASE",
-					"FORTIEDR", "FORTINDR_CLOUD", "FORTIRECON", "SIEM_CLOUD", "FDC_CLOUD", "FORTIAPPSEC", "FORTIDLP", "FMG_CLOUD"}),
+					"FORTIEDR", "FORTINDR_CLOUD", "FORTIRECON", "SIEM_CLOUD", "FDC_CLOUD", "FORTIAPPSEC", "FORTIDLP", "FMG_CLOUD", "SOCAAS"}),
 			},
 			"status": &schema.Schema{
 				Type:     schema.TypeString,
@@ -409,6 +413,11 @@ func resourceConfig() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"prma_service": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"device_model": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -670,6 +679,20 @@ func resourceConfig() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"playbooks": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"eps": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"addons": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
 						"metered_usage": &schema.Schema{
 							Type:     schema.TypeInt,
 							Computed: true,
@@ -826,6 +849,25 @@ func resourceConfig() *schema.Resource {
 					},
 				},
 			},
+			"socaas": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"service_pkg": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"daily_storage": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 			"fmg_cloud": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -850,69 +892,154 @@ func resourceConfig() *schema.Resource {
 	}
 }
 
-func importExistingConfig(d *schema.ResourceData, m interface{}) error {
-	c := m.(*FortiClient).Client
-	var err error
-	var response_data map[string]interface{}
-	config_id := d.Get("config_id").(int)
-	request_obj := make(map[string]interface{})
-	program_serial_number, ok := getProgramSerialNumber(d, m)
-	if !ok {
-		return fmt.Errorf("program_serial_number should be provided either in the resource or provider configuration")
+// configImportUpdate preserves remote parameters unless they are explicitly configured.
+// Build the request before refreshing ResourceData, which replaces the planned values.
+func configImportUpdate(d *schema.ResourceData, remote map[string]interface{}) (map[string]interface{}, error) {
+	obj := map[string]interface{}{"id": fmt.Sprint(remote["id"])}
+	changed := false
+	if name, ok := remote["name"]; ok {
+		obj["name"] = name
 	}
-	request_obj["programSerialNumber"] = program_serial_number
-	if v, ok := getAccountID(d, m); ok {
-		request_obj["accountId"] = v
-	}
-	config_list, err := c.ReadConfigsList(&request_obj)
-	if err != nil {
-		return fmt.Errorf("can not read configuration list: %v", err)
-	}
-	response_data, err = findConfigFromList(config_list, config_id)
-	if err != nil {
-		return err
-	}
-	if response_data["id"] != nil && response_data["id"] != "" {
-		d.SetId(fmt.Sprintf("%v", response_data["id"]))
-	} else {
-		d.SetId("Config")
+	if isConfigured(d, "name") {
+		obj["name"] = d.Get("name")
+		changed = obj["name"] != remote["name"]
 	}
 
-	// Update status if needed
-	if current_status, ok := response_data["status"].(string); ok {
-		if set_status, ok := d.GetOk("status"); ok && current_status != set_status.(string) {
-			obj, err := getObjectConfig(d, m, "id")
-			if err != nil {
-				return fmt.Errorf("error creating Config resource while getting object: %v", err)
-			}
-
-			var op string
-			if d.Get("status").(string) == "ACTIVE" {
-				op = "enable"
-			} else {
-				op = "disable"
-			}
-			response_data, err = c.UpdateConfigStatus(obj, op)
-			if err != nil {
-				return fmt.Errorf("error update Config status: %v", err)
-			}
-			if st, ok := response_data["status"].(string); ok {
-				if st != d.Get("status").(string) {
-					log.Printf("[WARN] Could not update the status of Config %v", d.Id())
+	blockName := strings.ToLower(d.Get("product_type").(string))
+	configured := make(map[string]interface{})
+	rawBlock, diags := d.GetRawConfigAt(cty.GetAttrPath(blockName))
+	if diags.HasError() {
+		return nil, fmt.Errorf("cannot read configuration block %s: %v", blockName, diags)
+	}
+	if !rawBlock.IsNull() {
+		if !rawBlock.IsWhollyKnown() {
+			return nil, fmt.Errorf("configuration block %s must be known when importing", blockName)
+		}
+		if rawBlock.LengthInt() > 1 {
+			return nil, fmt.Errorf("only one %s block can be imported", blockName)
+		}
+		if rawBlock.LengthInt() == 1 {
+			planned := d.Get(blockName).([]interface{})[0].(map[string]interface{})
+			for name, value := range rawBlock.Index(cty.NumberIntVal(0)).AsValueMap() {
+				if !value.IsNull() {
+					configured[name] = planned[name]
 				}
 			}
 		}
-	} else {
-		log.Printf("[WARN] Could not get status from HTTP response")
 	}
 
-	// refresh schema
-	err = refreshObjectConfig(d, response_data)
+	var desired []map[string]interface{}
+	if len(configured) > 0 {
+		parameters, err := expandConfigParameters(d, []interface{}{configured}, blockName)
+		if err != nil {
+			return nil, err
+		}
+		desired = parameters.([]map[string]interface{})
+	}
+
+	// Compare API values as strings because the API returns numbers as strings.
+	remoteValues := make(map[int][]string)
+	var parameters []map[string]interface{}
+	if values, ok := remote["parameters"].([]interface{}); ok {
+		for _, value := range values {
+			param := value.(map[string]interface{})
+			id := int(param["id"].(float64))
+			if !isReadOnlyConfigParameter(id) {
+				parameters = append(parameters, map[string]interface{}{"id": id, "value": param["value"]})
+				remoteValues[id] = append(remoteValues[id], fmt.Sprint(param["value"]))
+			}
+		}
+	}
+	desiredValues := make(map[int][]string)
+	for _, param := range desired {
+		id := param["id"].(int)
+		desiredValues[id] = append(desiredValues[id], fmt.Sprint(param["value"]))
+	}
+	for id, values := range desiredValues {
+		if !slices.Equal(values, remoteValues[id]) {
+			changed = true
+		}
+	}
+	if !changed {
+		return nil, nil
+	}
+
+	merged := make([]map[string]interface{}, 0, len(parameters)+len(desired))
+	for _, param := range parameters {
+		if _, replaced := desiredValues[param["id"].(int)]; !replaced {
+			merged = append(merged, param)
+		}
+	}
+	obj["parameters"] = append(merged, desired...)
+	return obj, nil
+}
+
+func importExistingConfig(d *schema.ResourceData, m interface{}) (err error) {
+	c := m.(*FortiClient).Client
+	configID := d.Get("config_id").(int)
+	programSerialNumber, ok := getProgramSerialNumber(d, m)
+	if !ok {
+		return fmt.Errorf("program_serial_number should be provided either in the resource or provider configuration")
+	}
+	request := map[string]interface{}{"programSerialNumber": programSerialNumber}
+	if value, ok := getAccountID(d, m); ok {
+		request["accountId"] = value
+	}
+	configs, err := c.ReadConfigsList(&request)
 	if err != nil {
-		return fmt.Errorf("error refresh Config resource: %v", err)
+		return fmt.Errorf("cannot read configuration list: %w", err)
 	}
+	remote, err := findConfigFromList(configs, configID)
+	if err != nil {
+		return err
+	}
+	productType := d.Get("product_type").(string)
+	if actual := flattenConfigProductType(remote["productType"]); actual != productType {
+		return fmt.Errorf("configuration %d has product_type %v, expected %s", configID, actual, productType)
+	}
+	update, err := configImportUpdate(d, remote)
+	if err != nil {
+		return err
+	}
+	status, setStatus := d.GetOk("status")
+	changeStatus := setStatus && status != remote["status"]
 
-	return err
+	// Keep the imported ID and actual values if a subsequent update fails.
+	d.SetId(strconv.Itoa(configID))
+	if err := d.Set("program_serial_number", programSerialNumber); err != nil {
+		return err
+	}
+	if err := refreshObjectConfig(d, remote); err != nil {
+		return fmt.Errorf("error refreshing imported Config resource: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			// An API error can occur after a remote write has already succeeded.
+			if readErr := resourceConfigRead(d, m); readErr != nil {
+				log.Printf("[WARN] Could not refresh imported configuration %d after update failure: %v", configID, readErr)
+			}
+		}
+	}()
+	if update != nil {
+		if _, err := c.UpdateConfig(&update); err != nil {
+			return fmt.Errorf("configuration %d was imported but updating it failed: %w", configID, err)
+		}
+	}
+	if changeStatus {
+		op := "disable"
+		if status == "ACTIVE" {
+			op = "enable"
+		}
+		obj := map[string]interface{}{"id": d.Id()}
+		if _, err := c.UpdateConfigStatus(&obj, op); err != nil {
+			return fmt.Errorf("configuration %d was imported but updating its status failed: %w", configID, err)
+		}
+	}
+	if update != nil || changeStatus {
+		// Read the full object; update and status responses may contain partial data.
+		return resourceConfigRead(d, m)
+	}
+	return nil
 }
 
 func createNewConfig(d *schema.ResourceData, m interface{}) error {
@@ -1227,7 +1354,7 @@ func expandConfigProductType(d *schema.ResourceData, v interface{}, pre string) 
 			"FGT_VM_Bundle, FMG_VM, FWB_VM, FGT_VM_LCS, FC_EMS_OP, FAZ_VM, FPC_VM, FAD_VM, FORTINAC_VM, "+
 				"FORTISOAR_VM, FORTIMAIL_VM, FGT_HW, FAP_HW, FSW_HW, FEXT_HW, FWBC_PRIVATE, FWBC_PUBLIC, "+
 				"FC_EMS_CLOUD, FORTISASE, FORTIEDR, FORTINDR_CLOUD, FORTIRECON, SIEM_CLOUD, "+
-				"FDC_CLOUD, FORTIAPPSEC, FORTIDLP, FMG_CLOUD")
+				"FDC_CLOUD, FORTIAPPSEC, FORTIDLP, FMG_CLOUD, SOCAAS")
 		return typeId, err
 	}
 	return typeId, nil
@@ -1272,6 +1399,9 @@ func expandConfigParameters(d *schema.ResourceData, v interface{}, pre string) (
 				if ck == "support_service" && cv == "" {
 					cv = "NONE"
 				}
+			}
+			if pre == "fgt_hw" && ck == "prma_service" && cv == "" {
+				cv = "NONE"
 			}
 			tmp := make(map[string]interface{})
 			tmp["id"] = ckId

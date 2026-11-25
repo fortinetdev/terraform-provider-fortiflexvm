@@ -173,7 +173,7 @@ func paramID2Name(p_id int) (string, string, string) {
 	case 5:
 		return "fwb_vm", "service_pkg", "string"
 	case 6:
-		return "fgt_vm_lcs", "cpu_size", "String"
+		return "fgt_vm_lcs", "cpu_size", "string"
 	case 7:
 		return "fgt_vm_lcs", "fortiguard_services", "list"
 	case 8:
@@ -362,6 +362,18 @@ func paramID2Name(p_id int) (string, string, string) {
 		return "fext_hw", "device_model", "string"
 	case 112:
 		return "fext_hw", "service_pkg", "string"
+	case 113:
+		return "fortindr_cloud", "playbooks", "int"
+	case 114:
+		return "fortindr_cloud", "addons", "list"
+	case 115:
+		return "fortindr_cloud", "eps", "int"
+	case 116:
+		return "socaas", "service_pkg", "string"
+	case 117:
+		return "socaas", "daily_storage", "int"
+	case 118:
+		return "fgt_hw", "prma_service", "string"
 	default:
 		return "", "", ""
 	}
